@@ -1,0 +1,115 @@
+[gd_scene load_steps=3 format=3 uid="uid://cgocqq54tsr6v"]
+
+[ext_resource type="Script" uid="uid://dpwskmlvgg420" path="res://scripts/Main.gd" id="1_main"]
+[ext_resource type="Texture2D" uid="uid://bat18du6tww2n" path="res://assets/images/background_2.jpg" id="2_rvslj"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 763.0
+offset_top = 495.0
+offset_right = 4603.0
+offset_bottom = 2655.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 3.14159
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("2_rvslj")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PlayerStats" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+
+[node name="HPLabel" type="Label" parent="VBox/PlayerStats"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "HP: 20"
+
+[node name="ManaLabel" type="Label" parent="VBox/PlayerStats"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Maná: 10"
+
+[node name="ShieldLabel" type="Label" parent="VBox/PlayerStats"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Escudo: 0"
+
+[node name="VSeparator" type="VSeparator" parent="VBox"]
+layout_mode = 2
+
+[node name="AIStats" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+
+[node name="HPLabel" type="Label" parent="VBox/AIStats"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "IA HP: 20"
+
+[node name="ManaLabel" type="Label" parent="VBox/AIStats"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "IA Maná: 10"
+
+[node name="ShieldLabel" type="Label" parent="VBox/AIStats"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "IA Escudo: 0"
+
+[node name="HSeparator" type="HSeparator" parent="VBox"]
+layout_mode = 2
+
+[node name="TurnLabel" type="Label" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Tu turno"
+horizontal_alignment = 1
+
+[node name="HSeparator2" type="HSeparator" parent="VBox"]
+layout_mode = 2
+
+[node name="HandContainer" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="HSeparator3" type="HSeparator" parent="VBox"]
+layout_mode = 2
+
+[node name="EndTurnButton" type="Button" parent="VBox"]
+layout_mode = 2
+text = "Terminar Turno"
+
+[node name="GameOverLabel" type="Label" parent="VBox"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 1
+text = "¡Juego Terminado!"
+horizontal_alignment = 1
+
+[node name="HSeparator4" type="HSeparator" parent="VBox"]
+layout_mode = 2

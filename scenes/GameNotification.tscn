@@ -1,0 +1,57 @@
+[gd_scene load_steps=2 format=3 uid="uid://do23whji38qbb"]
+
+[ext_resource type="Script" uid="uid://c7vc7s8rm8n7f" path="res://scripts/GameNotification.gd" id="1_game_notification"]
+
+[node name="GameNotification" type="Control"]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -218.0
+offset_top = -162.0
+offset_right = -18.0
+offset_bottom = -82.0
+grow_horizontal = 0
+grow_vertical = 0
+script = ExtResource("1_game_notification")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.15, 0.25, 0.95)
+
+[node name="VBox" type="VBoxContainer" parent="Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 15.0
+offset_top = 10.0
+offset_right = -15.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NotificationTitle" type="Label" parent="Background/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Título"
+horizontal_alignment = 1
+
+[node name="NotificationText" type="Label" parent="Background/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "📥 Texto principal"
+horizontal_alignment = 1
+
+[node name="NotificationDetail" type="Label" parent="Background/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Detalle adicional"
+horizontal_alignment = 1
