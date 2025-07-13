@@ -100,7 +100,15 @@ alignment = 1
 [node name="HSeparator3" type="HSeparator" parent="VBox"]
 layout_mode = 2
 
-[node name="EndTurnButton" type="Button" parent="VBox"]
+[node name="TurnButtonsContainer" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="PassTurnButton" type="Button" parent="VBox/TurnButtonsContainer"]
+layout_mode = 2
+text = "Pasar Turno"
+
+[node name="EndTurnButton" type="Button" parent="VBox/TurnButtonsContainer"]
 layout_mode = 2
 text = "Terminar Turno"
 

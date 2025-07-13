@@ -10,7 +10,8 @@ extends Control
 
 @onready var hand_container = $VBox/HandContainer
 @onready var turn_label = $VBox/TurnLabel
-@onready var end_turn_button = $VBox/EndTurnButton
+@onready var pass_turn_button = $VBox/TurnButtonsContainer/PassTurnButton
+@onready var end_turn_button = $VBox/TurnButtonsContainer/EndTurnButton
 @onready var game_over_label = $VBox/GameOverLabel
 
 var player: Player
@@ -25,6 +26,8 @@ var difficulty: String = "normal"
 var game_count: int = 1
 
 func _ready():
+	# Conectar botones
+	pass_turn_button.pressed.connect(_on_pass_turn_pressed)
 	end_turn_button.pressed.connect(_on_end_turn_pressed)
 	
 	ai_notification = ai_notification_scene.instantiate()
@@ -145,12 +148,18 @@ func start_player_turn():
 	player.start_turn()
 	var max_cards = player.get_max_cards_per_turn()
 	turn_label.text = "Tu turno - Puedes jugar " + str(max_cards) + " carta" + ("s" if max_cards > 1 else "")
+	
+	# Habilitar ambos botones
+	pass_turn_button.disabled = false
 	end_turn_button.disabled = false
 
 func start_ai_turn():
 	is_player_turn = false
 	ai.start_turn()
 	turn_label.text = "Turno de la IA"
+	
+	# Deshabilitar ambos botones
+	pass_turn_button.disabled = true
 	end_turn_button.disabled = true
 	
 	await ai.ai_turn(player)
@@ -163,6 +172,25 @@ func start_ai_turn():
 	
 	await get_tree().create_timer(1.0).timeout
 	start_player_turn()
+
+# Nuevo: Función para pasar turno sin jugar cartas
+func _on_pass_turn_pressed():
+	if is_player_turn:
+		turn_label.text = "Pasaste el turno - Sin cartas jugadas"
+		
+		# Mostrar notificación de turno pasado
+		if game_notification:
+			game_notification.show_auto_end_turn_notification("pass_turn")
+		
+		await get_tree().create_timer(GameBalance.get_timer_delay("turn_end")).timeout
+		
+		if DeckManager.should_restart_game(player.get_deck_size(), ai.get_deck_size(), player.get_hand_size(), ai.get_hand_size()):
+			turn_label.text = "¡Ambos sin cartas! Reiniciando..."
+			await get_tree().create_timer(GameBalance.get_timer_delay("game_restart")).timeout
+			restart_game()
+			return
+		
+		start_ai_turn()
 
 func _on_end_turn_pressed():
 	if is_player_turn:
@@ -267,6 +295,7 @@ func _on_player_died():
 		game_notification.show_game_end_notification("Derrota", "hp_zero")
 	game_over_label.text = "¡Perdiste! Reiniciando en " + str(int(GameBalance.get_timer_delay("death_restart"))) + " segundo..."
 	game_over_label.visible = true
+	pass_turn_button.disabled = true
 	end_turn_button.disabled = true
 	await get_tree().create_timer(GameBalance.get_timer_delay("death_restart")).timeout
 	restart_game()
@@ -276,6 +305,7 @@ func _on_ai_died():
 		game_notification.show_game_end_notification("Victoria", "hp_zero")
 	game_over_label.text = "¡Ganaste! Reiniciando en " + str(int(GameBalance.get_timer_delay("death_restart"))) + " segundo..."
 	game_over_label.visible = true
+	pass_turn_button.disabled = true
 	end_turn_button.disabled = true
 	await get_tree().create_timer(GameBalance.get_timer_delay("death_restart")).timeout
 	restart_game()

@@ -24,7 +24,7 @@ func show_card_draw_notification(player_name: String, cards_drawn: int, from_dec
 	var title = player_name + " robó carta" + ("s" if cards_drawn > 1 else "")
 	var text = ""
 	var detail = ""
-	var color = Color(0.2, 0.6, 0.9, 0.95)  # Azul para robo
+	var color = Color(0.2, 0.6, 0.9, 0.95)
 	
 	if from_deck:
 		text = "📥 " + str(cards_drawn) + " carta" + ("s" if cards_drawn > 1 else "") + " del mazo"
@@ -35,21 +35,19 @@ func show_card_draw_notification(player_name: String, cards_drawn: int, from_dec
 	
 	queue_notification(title, text, detail, color, GameBalance.get_timer_delay("notification_draw"))
 
-# Notificación para remezcla del cementerio
 func show_reshuffle_notification(player_name: String, cards_reshuffled: int):
 	var title = player_name + " remezcló el cementerio"
 	var text = "♻️ " + str(cards_reshuffled) + " cartas al mazo"
 	var detail = "¡Cartas usadas vuelven a estar disponibles!"
-	var color = Color(0.8, 0.6, 0.2, 0.95)  # Dorado para remezcla
+	var color = Color(0.8, 0.6, 0.2, 0.95)
 	
 	queue_notification(title, text, detail, color, GameBalance.get_timer_delay("notification_reshuffle"))
 
-# Notificación para fin de turno automático
 func show_auto_end_turn_notification(reason: String):
 	var title = "Turno terminado automáticamente"
 	var text = ""
 	var detail = ""
-	var color = Color(0.6, 0.6, 0.6, 0.95)  # Gris para sistema
+	var color = Color(0.6, 0.6, 0.6, 0.95) 
 	
 	match reason:
 		"no_cards":
@@ -61,24 +59,27 @@ func show_auto_end_turn_notification(reason: String):
 		"no_mana":
 			text = "⚡ Sin maná suficiente"
 			detail = "Ninguna carta se puede jugar"
+		"pass_turn":
+			title = "Turno pasado"
+			text = "⏭️ Decidiste pasar el turno"
+			detail = "Sin cartas jugadas"
+			color = Color(0.4, 0.7, 0.9, 0.95)
 	
 	queue_notification(title, text, detail, color, GameBalance.get_timer_delay("notification_auto_turn"))
 
-# Notificación para bonus de daño
 func show_damage_bonus_notification(turn_number: int, bonus: int):
 	var title = "¡Bonus de daño activado!"
 	var text = "⚔️ +" + str(bonus) + " de daño a todos los ataques"
 	var detail = "Turno " + str(turn_number) + " - ¡La batalla se intensifica!"
-	var color = Color(0.9, 0.3, 0.1, 0.95)  # Rojo intenso para bonus
+	var color = Color(0.9, 0.3, 0.1, 0.95)
 	
 	queue_notification(title, text, detail, color, GameBalance.get_timer_delay("notification_bonus"))
 
-# Notificación para fin de juego
 func show_game_end_notification(winner: String, reason: String):
 	var title = winner + " ha ganado"
 	var text = ""
 	var detail = "Nueva partida comenzando..."
-	var color = Color(0.2, 0.8, 0.2, 0.95)  # Verde para victoria
+	var color = Color(0.2, 0.8, 0.2, 0.95)
 	
 	match reason:
 		"hp_zero":
