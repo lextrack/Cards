@@ -16,6 +16,10 @@ extends Control
 @onready var end_turn_button = $UILayer/BottomPanel/TurnButtonsContainer/EndTurnButton
 @onready var game_over_label = $UILayer/GameOverLabel
 
+# Referencias para efectos visuales
+@onready var ui_layer = $UILayer
+@onready var overlay = $BackgroundLayer/Overlay
+
 var player: Player
 var ai: Player
 var card_scene = preload("res://scenes/Card.tscn")
@@ -27,10 +31,17 @@ var is_player_turn: bool = true
 var difficulty: String = "normal"
 var game_count: int = 1
 
+# Variables para efectos de daño
+var original_ui_position: Vector2
+var is_screen_shaking: bool = false
+
 func _ready():
 	# Conectar botones
 	pass_turn_button.pressed.connect(_on_pass_turn_pressed)
 	end_turn_button.pressed.connect(_on_end_turn_pressed)
+	
+	# Guardar posición original para efectos de shake
+	original_ui_position = ui_layer.position
 	
 	ai_notification = ai_notification_scene.instantiate()
 	add_child(ai_notification)
@@ -70,6 +81,7 @@ func setup_game():
 	player.turn_changed.connect(_on_player_turn_changed)
 	player.card_drawn.connect(_on_player_card_drawn)
 	player.auto_turn_ended.connect(_on_player_auto_turn_ended)
+	player.damage_taken.connect(_on_player_damage_taken)
 	
 	# Conectar señales de la IA
 	ai.hp_changed.connect(_on_ai_hp_changed)
@@ -156,7 +168,7 @@ func start_player_turn():
 	var cards_played = player.get_cards_played()
 	
 	turn_label.text = "Tu turno"
-	game_info_label.text = "Cartas jugadas: " + str(cards_played) + "/" + str(max_cards) + " | Dificultad: " + difficulty.to_upper()
+	game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty.to_upper() + " | [ENTER] cambiar dificultad"
 	
 	# Habilitar ambos botones
 	pass_turn_button.disabled = false
@@ -184,13 +196,11 @@ func start_ai_turn():
 	await get_tree().create_timer(1.0).timeout
 	start_player_turn()
 
-# Función para pasar turno sin jugar cartas
 func _on_pass_turn_pressed():
 	if is_player_turn:
 		turn_label.text = "Pasaste el turno"
 		game_info_label.text = "Sin cartas jugadas"
 		
-		# Mostrar notificación de turno pasado
 		if game_notification:
 			game_notification.show_auto_end_turn_notification("pass_turn")
 		
@@ -236,7 +246,7 @@ func _on_ai_shield_changed(new_shield: int):
 
 func _on_player_cards_played_changed(cards_played: int, max_cards: int):
 	update_hand_display()
-	game_info_label.text = "Cartas jugadas: " + str(cards_played) + "/" + str(max_cards) + " | Dificultad: " + difficulty.to_upper()
+	game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty.to_upper() + " | [ENTER] cambiar dificultad"
 	
 	if cards_played >= max_cards:
 		turn_label.text = "¡Límite alcanzado!"
@@ -333,9 +343,67 @@ func _on_ai_died():
 
 func _input(event):
 	if event.is_action_pressed("ui_accept"):
-		var difficulties = GameBalance.get_available_difficulties()
-		var current_index = difficulties.find(difficulty)
-		var next_index = (current_index + 1) % difficulties.size()
-		set_difficulty(difficulties[next_index])
+		# Solo permitir cambio de dificultad durante el turno del jugador
+		if is_player_turn:
+			var difficulties = GameBalance.get_available_difficulties()
+			var current_index = difficulties.find(difficulty)
+			var next_index = (current_index + 1) % difficulties.size()
+			set_difficulty(difficulties[next_index])
+		else:
+			# Mostrar mensaje si intenta cambiar durante turno de IA
+			turn_label.text = "Turno de la IA"
+			game_info_label.text = "No puedes cambiar dificultad ahora"
 	elif event.is_action_pressed("restart_game"):
 		restart_game()
+
+# === EFECTOS VISUALES DE DAÑO ===
+
+func _on_player_damage_taken(damage_amount: int):
+	play_damage_effects(damage_amount)
+
+func play_damage_effects(damage_amount: int):
+	if is_screen_shaking:
+		return
+	
+	var shake_intensity = min(damage_amount * 2.0, 8.0)
+	var flash_intensity = min(damage_amount * 0.1, 0.4)
+	
+	screen_shake(shake_intensity, 0.3)
+	red_flash(flash_intensity, 0.25)
+
+func screen_shake(intensity: float, duration: float):
+	if is_screen_shaking:
+		return
+	
+	is_screen_shaking = true
+	
+	var shake_count = 8
+	var time_per_shake = duration / shake_count
+	
+	for i in range(shake_count):
+		var current_intensity = intensity * (1.0 - float(i) / shake_count)
+		var shake_x = randf_range(-current_intensity, current_intensity)
+		var shake_y = randf_range(-current_intensity, current_intensity)
+		var shake_position = original_ui_position + Vector2(shake_x, shake_y)
+		
+		var tween = create_tween()
+		tween.tween_property(ui_layer, "position", shake_position, time_per_shake)
+		await tween.finished
+	
+	var final_tween = create_tween()
+	final_tween.tween_property(ui_layer, "position", original_ui_position, 0.1)
+	await final_tween.finished
+	
+	is_screen_shaking = false
+
+func red_flash(intensity: float, duration: float):
+	var original_color = overlay.color
+	var flash_color = Color(1.0, 0.2, 0.2, intensity)
+	
+	var tween = create_tween()
+	tween.set_parallel(true)
+	
+	tween.tween_property(overlay, "color", original_color + flash_color, duration * 0.2)
+	tween.tween_property(overlay, "color", original_color, duration * 0.8)
+	
+	await tween.finished

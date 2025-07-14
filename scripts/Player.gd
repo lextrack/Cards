@@ -30,6 +30,7 @@ signal turn_changed(turn_num: int, damage_bonus: int)
 signal ai_card_played(card: CardData)
 signal card_drawn(cards_count: int, from_deck: bool)
 signal auto_turn_ended(reason: String)
+signal damage_taken(damage_amount: int)  # Nueva señal para efectos visuales
 
 func _ready():
 	setup_from_difficulty()
@@ -78,6 +79,10 @@ func take_damage(damage: int):
 	var actual_damage = max(0, total_damage - current_shield)
 	current_shield = max(0, current_shield - total_damage)
 	current_hp -= actual_damage
+	
+	# Emitir señal de daño solo si realmente se recibió daño
+	if actual_damage > 0:
+		damage_taken.emit(actual_damage)
 	
 	if current_hp <= 0:
 		current_hp = 0

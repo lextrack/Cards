@@ -61,6 +61,9 @@ func update_display():
 	card_border.color = card_border.color * rarity_multiplier
 	rarity_bg.color = type_colors.border * 0.8
 	
+	# Efectos especiales según rareza
+	apply_rarity_effects(rarity)
+	
 	# Configurar icono y estadísticas
 	match card_data.card_type:
 		"attack":
@@ -122,9 +125,9 @@ func get_card_type_colors(card_type: String) -> Dictionary:
 func get_rarity_colors() -> Dictionary:
 	return {
 		"common": 1.0,
-		"uncommon": 1.2,
-		"rare": 1.5,
-		"epic": 2.0
+		"uncommon": 1.4,  # Más notable
+		"rare": 1.8,      # Más brillante
+		"epic": 2.5       # Muy brillante
 	}
 
 func _on_card_input(event: InputEvent):
@@ -151,6 +154,8 @@ func set_card_data(data: CardData):
 	card_data = data
 	if is_inside_tree():
 		update_display()
+		# Reproducir animación especial para cartas épicas
+		call_deferred("play_epic_entrance_animation")
 
 func set_playable(playable: bool):
 	if playable:
@@ -167,3 +172,51 @@ func set_mouse_filter_recursive(node: Node):
 	
 	for child in node.get_children():
 		set_mouse_filter_recursive(child)
+
+# Efectos especiales según rareza
+func apply_rarity_effects(rarity: String):
+	match rarity:
+		"uncommon":
+			# Brillo sutil en el nombre
+			name_label.modulate = Color(1.2, 1.2, 1.0, 1.0)
+			# Efecto en el costo
+			cost_label.modulate = Color(1.3, 1.3, 1.0, 1.0)
+		"rare":
+			# Brillo dorado en elementos clave
+			name_label.modulate = Color(1.4, 1.3, 0.8, 1.0)
+			cost_label.modulate = Color(1.5, 1.4, 0.7, 1.0)
+			stat_value.modulate = stat_value.modulate * Color(1.3, 1.2, 0.9, 1.0)
+			# Efecto en el icono
+			card_icon.modulate = Color(1.2, 1.15, 0.95, 1.0)
+		"epic":
+			# Efectos muy notorios - colores púrpura/dorado
+			name_label.modulate = Color(1.8, 1.4, 2.0, 1.0)  # Púrpura brillante
+			cost_label.modulate = Color(2.0, 1.5, 0.5, 1.0)  # Dorado intenso
+			stat_value.modulate = stat_value.modulate * Color(1.8, 1.3, 0.6, 1.0)
+			card_icon.modulate = Color(1.5, 1.2, 1.8, 1.0)   # Púrpura suave
+			# Brillo adicional en toda la carta
+			modulate = Color(1.1, 1.05, 1.15, 1.0)
+		_:
+			# Cartas comunes - colores normales
+			pass
+
+# Animación especial para cartas épicas al aparecer
+func play_epic_entrance_animation():
+	if not card_data:
+		return
+	
+	var rarity = CardProbability.calculate_card_rarity(card_data.damage, card_data.heal, card_data.shield)
+	if rarity == "epic":
+		# Efecto de pulso dorado
+		var tween = create_tween()
+		tween.set_loops(3)
+		tween.set_parallel(true)
+		
+		# Pulso de escala
+		tween.tween_property(self, "scale", original_scale * 1.15, 0.3)
+		tween.tween_property(self, "scale", original_scale, 0.3)
+		
+		# Pulso de brillo
+		var original_modulate = modulate
+		tween.tween_property(self, "modulate", Color(1.3, 1.1, 1.4, 1.0), 0.3)
+		tween.tween_property(self, "modulate", original_modulate, 0.3)
