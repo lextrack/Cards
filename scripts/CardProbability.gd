@@ -1,7 +1,6 @@
 class_name CardProbability
 extends RefCounted
 
-# Definición de cartas con sus probabilidades
 class CardTemplate:
 	var name: String
 	var cost: int
@@ -69,20 +68,16 @@ static func create_weighted_deck(deck_size: int = 30) -> Array:
 	var templates = get_all_card_templates()
 	var deck = []
 	
-	# Crear pool de cartas basado en pesos
 	var card_pool = []
 	for template in templates:
-		# Añadir cada carta tantas veces como su peso
 		for i in range(template.weight):
 			card_pool.append(template)
-	
-	# Seleccionar cartas aleatoriamente del pool
+
 	for i in range(deck_size):
 		if card_pool.size() > 0:
 			var random_index = randi() % card_pool.size()
 			var selected_template = card_pool[random_index]
 			
-			# Crear CardData desde el template
 			var card = CardData.new(
 				selected_template.name,
 				selected_template.cost,
@@ -123,7 +118,6 @@ static func calculate_card_rarity(damage: int, heal: int, shield: int) -> String
 	else:
 		return "common"
 
-# Función para obtener estadísticas del mazo
 static func get_deck_stats(deck: Array) -> Dictionary:
 	var stats = {
 		"total_cards": deck.size(),
@@ -138,11 +132,9 @@ static func get_deck_stats(deck: Array) -> Dictionary:
 	
 	for card in deck:
 		if card is CardData:
-			# Calcular rareza basada en poder
 			var rarity = calculate_card_rarity(card.damage, card.heal, card.shield)
 			stats[rarity] += 1
 			
-			# Contar por tipo
 			match card.card_type:
 				"attack":
 					stats["attack_cards"] += 1
@@ -153,12 +145,10 @@ static func get_deck_stats(deck: Array) -> Dictionary:
 	
 	return stats
 
-# Función para ajustar probabilidades dinámicamente
 static func create_balanced_deck(deck_size: int = 30, attack_ratio: float = 0.8) -> Array:
 	var templates = get_all_card_templates()
 	var deck = []
 	
-	# Separar templates por tipo
 	var attack_templates = []
 	var heal_templates = []
 	var shield_templates = []
@@ -172,21 +162,14 @@ static func create_balanced_deck(deck_size: int = 30, attack_ratio: float = 0.8)
 			"shield":
 				shield_templates.append(template)
 	
-	# Calcular cantidad de cada tipo
 	var attack_count = int(deck_size * attack_ratio)
 	var remaining = deck_size - attack_count
-	var heal_count = int(remaining * 0.6)  # 60% del restante para curación
+	var heal_count = int(remaining * 0.6)
 	var shield_count = remaining - heal_count
 	
-	# Generar cartas de ataque
 	deck.append_array(_generate_cards_from_templates(attack_templates, attack_count))
-	
-	# Generar cartas de curación
 	deck.append_array(_generate_cards_from_templates(heal_templates, heal_count))
-	
-	# Generar cartas de escudo
 	deck.append_array(_generate_cards_from_templates(shield_templates, shield_count))
-	
 	deck.shuffle()
 	return deck
 
@@ -194,12 +177,10 @@ static func _generate_cards_from_templates(templates: Array, count: int) -> Arra
 	var cards = []
 	var pool = []
 	
-	# Crear pool ponderado
 	for template in templates:
 		for i in range(template.weight):
 			pool.append(template)
 	
-	# Seleccionar cartas
 	for i in range(count):
 		if pool.size() > 0:
 			var random_index = randi() % pool.size()

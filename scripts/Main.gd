@@ -1,6 +1,5 @@
 extends Control
 
-# Referencias del UI mejorado
 @onready var player_hp_label = $UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer/HPStat/HPLabel
 @onready var player_mana_label = $UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer/ManaStat/ManaLabel
 @onready var player_shield_label = $UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer/ShieldStat/ShieldLabel
@@ -12,13 +11,9 @@ extends Control
 @onready var hand_container = $UILayer/CenterArea/HandContainer
 @onready var turn_label = $UILayer/TopPanel/StatsContainer/CenterInfo/TurnLabel
 @onready var game_info_label = $UILayer/TopPanel/StatsContainer/CenterInfo/GameInfoLabel
-@onready var pass_turn_button = $UILayer/BottomPanel/TurnButtonsContainer/PassTurnButton
 @onready var end_turn_button = $UILayer/BottomPanel/TurnButtonsContainer/EndTurnButton
 @onready var game_over_label = $UILayer/GameOverLabel
-
-# Referencias para efectos visuales
 @onready var ui_layer = $UILayer
-@onready var overlay = $BackgroundLayer/Overlay
 
 var player: Player
 var ai: Player
@@ -30,17 +25,15 @@ var game_notification: GameNotification
 var is_player_turn: bool = true
 var difficulty: String = "normal"
 var game_count: int = 1
-
-# Variables para efectos de daño
 var original_ui_position: Vector2
 var is_screen_shaking: bool = false
 
 func _ready():
-	# Conectar botones
-	pass_turn_button.pressed.connect(_on_pass_turn_pressed)
-	end_turn_button.pressed.connect(_on_end_turn_pressed)
+	if end_turn_button:
+		end_turn_button.pressed.connect(_on_end_turn_pressed)
+	else:
+		push_error("EndTurnButton no encontrado en la escena")
 	
-	# Guardar posición original para efectos de shake
 	original_ui_position = ui_layer.position
 	
 	ai_notification = ai_notification_scene.instantiate()
@@ -126,12 +119,10 @@ func update_all_labels():
 	if damage_bonus > 0:
 		bonus_text = " (+{0} dmg)".format([damage_bonus])
 	
-	# Actualizar stats del jugador
 	player_hp_label.text = str(player.current_hp)
 	player_mana_label.text = str(player.current_mana)
 	player_shield_label.text = str(player.current_shield)
 	
-	# Actualizar stats de la IA
 	ai_hp_label.text = str(ai.current_hp)
 	ai_mana_label.text = str(ai.current_mana)
 	ai_shield_label.text = str(ai.current_shield)
@@ -146,8 +137,7 @@ func update_hand_display():
 		card_instance.card_clicked.connect(_on_card_clicked)
 		hand_container.add_child(card_instance)
 		
-		# Verificar si la carta es jugable
-		var can_play = player.can_play_card(card_data)
+		var can_play = is_player_turn and player.can_play_card(card_data)
 		card_instance.set_playable(can_play)
 
 func _on_card_clicked(card: Card):
@@ -170,9 +160,10 @@ func start_player_turn():
 	turn_label.text = "Tu turno"
 	game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty.to_upper() + " | [ENTER] cambiar dificultad"
 	
-	# Habilitar ambos botones
-	pass_turn_button.disabled = false
-	end_turn_button.disabled = false
+	update_turn_button_text()
+	
+	if end_turn_button:
+		end_turn_button.disabled = false
 
 func start_ai_turn():
 	is_player_turn = false
@@ -180,9 +171,10 @@ func start_ai_turn():
 	turn_label.text = "Turno de la IA"
 	game_info_label.text = "La IA está pensando..."
 	
-	# Deshabilitar ambos botones
-	pass_turn_button.disabled = true
-	end_turn_button.disabled = true
+	if end_turn_button:
+		end_turn_button.disabled = true
+	
+	update_hand_display()
 	
 	await ai.ai_turn(player)
 	
@@ -196,27 +188,27 @@ func start_ai_turn():
 	await get_tree().create_timer(1.0).timeout
 	start_player_turn()
 
-func _on_pass_turn_pressed():
-	if is_player_turn:
-		turn_label.text = "Pasaste el turno"
-		game_info_label.text = "Sin cartas jugadas"
+func update_turn_button_text():
+	if not end_turn_button:
+		return
 		
-		if game_notification:
-			game_notification.show_auto_end_turn_notification("pass_turn")
-		
-		await get_tree().create_timer(GameBalance.get_timer_delay("turn_end")).timeout
-		
-		if DeckManager.should_restart_game(player.get_deck_size(), ai.get_deck_size(), player.get_hand_size(), ai.get_hand_size()):
-			turn_label.text = "¡Ambos sin cartas!"
-			game_info_label.text = "Reiniciando partida..."
-			await get_tree().create_timer(GameBalance.get_timer_delay("game_restart")).timeout
-			restart_game()
-			return
-		
-		start_ai_turn()
+	var cards_played = player.get_cards_played()
+	var max_cards = player.get_max_cards_per_turn()
+	var playable_cards = DeckManager.get_playable_cards(player.hand, player.current_mana)
+	
+	if cards_played >= max_cards:
+		end_turn_button.text = "Esperando"
+	elif playable_cards.size() == 0:
+		end_turn_button.text = "Sin cartas jugables"
+	elif player.get_hand_size() == 0:
+		end_turn_button.text = "Sin cartas en mano"
+	else:
+		end_turn_button.text = "Terminar Turno"
 
 func _on_end_turn_pressed():
-	if is_player_turn:
+	if is_player_turn and end_turn_button:
+		end_turn_button.release_focus()
+		
 		if DeckManager.should_restart_game(player.get_deck_size(), ai.get_deck_size(), player.get_hand_size(), ai.get_hand_size()):
 			turn_label.text = "¡Ambos sin cartas!"
 			game_info_label.text = "Reiniciando partida..."
@@ -246,16 +238,17 @@ func _on_ai_shield_changed(new_shield: int):
 
 func _on_player_cards_played_changed(cards_played: int, max_cards: int):
 	update_hand_display()
+	update_turn_button_text()
 	game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty.to_upper() + " | [ENTER] cambiar dificultad"
 	
 	if cards_played >= max_cards:
 		turn_label.text = "¡Límite alcanzado!"
-		game_info_label.text = "Terminando turno..."
+		game_info_label.text = "Terminando turno automáticamente..."
 		await get_tree().create_timer(GameBalance.get_timer_delay("turn_end")).timeout
 		start_ai_turn()
 	elif is_player_turn and player.get_hand_size() == 0:
 		turn_label.text = "¡Sin cartas!"
-		game_info_label.text = "Terminando turno..."
+		game_info_label.text = "Terminando turno automáticamente..."
 		await get_tree().create_timer(GameBalance.get_timer_delay("turn_end")).timeout
 		start_ai_turn()
 
@@ -301,10 +294,11 @@ func _on_player_auto_turn_ended(reason: String):
 
 func _on_player_hand_changed():
 	update_hand_display()
+	update_turn_button_text()
 	
 	if is_player_turn and player.get_hand_size() == 0:
 		turn_label.text = "¡Sin cartas!"
-		game_info_label.text = "Terminando turno..."
+		game_info_label.text = "Terminando turno automáticamente..."
 		await get_tree().create_timer(GameBalance.get_timer_delay("turn_end")).timeout
 		start_ai_turn()
 
@@ -326,8 +320,8 @@ func _on_player_died():
 		game_notification.show_game_end_notification("Derrota", "hp_zero")
 	game_over_label.text = "¡PERDISTE! Reiniciando..."
 	game_over_label.visible = true
-	pass_turn_button.disabled = true
-	end_turn_button.disabled = true
+	if end_turn_button:
+		end_turn_button.disabled = true
 	await get_tree().create_timer(GameBalance.get_timer_delay("death_restart")).timeout
 	restart_game()
 
@@ -336,27 +330,23 @@ func _on_ai_died():
 		game_notification.show_game_end_notification("Victoria", "hp_zero")
 	game_over_label.text = "¡GANASTE! Reiniciando..."
 	game_over_label.visible = true
-	pass_turn_button.disabled = true
-	end_turn_button.disabled = true
+	if end_turn_button:
+		end_turn_button.disabled = true
 	await get_tree().create_timer(GameBalance.get_timer_delay("death_restart")).timeout
 	restart_game()
 
 func _input(event):
 	if event.is_action_pressed("ui_accept"):
-		# Solo permitir cambio de dificultad durante el turno del jugador
 		if is_player_turn:
 			var difficulties = GameBalance.get_available_difficulties()
 			var current_index = difficulties.find(difficulty)
 			var next_index = (current_index + 1) % difficulties.size()
 			set_difficulty(difficulties[next_index])
 		else:
-			# Mostrar mensaje si intenta cambiar durante turno de IA
 			turn_label.text = "Turno de la IA"
 			game_info_label.text = "No puedes cambiar dificultad ahora"
 	elif event.is_action_pressed("restart_game"):
 		restart_game()
-
-# === EFECTOS VISUALES DE DAÑO ===
 
 func _on_player_damage_taken(damage_amount: int):
 	play_damage_effects(damage_amount)
@@ -366,10 +356,8 @@ func play_damage_effects(damage_amount: int):
 		return
 	
 	var shake_intensity = min(damage_amount * 2.0, 8.0)
-	var flash_intensity = min(damage_amount * 0.1, 0.4)
 	
 	screen_shake(shake_intensity, 0.3)
-	red_flash(flash_intensity, 0.25)
 
 func screen_shake(intensity: float, duration: float):
 	if is_screen_shaking:
@@ -395,15 +383,3 @@ func screen_shake(intensity: float, duration: float):
 	await final_tween.finished
 	
 	is_screen_shaking = false
-
-func red_flash(intensity: float, duration: float):
-	var original_color = overlay.color
-	var flash_color = Color(1.0, 0.2, 0.2, intensity)
-	
-	var tween = create_tween()
-	tween.set_parallel(true)
-	
-	tween.tween_property(overlay, "color", original_color + flash_color, duration * 0.2)
-	tween.tween_property(overlay, "color", original_color, duration * 0.8)
-	
-	await tween.finished
