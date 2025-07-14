@@ -14,6 +14,7 @@ extends Control
 @onready var end_turn_button = $UILayer/BottomPanel/TurnButtonsContainer/EndTurnButton
 @onready var game_over_label = $UILayer/GameOverLabel
 @onready var ui_layer = $UILayer
+@onready var top_panel_bg = $UILayer/TopPanel/TopPanelBG
 
 var player: Player
 var ai: Player
@@ -27,6 +28,9 @@ var difficulty: String = "normal"
 var game_count: int = 1
 var original_ui_position: Vector2
 var is_screen_shaking: bool = false
+var player_turn_color = Color(0.08, 0.13, 0.18, 0.9)
+var ai_turn_color = Color(0.15, 0.08, 0.08, 0.9)
+var transition_time = 0.8
 
 func _ready():
 	if end_turn_button:
@@ -153,6 +157,10 @@ func _on_card_clicked(card: Card):
 
 func start_player_turn():
 	is_player_turn = true
+	
+	var tween = create_tween()
+	tween.tween_property(top_panel_bg, "color", player_turn_color, transition_time)
+	
 	player.start_turn()
 	var max_cards = player.get_max_cards_per_turn()
 	var cards_played = player.get_cards_played()
@@ -167,6 +175,10 @@ func start_player_turn():
 
 func start_ai_turn():
 	is_player_turn = false
+	
+	var tween = create_tween()
+	tween.tween_property(top_panel_bg, "color", ai_turn_color, transition_time)
+	
 	ai.start_turn()
 	turn_label.text = "Turno de la IA"
 	game_info_label.text = "La IA está pensando..."
