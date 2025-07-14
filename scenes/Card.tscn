@@ -3,21 +3,72 @@
 [ext_resource type="Script" uid="uid://bmwtnxhcx165w" path="res://scripts/Card.gd" id="1_0x2y3"]
 
 [node name="Card" type="Control"]
-custom_minimum_size = Vector2(140, 180)
+custom_minimum_size = Vector2(160, 220)
 layout_mode = 3
 anchors_preset = 0
-offset_right = 140.0
-offset_bottom = 180.0
+offset_right = 160.0
+offset_bottom = 220.0
 script = ExtResource("1_0x2y3")
 
-[node name="CardBackground" type="ColorRect" parent="."]
+[node name="CardShadow" type="ColorRect" parent="."]
+z_index = -1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 4.0
+offset_bottom = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.4)
+
+[node name="CardBackground" type="Panel" parent="."]
+clip_contents = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.5, 0.5, 0.5, 1)
+mouse_filter = 2
+
+[node name="CardBG" type="ColorRect" parent="CardBackground"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.15, 0.15, 0.25, 1)
+
+[node name="CardBorder" type="ColorRect" parent="CardBackground"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.25, 0.35, 1)
+
+[node name="CardInner" type="ColorRect" parent="CardBackground"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.25, 0.3, 0.4, 1)
 
 [node name="VBox" type="VBoxContainer" parent="CardBackground"]
 layout_mode = 1
@@ -31,21 +82,178 @@ offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="NameLabel" type="Label" parent="CardBackground/VBox"]
+[node name="HeaderContainer" type="HBoxContainer" parent="CardBackground/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+size_flags_vertical = 0
+
+[node name="NameLabel" type="Label" parent="CardBackground/VBox/HeaderContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
 text = "Carta"
-horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
 
-[node name="CostLabel" type="Label" parent="CardBackground/VBox"]
+[node name="CostContainer" type="Panel" parent="CardBackground/VBox/HeaderContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Costo: 1"
-horizontal_alignment = 1
+size_flags_horizontal = 0
 
-[node name="DescriptionLabel" type="Label" parent="CardBackground/VBox"]
+[node name="CostBG" type="ColorRect" parent="CardBackground/VBox/HeaderContainer/CostContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.4, 0.8, 1)
+
+[node name="CostLabel" type="Label" parent="CardBackground/VBox/HeaderContainer/CostContainer"]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="CardBackground/VBox"]
 layout_mode = 2
+
+[node name="ArtContainer" type="Panel" parent="CardBackground/VBox"]
+clip_contents = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ArtBG" type="ColorRect" parent="CardBackground/VBox/ArtContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.3, 0.35, 0.45, 1)
+
+[node name="CardIcon" type="Label" parent="CardBackground/VBox/ArtContainer"]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 32
+text = "⚔️"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator2" type="HSeparator" parent="CardBackground/VBox"]
+layout_mode = 2
+
+[node name="StatsContainer" type="HBoxContainer" parent="CardBackground/VBox"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="StatValue" type="Label" parent="CardBackground/VBox/StatsContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 18
+text = "2"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatIcon" type="Label" parent="CardBackground/VBox/StatsContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 16
+text = "💥"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator3" type="HSeparator" parent="CardBackground/VBox"]
+layout_mode = 2
+
+[node name="DescriptionContainer" type="Panel" parent="CardBackground/VBox"]
+clip_contents = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DescBG" type="ColorRect" parent="CardBackground/VBox/DescriptionContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.15, 0.8)
+
+[node name="DescriptionLabel" type="Label" parent="CardBackground/VBox/DescriptionContainer"]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = -6.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 theme_override_font_sizes/font_size = 10
 text = "Descripción"
 horizontal_alignment = 1
+vertical_alignment = 1
 autowrap_mode = 2
+
+[node name="HSeparator4" type="HSeparator" parent="CardBackground/VBox"]
+layout_mode = 2
+
+[node name="RarityContainer" type="Panel" parent="CardBackground/VBox"]
+clip_contents = true
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="RarityBG" type="ColorRect" parent="CardBackground/VBox/RarityContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.4, 0.4, 0.4, 0.6)
+
+[node name="RarityLabel" type="Label" parent="CardBackground/VBox/RarityContainer"]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 2.0
+offset_right = -4.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 9
+text = "[Común]"
+horizontal_alignment = 1
+vertical_alignment = 1

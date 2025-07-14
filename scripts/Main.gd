@@ -1,18 +1,20 @@
 extends Control
 
-@onready var player_hp_label = $VBox/PlayerStats/HPLabel
-@onready var player_mana_label = $VBox/PlayerStats/ManaLabel
-@onready var player_shield_label = $VBox/PlayerStats/ShieldLabel
+# Referencias del UI mejorado
+@onready var player_hp_label = $UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer/HPStat/HPLabel
+@onready var player_mana_label = $UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer/ManaStat/ManaLabel
+@onready var player_shield_label = $UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer/ShieldStat/ShieldLabel
 
-@onready var ai_hp_label = $VBox/AIStats/HPLabel
-@onready var ai_mana_label = $VBox/AIStats/ManaLabel
-@onready var ai_shield_label = $VBox/AIStats/ShieldLabel
+@onready var ai_hp_label = $UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer/HPStat/HPLabel
+@onready var ai_mana_label = $UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer/ManaStat/ManaLabel
+@onready var ai_shield_label = $UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer/ShieldStat/ShieldLabel
 
-@onready var hand_container = $VBox/HandContainer
-@onready var turn_label = $VBox/TurnLabel
-@onready var pass_turn_button = $VBox/TurnButtonsContainer/PassTurnButton
-@onready var end_turn_button = $VBox/TurnButtonsContainer/EndTurnButton
-@onready var game_over_label = $VBox/GameOverLabel
+@onready var hand_container = $UILayer/CenterArea/HandContainer
+@onready var turn_label = $UILayer/TopPanel/StatsContainer/CenterInfo/TurnLabel
+@onready var game_info_label = $UILayer/TopPanel/StatsContainer/CenterInfo/GameInfoLabel
+@onready var pass_turn_button = $UILayer/BottomPanel/TurnButtonsContainer/PassTurnButton
+@onready var end_turn_button = $UILayer/BottomPanel/TurnButtonsContainer/EndTurnButton
+@onready var game_over_label = $UILayer/GameOverLabel
 
 var player: Player
 var ai: Player
@@ -89,7 +91,8 @@ func setup_game():
 
 func restart_game():
 	game_count += 1
-	turn_label.text = "¡Nueva partida! (Partida #" + str(game_count) + ")"
+	turn_label.text = "¡Nueva partida!"
+	game_info_label.text = "Partida #" + str(game_count)
 	await get_tree().create_timer(GameBalance.get_timer_delay("new_game")).timeout
 	setup_game()
 
@@ -102,22 +105,24 @@ func set_difficulty(new_difficulty: String):
 	update_all_labels()
 	
 	var description = GameBalance.get_difficulty_description(difficulty)
-	turn_label.text = difficulty.to_upper() + ": " + description
+	turn_label.text = difficulty.to_upper()
+	game_info_label.text = description
 
 func update_all_labels():
-	var difficulty_text = " [" + difficulty.to_upper() + "]"
 	var damage_bonus = player.get_damage_bonus()
 	var bonus_text = ""
 	if damage_bonus > 0:
 		bonus_text = " (+{0} dmg)".format([damage_bonus])
 	
-	player_hp_label.text = "HP: " + str(player.current_hp)
-	player_mana_label.text = "Maná: " + str(player.current_mana)
-	player_shield_label.text = "Escudo: " + str(player.current_shield) + " | Cartas: " + str(player.get_hand_size()) + "/" + str(player.get_total_cards()) + " | Jugadas: " + str(player.get_cards_played()) + "/" + str(player.get_max_cards_per_turn()) + difficulty_text + bonus_text
+	# Actualizar stats del jugador
+	player_hp_label.text = str(player.current_hp)
+	player_mana_label.text = str(player.current_mana)
+	player_shield_label.text = str(player.current_shield)
 	
-	ai_hp_label.text = "IA HP: " + str(ai.current_hp)
-	ai_mana_label.text = "IA Maná: " + str(ai.current_mana)
-	ai_shield_label.text = "IA Escudo: " + str(ai.current_shield) + " | Cartas: " + str(ai.get_hand_size()) + "/" + str(ai.get_total_cards()) + " | Jugadas: " + str(ai.get_cards_played()) + "/" + str(ai.get_max_cards_per_turn()) + bonus_text
+	# Actualizar stats de la IA
+	ai_hp_label.text = str(ai.current_hp)
+	ai_mana_label.text = str(ai.current_mana)
+	ai_shield_label.text = str(ai.current_shield)
 
 func update_hand_display():
 	for child in hand_container.get_children():
@@ -129,8 +134,9 @@ func update_hand_display():
 		card_instance.card_clicked.connect(_on_card_clicked)
 		hand_container.add_child(card_instance)
 		
-		if not player.can_play_card(card_data):
-			card_instance.modulate = Color(0.5, 0.5, 0.5, 1.0)
+		# Verificar si la carta es jugable
+		var can_play = player.can_play_card(card_data)
+		card_instance.set_playable(can_play)
 
 func _on_card_clicked(card: Card):
 	if not is_player_turn:
@@ -147,7 +153,10 @@ func start_player_turn():
 	is_player_turn = true
 	player.start_turn()
 	var max_cards = player.get_max_cards_per_turn()
-	turn_label.text = "Tu turno - Puedes jugar " + str(max_cards) + " carta" + ("s" if max_cards > 1 else "")
+	var cards_played = player.get_cards_played()
+	
+	turn_label.text = "Tu turno"
+	game_info_label.text = "Cartas jugadas: " + str(cards_played) + "/" + str(max_cards) + " | Dificultad: " + difficulty.to_upper()
 	
 	# Habilitar ambos botones
 	pass_turn_button.disabled = false
@@ -157,6 +166,7 @@ func start_ai_turn():
 	is_player_turn = false
 	ai.start_turn()
 	turn_label.text = "Turno de la IA"
+	game_info_label.text = "La IA está pensando..."
 	
 	# Deshabilitar ambos botones
 	pass_turn_button.disabled = true
@@ -165,7 +175,8 @@ func start_ai_turn():
 	await ai.ai_turn(player)
 	
 	if DeckManager.should_restart_game(player.get_deck_size(), ai.get_deck_size(), player.get_hand_size(), ai.get_hand_size()):
-		turn_label.text = "¡Ambos sin cartas! Reiniciando..."
+		turn_label.text = "¡Ambos sin cartas!"
+		game_info_label.text = "Reiniciando partida..."
 		await get_tree().create_timer(GameBalance.get_timer_delay("game_restart")).timeout
 		restart_game()
 		return
@@ -173,10 +184,11 @@ func start_ai_turn():
 	await get_tree().create_timer(1.0).timeout
 	start_player_turn()
 
-# Nuevo: Función para pasar turno sin jugar cartas
+# Función para pasar turno sin jugar cartas
 func _on_pass_turn_pressed():
 	if is_player_turn:
-		turn_label.text = "Pasaste el turno - Sin cartas jugadas"
+		turn_label.text = "Pasaste el turno"
+		game_info_label.text = "Sin cartas jugadas"
 		
 		# Mostrar notificación de turno pasado
 		if game_notification:
@@ -185,7 +197,8 @@ func _on_pass_turn_pressed():
 		await get_tree().create_timer(GameBalance.get_timer_delay("turn_end")).timeout
 		
 		if DeckManager.should_restart_game(player.get_deck_size(), ai.get_deck_size(), player.get_hand_size(), ai.get_hand_size()):
-			turn_label.text = "¡Ambos sin cartas! Reiniciando..."
+			turn_label.text = "¡Ambos sin cartas!"
+			game_info_label.text = "Reiniciando partida..."
 			await get_tree().create_timer(GameBalance.get_timer_delay("game_restart")).timeout
 			restart_game()
 			return
@@ -195,7 +208,8 @@ func _on_pass_turn_pressed():
 func _on_end_turn_pressed():
 	if is_player_turn:
 		if DeckManager.should_restart_game(player.get_deck_size(), ai.get_deck_size(), player.get_hand_size(), ai.get_hand_size()):
-			turn_label.text = "¡Ambos sin cartas! Reiniciando..."
+			turn_label.text = "¡Ambos sin cartas!"
+			game_info_label.text = "Reiniciando partida..."
 			await get_tree().create_timer(GameBalance.get_timer_delay("game_restart")).timeout
 			restart_game()
 			return
@@ -203,33 +217,35 @@ func _on_end_turn_pressed():
 		start_ai_turn()
 
 func _on_player_hp_changed(new_hp: int):
-	player_hp_label.text = "HP: " + str(new_hp)
+	player_hp_label.text = str(new_hp)
 
 func _on_player_mana_changed(new_mana: int):
-	player_mana_label.text = "Maná: " + str(new_mana)
+	player_mana_label.text = str(new_mana)
 
 func _on_player_shield_changed(new_shield: int):
-	update_all_labels()
+	player_shield_label.text = str(new_shield)
 
 func _on_ai_hp_changed(new_hp: int):
-	ai_hp_label.text = "IA HP: " + str(new_hp)
+	ai_hp_label.text = str(new_hp)
 
 func _on_ai_mana_changed(new_mana: int):
-	ai_mana_label.text = "IA Maná: " + str(new_mana)
+	ai_mana_label.text = str(new_mana)
 
 func _on_ai_shield_changed(new_shield: int):
-	update_all_labels()
+	ai_shield_label.text = str(new_shield)
 
 func _on_player_cards_played_changed(cards_played: int, max_cards: int):
-	update_all_labels()
 	update_hand_display()
+	game_info_label.text = "Cartas jugadas: " + str(cards_played) + "/" + str(max_cards) + " | Dificultad: " + difficulty.to_upper()
 	
 	if cards_played >= max_cards:
-		turn_label.text = "¡Límite alcanzado! Terminando turno..."
+		turn_label.text = "¡Límite alcanzado!"
+		game_info_label.text = "Terminando turno..."
 		await get_tree().create_timer(GameBalance.get_timer_delay("turn_end")).timeout
 		start_ai_turn()
 	elif is_player_turn and player.get_hand_size() == 0:
-		turn_label.text = "¡Sin cartas! Terminando turno..."
+		turn_label.text = "¡Sin cartas!"
+		game_info_label.text = "Terminando turno..."
 		await get_tree().create_timer(GameBalance.get_timer_delay("turn_end")).timeout
 		start_ai_turn()
 
@@ -241,7 +257,8 @@ func _on_player_turn_changed(turn_num: int, damage_bonus: int):
 		if game_notification:
 			game_notification.show_damage_bonus_notification(turn_num, damage_bonus)
 	elif damage_bonus > 0:
-		turn_label.text = "Turno " + str(turn_num) + " - ¡Bonus de daño: +" + str(damage_bonus) + "!"
+		turn_label.text = "Turno " + str(turn_num)
+		game_info_label.text = "¡Bonus de daño: +" + str(damage_bonus) + "!"
 	update_all_labels()
 
 func _on_ai_turn_changed(turn_num: int, damage_bonus: int):
@@ -259,11 +276,13 @@ func _on_player_deck_reshuffled():
 	if game_notification:
 		var cards_reshuffled = player.deck.size()
 		game_notification.show_reshuffle_notification("Jugador", cards_reshuffled)
-	turn_label.text = "¡Tu cementerio se remezcló en el mazo!"
+	turn_label.text = "¡Cementerio remezcla"
+	game_info_label.text = "Cartas devueltas al mazo"
 	await get_tree().create_timer(2.0).timeout
 
 func _on_ai_deck_reshuffled():
-	turn_label.text = "La IA remezcló su cementerio"
+	turn_label.text = "IA remezcló"
+	game_info_label.text = "Su cementerio vuelve al mazo"
 	await get_tree().create_timer(2.0).timeout
 
 func _on_player_auto_turn_ended(reason: String):
@@ -272,10 +291,10 @@ func _on_player_auto_turn_ended(reason: String):
 
 func _on_player_hand_changed():
 	update_hand_display()
-	update_all_labels()
 	
 	if is_player_turn and player.get_hand_size() == 0:
-		turn_label.text = "¡Sin cartas! Terminando turno..."
+		turn_label.text = "¡Sin cartas!"
+		game_info_label.text = "Terminando turno..."
 		await get_tree().create_timer(GameBalance.get_timer_delay("turn_end")).timeout
 		start_ai_turn()
 
@@ -284,16 +303,18 @@ func _on_ai_hand_changed():
 
 func _on_player_deck_empty():
 	if player.discard_pile.size() == 0:
-		turn_label.text = "¡Sin cartas! Verificando reinicio..."
+		turn_label.text = "¡Sin cartas!"
+		game_info_label.text = "Verificando reinicio..."
 
 func _on_ai_deck_empty():
 	if ai.discard_pile.size() == 0:
-		turn_label.text = "IA sin cartas - Verificando reinicio..."
+		turn_label.text = "IA sin cartas"
+		game_info_label.text = "Verificando reinicio..."
 
 func _on_player_died():
 	if game_notification:
 		game_notification.show_game_end_notification("Derrota", "hp_zero")
-	game_over_label.text = "¡Perdiste! Reiniciando en " + str(int(GameBalance.get_timer_delay("death_restart"))) + " segundo..."
+	game_over_label.text = "¡PERDISTE! Reiniciando..."
 	game_over_label.visible = true
 	pass_turn_button.disabled = true
 	end_turn_button.disabled = true
@@ -303,7 +324,7 @@ func _on_player_died():
 func _on_ai_died():
 	if game_notification:
 		game_notification.show_game_end_notification("Victoria", "hp_zero")
-	game_over_label.text = "¡Ganaste! Reiniciando en " + str(int(GameBalance.get_timer_delay("death_restart"))) + " segundo..."
+	game_over_label.text = "¡GANASTE! Reiniciando..."
 	game_over_label.visible = true
 	pass_turn_button.disabled = true
 	end_turn_button.disabled = true

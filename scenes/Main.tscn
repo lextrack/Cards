@@ -12,7 +12,16 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_main")
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="BackgroundLayer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TextureRect" type="TextureRect" parent="BackgroundLayer"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -29,95 +38,310 @@ rotation = 3.14159
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("2_rvslj")
 
-[node name="VBox" type="VBoxContainer" parent="."]
+[node name="Overlay" type="ColorRect" parent="BackgroundLayer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.05, 0.1, 0.2, 0.7)
+
+[node name="UILayer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopPanel" type="Panel" parent="UILayer"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 120.0
+grow_horizontal = 2
+
+[node name="TopPanelBG" type="ColorRect" parent="UILayer/TopPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.15, 0.25, 0.9)
+
+[node name="StatsContainer" type="HBoxContainer" parent="UILayer/TopPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = 15.0
+offset_right = -25.0
+offset_bottom = -15.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PlayerStatsPanel" type="Panel" parent="UILayer/TopPanel/StatsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PlayerStatsBG" type="ColorRect" parent="UILayer/TopPanel/StatsContainer/PlayerStatsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.3, 0.5, 0.8)
+
+[node name="PlayerStatsContainer" type="HBoxContainer" parent="UILayer/TopPanel/StatsContainer/PlayerStatsPanel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 20.0
-offset_top = 20.0
+offset_top = 10.0
 offset_right = -20.0
-offset_bottom = -20.0
+offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PlayerStats" type="HBoxContainer" parent="VBox"]
-layout_mode = 2
-
-[node name="HPLabel" type="Label" parent="VBox/PlayerStats"]
+[node name="HPStat" type="VBoxContainer" parent="UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "HP: 20"
+alignment = 1
 
-[node name="ManaLabel" type="Label" parent="VBox/PlayerStats"]
+[node name="HPLabel" type="Label" parent="UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer/HPStat"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 24
+text = "20"
+horizontal_alignment = 1
+
+[node name="HPTitle" type="Label" parent="UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer/HPStat"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "❤️ VIDA"
+horizontal_alignment = 1
+
+[node name="ManaStat" type="VBoxContainer" parent="UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Maná: 10"
+alignment = 1
 
-[node name="ShieldLabel" type="Label" parent="VBox/PlayerStats"]
+[node name="ManaLabel" type="Label" parent="UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer/ManaStat"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.6, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "10"
+horizontal_alignment = 1
+
+[node name="ManaTitle" type="Label" parent="UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer/ManaStat"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "⚡ MANÁ"
+horizontal_alignment = 1
+
+[node name="ShieldStat" type="VBoxContainer" parent="UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Escudo: 0"
+alignment = 1
 
-[node name="VSeparator" type="VSeparator" parent="VBox"]
+[node name="ShieldLabel" type="Label" parent="UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer/ShieldStat"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 1, 0.6, 1)
+theme_override_font_sizes/font_size = 24
+text = "0"
+horizontal_alignment = 1
 
-[node name="AIStats" type="HBoxContainer" parent="VBox"]
+[node name="ShieldTitle" type="Label" parent="UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer/ShieldStat"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "🛡️ ESCUDO"
+horizontal_alignment = 1
 
-[node name="HPLabel" type="Label" parent="VBox/AIStats"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "IA HP: 20"
-
-[node name="ManaLabel" type="Label" parent="VBox/AIStats"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "IA Maná: 10"
-
-[node name="ShieldLabel" type="Label" parent="VBox/AIStats"]
+[node name="CenterInfo" type="VBoxContainer" parent="UILayer/TopPanel/StatsContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "IA Escudo: 0"
+alignment = 1
 
-[node name="HSeparator" type="HSeparator" parent="VBox"]
+[node name="TurnLabel" type="Label" parent="UILayer/TopPanel/StatsContainer/CenterInfo"]
 layout_mode = 2
-
-[node name="TurnLabel" type="Label" parent="VBox"]
-layout_mode = 2
-size_flags_vertical = 1
+theme_override_colors/font_color = Color(1, 1, 0.6, 1)
+theme_override_font_sizes/font_size = 18
 text = "Tu turno"
 horizontal_alignment = 1
 
-[node name="HSeparator2" type="HSeparator" parent="VBox"]
+[node name="GameInfoLabel" type="Label" parent="UILayer/TopPanel/StatsContainer/CenterInfo"]
 layout_mode = 2
-
-[node name="HandContainer" type="HBoxContainer" parent="VBox"]
-layout_mode = 2
-size_flags_vertical = 3
-alignment = 1
-
-[node name="HSeparator3" type="HSeparator" parent="VBox"]
-layout_mode = 2
-
-[node name="TurnButtonsContainer" type="HBoxContainer" parent="VBox"]
-layout_mode = 2
-alignment = 1
-
-[node name="PassTurnButton" type="Button" parent="VBox/TurnButtonsContainer"]
-layout_mode = 2
-text = "Pasar Turno"
-
-[node name="EndTurnButton" type="Button" parent="VBox/TurnButtonsContainer"]
-layout_mode = 2
-text = "Terminar Turno"
-
-[node name="GameOverLabel" type="Label" parent="VBox"]
-visible = false
-layout_mode = 2
-size_flags_vertical = 1
-text = "¡Juego Terminado!"
+theme_override_font_sizes/font_size = 14
+text = "Puedes jugar 2 cartas"
 horizontal_alignment = 1
 
-[node name="HSeparator4" type="HSeparator" parent="VBox"]
+[node name="AIStatsPanel" type="Panel" parent="UILayer/TopPanel/StatsContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AIStatsBG" type="ColorRect" parent="UILayer/TopPanel/StatsContainer/AIStatsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.5, 0.2, 0.3, 0.8)
+
+[node name="AIStatsContainer" type="HBoxContainer" parent="UILayer/TopPanel/StatsContainer/AIStatsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 10.0
+offset_right = -20.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HPStat" type="VBoxContainer" parent="UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="HPLabel" type="Label" parent="UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer/HPStat"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 24
+text = "20"
+horizontal_alignment = 1
+
+[node name="HPTitle" type="Label" parent="UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer/HPStat"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "❤️ IA VIDA"
+horizontal_alignment = 1
+
+[node name="ManaStat" type="VBoxContainer" parent="UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="ManaLabel" type="Label" parent="UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer/ManaStat"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.6, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "10"
+horizontal_alignment = 1
+
+[node name="ManaTitle" type="Label" parent="UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer/ManaStat"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "⚡ IA MANÁ"
+horizontal_alignment = 1
+
+[node name="ShieldStat" type="VBoxContainer" parent="UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="ShieldLabel" type="Label" parent="UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer/ShieldStat"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 1, 0.6, 1)
+theme_override_font_sizes/font_size = 24
+text = "0"
+horizontal_alignment = 1
+
+[node name="ShieldTitle" type="Label" parent="UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer/ShieldStat"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "🛡️ IA ESCUDO"
+horizontal_alignment = 1
+
+[node name="CenterArea" type="Control" parent="UILayer"]
+layout_mode = 1
+anchor_top = 0.15
+anchor_right = 1.0
+anchor_bottom = 0.85
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HandContainer" type="HBoxContainer" parent="UILayer/CenterArea"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -120.0
+offset_right = 400.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="BottomPanel" type="Panel" parent="UILayer"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -80.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="BottomPanelBG" type="ColorRect" parent="UILayer/BottomPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.15, 0.25, 0.9)
+
+[node name="TurnButtonsContainer" type="HBoxContainer" parent="UILayer/BottomPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -20.0
+offset_right = 120.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="PassTurnButton" type="Button" parent="UILayer/BottomPanel/TurnButtonsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Pasar Turno"
+
+[node name="EndTurnButton" type="Button" parent="UILayer/BottomPanel/TurnButtonsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Terminar Turno"
+
+[node name="GameOverLabel" type="Label" parent="UILayer"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -25.0
+offset_right = 200.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "¡Juego Terminado!"
+horizontal_alignment = 1
