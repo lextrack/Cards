@@ -88,7 +88,7 @@ func show_game_end_notification(winner: String, reason: String):
 			text = "🃏 Sin cartas disponibles"
 	
 	if winner == "Derrota":
-		color = Color(0.8, 0.2, 0.2, 0.95)  # Rojo para derrota
+		color = Color(0.8, 0.2, 0.2, 0.95)
 	
 	queue_notification(title, text, detail, color, GameBalance.get_timer_delay("notification_end"))
 
@@ -150,9 +150,8 @@ func show_notification(title: String, text: String, detail: String, color: Color
 	# Animar salida
 	await hide_notification()
 	
-	# Procesar siguiente notificación si hay
 	if notification_queue.size() > 0:
-		await get_tree().create_timer(0.2).timeout  # Pequeña pausa entre notificaciones
+		await get_tree().create_timer(0.3).timeout
 		process_next_notification()
 
 func hide_notification():

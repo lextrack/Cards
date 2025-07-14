@@ -63,8 +63,7 @@ func setup_game():
 	
 	add_child(player)
 	add_child(ai)
-	
-	GameBalance.print_current_config(difficulty)
+
 	
 	# Conectar señales del jugador
 	player.hp_changed.connect(_on_player_hp_changed)

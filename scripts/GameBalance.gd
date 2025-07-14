@@ -14,17 +14,17 @@ const TURN_END_DELAY: float = 0.5
 const GAME_RESTART_DELAY: float = 0.8
 const NEW_GAME_DELAY: float = 0.5
 const DEATH_RESTART_DELAY: float = 1.0
-const DECK_RESHUFFLE_NOTIFICATION: float = 1.0
+const DECK_RESHUFFLE_NOTIFICATION: float = 1.2
 const AI_TURN_START_DELAY: float = 1.2
-const AI_CARD_NOTIFICATION_DELAY: float = 1.3
+const AI_CARD_NOTIFICATION_DELAY: float = 1.2
 const AI_CARD_PLAY_DELAY: float = 0.8
 
-const AI_CARD_POPUP_DURATION: float = 1.0
-const GAME_NOTIFICATION_DRAW_DURATION: float = 1.2
+const AI_CARD_POPUP_DURATION: float = 1.2
+const GAME_NOTIFICATION_DRAW_DURATION: float = 1.5
 const GAME_NOTIFICATION_RESHUFFLE_DURATION: float = 1.8
-const GAME_NOTIFICATION_BONUS_DURATION: float = 2.0
+const GAME_NOTIFICATION_BONUS_DURATION: float = 2.5
 const GAME_NOTIFICATION_END_DURATION: float = 2.5
-const GAME_NOTIFICATION_AUTO_TURN_DURATION: float = 1.0
+const GAME_NOTIFICATION_AUTO_TURN_DURATION: float = 1.5
 
 enum Difficulty {
 	NORMAL,
@@ -136,7 +136,7 @@ static func get_available_difficulties() -> Array:
 static func get_difficulty_description(difficulty: String) -> String:
 	match difficulty:
 		"normal":
-			return "Equilibrado - Aprende las mecánicas"
+			return "Equilibrado - Lo más simple"
 		"hard":
 			return "Desafiante - IA más fuerte, tú juegas 1 carta"
 		"expert":
@@ -206,34 +206,3 @@ static func get_timer_delay(timer_type: String) -> float:
 			return GAME_NOTIFICATION_AUTO_TURN_DURATION
 		_:
 			return 1.0
-
-static func print_current_config(difficulty: String):
-	print("\n========== CONFIGURACIÓN DE JUEGO ==========")
-	print("Dificultad: " + difficulty.to_upper())
-	print("Descripción: " + get_difficulty_description(difficulty))
-	
-	var player_config = get_player_config(difficulty)
-	var ai_config = get_ai_config(difficulty)
-	var card_dist = get_card_distribution(difficulty)
-	
-	print("\n--- JUGADOR ---")
-	print("HP: " + str(player_config.hp))
-	print("Maná: " + str(player_config.mana))
-	print("Cartas por turno: " + str(player_config.cards_per_turn))
-	
-	print("\n--- IA ---")
-	print("HP: " + str(ai_config.hp))
-	print("Maná: " + str(ai_config.mana))
-	print("Cartas por turno: " + str(ai_config.cards_per_turn))
-	
-	print("\n--- DISTRIBUCIÓN DE CARTAS ---")
-	print("Ataques: " + str(int(card_dist.attack_ratio * 100)) + "%")
-	print("Curación: " + str(int(card_dist.heal_ratio * 100)) + "%")
-	print("Escudos: " + str(int(card_dist.shield_ratio * 100)) + "%")
-	
-	print("\n--- TIEMPOS DE NOTIFICACIÓN ---")
-	print("Popup IA: " + str(AI_CARD_POPUP_DURATION) + "s")
-	print("Robo cartas: " + str(GAME_NOTIFICATION_DRAW_DURATION) + "s")
-	print("Remezcla: " + str(GAME_NOTIFICATION_RESHUFFLE_DURATION) + "s")
-	print("Bonus daño: " + str(GAME_NOTIFICATION_BONUS_DURATION) + "s")
-	print("==========================================\n")
