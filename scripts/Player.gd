@@ -49,6 +49,27 @@ func setup_from_difficulty():
 	var config = GameBalance.get_ai_config(difficulty) if is_ai else GameBalance.get_player_config(difficulty)
 	max_cards_per_turn = config.cards_per_turn
 
+func change_difficulty_safe(new_difficulty: String):
+	difficulty = new_difficulty
+	
+	var saved_hp = current_hp
+	var saved_shield = current_shield
+
+	var config = GameBalance.get_ai_config(difficulty) if is_ai else GameBalance.get_player_config(difficulty)
+	
+	var old_max_mana = max_mana
+	max_mana = config.mana
+	max_cards_per_turn = config.cards_per_turn
+	max_hand_size = config.hand_size
+	
+	if old_max_mana != max_mana:
+		var mana_ratio = float(current_mana) / float(old_max_mana)
+		current_mana = int(max_mana * mana_ratio)
+		mana_changed.emit(current_mana)
+
+	current_hp = saved_hp
+	current_shield = saved_shield
+
 func get_max_cards_per_turn() -> int:
 	return max_cards_per_turn
 
@@ -66,7 +87,6 @@ func draw_card() -> bool:
 		deck = DeckManager.create_discard_pile_deck(discard_pile)
 		discard_pile.clear()
 		deck_reshuffled.emit()
-		print("Jugador " + ("IA" if is_ai else "Humano") + " remezcló su cementerio")
 	
 	if deck.size() > 0 and hand.size() < max_hand_size:
 		hand.append(deck.pop_back())

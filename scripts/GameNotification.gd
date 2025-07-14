@@ -11,17 +11,14 @@ var is_showing: bool = false
 var notification_queue: Array = []
 
 func _ready():
-	# Configurar el popup inicialmente invisible
 	modulate.a = 0.0
 	scale = Vector2(0.8, 0.8)
 	rotation = 0.0
 	
-	# Configurar el fondo por defecto
 	background.color = Color(0.15, 0.15, 0.25, 0.95)
 
-# Notificación para robo de cartas
 func show_card_draw_notification(player_name: String, cards_drawn: int, from_deck: bool = true):
-	var title = player_name + " robó carta" + ("s" if cards_drawn > 1 else "")
+	var title = player_name + " sacó carta" + ("s" if cards_drawn > 1 else "")
 	var text = ""
 	var detail = ""
 	var color = Color(0.2, 0.6, 0.9, 0.95)
@@ -36,7 +33,7 @@ func show_card_draw_notification(player_name: String, cards_drawn: int, from_dec
 	queue_notification(title, text, detail, color, GameBalance.get_timer_delay("notification_draw"))
 
 func show_reshuffle_notification(player_name: String, cards_reshuffled: int):
-	var title = player_name + " remezcló el cementerio"
+	var title = player_name + " remezcló las cartas"
 	var text = "♻️ " + str(cards_reshuffled) + " cartas al mazo"
 	var detail = "¡Cartas usadas vuelven a estar disponibles!"
 	var color = Color(0.8, 0.6, 0.2, 0.95)
@@ -70,7 +67,7 @@ func show_auto_end_turn_notification(reason: String):
 func show_damage_bonus_notification(turn_number: int, bonus: int):
 	var title = "¡Bonus de daño activado!"
 	var text = "⚔️ +" + str(bonus) + " de daño a todos los ataques"
-	var detail = "Turno " + str(turn_number) + " - ¡La batalla se intensifica!"
+	var detail = "Turno " + str(turn_number)
 	var color = Color(0.9, 0.3, 0.1, 0.95)
 	
 	queue_notification(title, text, detail, color, GameBalance.get_timer_delay("notification_bonus"))
@@ -92,7 +89,6 @@ func show_game_end_notification(winner: String, reason: String):
 	
 	queue_notification(title, text, detail, color, GameBalance.get_timer_delay("notification_end"))
 
-# Sistema de cola para múltiples notificaciones
 func queue_notification(title: String, text: String, detail: String, color: Color, duration: float):
 	var notification = {
 		"title": title,
@@ -120,34 +116,28 @@ func show_notification(title: String, text: String, detail: String, color: Color
 	
 	is_showing = true
 	
-	# Configurar el contenido
 	notification_title.text = title
 	notification_text.text = text
 	notification_detail.text = detail
 	background.color = color
 	
-	# Animar la aparición
 	if tween:
 		tween.kill()
 	
 	tween = create_tween()
 	tween.set_parallel(true)
 	
-	# Animación de entrada
 	tween.tween_property(self, "modulate:a", 1.0, 0.2)
 	tween.tween_property(self, "scale", Vector2(1.05, 1.05), 0.15)
 	tween.tween_property(self, "rotation", 0.0, 0.2)
 	
-	# Corrección del overshoot
 	await tween.finished
 	tween = create_tween()
 	tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.1)
-	
-	# Esperar según duración
+
 	await tween.finished
 	await get_tree().create_timer(duration).timeout
-	
-	# Animar salida
+
 	await hide_notification()
 	
 	if notification_queue.size() > 0:
@@ -164,7 +154,6 @@ func hide_notification():
 	tween = create_tween()
 	tween.set_parallel(true)
 	
-	# Animación de salida
 	tween.tween_property(self, "modulate:a", 0.0, 0.15)
 	tween.tween_property(self, "scale", Vector2(0.8, 0.8), 0.15)
 	tween.tween_property(self, "rotation", 0.02, 0.15)
@@ -172,7 +161,6 @@ func hide_notification():
 	await tween.finished
 	is_showing = false
 
-# Función para cerrar todo
 func clear_all_notifications():
 	notification_queue.clear()
 	if tween:

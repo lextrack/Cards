@@ -5,9 +5,9 @@ const DEFAULT_MANA: int = 10
 const DEFAULT_HAND_SIZE: int = 5
 const DEFAULT_DECK_SIZE: int = 30
 
-const DAMAGE_BONUS_TURN_1: int = 3
-const DAMAGE_BONUS_TURN_2: int = 6
-const DAMAGE_BONUS_TURN_3: int = 9
+const DAMAGE_BONUS_TURN_1: int = 4
+const DAMAGE_BONUS_TURN_2: int = 7
+const DAMAGE_BONUS_TURN_3: int = 10
 const DAMAGE_BONUS_TURN_4: int = 15
 const DAMAGE_BONUS_1: int = 1
 const DAMAGE_BONUS_2: int = 2

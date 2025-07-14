@@ -106,16 +106,24 @@ func restart_game():
 	setup_game()
 
 func set_difficulty(new_difficulty: String):
+	var old_difficulty = difficulty
 	difficulty = new_difficulty
-	if player:
-		player.set_difficulty(difficulty)
-	if ai:
-		ai.set_difficulty(difficulty)
-	update_all_labels()
 	
-	var description = GameBalance.get_difficulty_description(difficulty)
-	turn_label.text = difficulty.to_upper()
-	game_info_label.text = description
+	if player and ai:
+		player.change_difficulty_safe(difficulty)
+		ai.change_difficulty_safe(difficulty)
+		
+		var description = GameBalance.get_difficulty_description(difficulty)
+		turn_label.text = "Dificultad: " + difficulty.to_upper()
+		game_info_label.text = description
+		
+		update_all_labels()
+		update_hand_display()
+	else:
+
+		var description = GameBalance.get_difficulty_description(difficulty)
+		turn_label.text = difficulty.to_upper()
+		game_info_label.text = description
 
 func update_all_labels():
 	var damage_bonus = player.get_damage_bonus()
@@ -152,28 +160,15 @@ func update_damage_bonus_indicator():
 				bonus_text = "⚔️ +" + str(damage_bonus) + " DMG"
 				bonus_color = Color(0.6, 0.2, 0.6, 1.0)  # Púrpura oscuro
 		
-		# Actualizar el texto y color del indicador
 		if damage_bonus_label:
 			damage_bonus_label.text = bonus_text
 			damage_bonus_label.modulate = bonus_color
 			damage_bonus_label.visible = true
-			
-			# Efecto de pulso para llamar la atención
-			if damage_bonus >= 3:
-				animate_damage_bonus_pulse()
 	else:
 		# Ocultar el indicador si no hay bonus
 		if damage_bonus_label:
 			damage_bonus_label.visible = false
-			
-func animate_damage_bonus_pulse():
-	if not damage_bonus_label or not damage_bonus_label.visible:
-		return
-	
-	var tween = create_tween()
-	tween.set_loops()
-	tween.tween_property(damage_bonus_label, "scale", Vector2(1.2, 1.2), 0.5)
-	tween.tween_property(damage_bonus_label, "scale", Vector2(1.0, 1.0), 0.5)
+		
 
 func update_hand_display():
 	for child in hand_container.get_children():
@@ -226,7 +221,7 @@ func start_ai_turn():
 	
 	ai.start_turn()
 	turn_label.text = "Turno de la IA"
-	game_info_label.text = "La IA está pensando..."
+	game_info_label.text = "La IA está jugando..."
 	
 	update_damage_bonus_indicator() 
 	
@@ -341,13 +336,13 @@ func _on_player_deck_reshuffled():
 	if game_notification:
 		var cards_reshuffled = player.deck.size()
 		game_notification.show_reshuffle_notification("Jugador", cards_reshuffled)
-	turn_label.text = "¡Cementerio remezcla"
+	turn_label.text = "¡Remezcla de cartas"
 	game_info_label.text = "Cartas devueltas al mazo"
 	await get_tree().create_timer(2.0).timeout
 
 func _on_ai_deck_reshuffled():
 	turn_label.text = "IA remezcló"
-	game_info_label.text = "Su cementerio vuelve al mazo"
+	game_info_label.text = "Algunas cartas volvieron a su al mazo"
 	await get_tree().create_timer(2.0).timeout
 
 func _on_player_auto_turn_ended(reason: String):

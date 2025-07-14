@@ -166,36 +166,28 @@ func set_mouse_filter_recursive(node: Node):
 func apply_rarity_effects(rarity: String):
 	match rarity:
 		"uncommon":
-			# Verde vibrante para poco comunes
-			name_label.modulate = Color(0.3, 1.8, 0.6, 1.0)  # Verde más intenso
+			name_label.modulate = Color(0.3, 1.8, 0.6, 1.0)
 			cost_label.modulate = Color(0.4, 1.9, 0.7, 1.0)
-			# Brillo sutil en el borde
 			card_border.modulate = Color(1.2, 1.4, 1.1, 1.0)
 		"rare":
-			# Azul brillante para raras
-			name_label.modulate = Color(0.4, 0.8, 2.2, 1.0)  # Azul más intenso
+			name_label.modulate = Color(0.4, 0.8, 2.2, 1.0)
 			cost_label.modulate = Color(0.5, 0.9, 2.4, 1.0)
 			stat_value.modulate = stat_value.modulate * Color(0.7, 1.0, 1.8, 1.0)
 			card_icon.modulate = Color(0.6, 0.9, 1.6, 1.0)
-			# Brillo azulado en el borde
 			card_border.modulate = Color(1.0, 1.3, 1.8, 1.0)
 		"epic":
-			# Púrpura/dorado intenso para épicas
-			name_label.modulate = Color(2.4, 1.2, 2.6, 1.0)  # Púrpura brillante
-			cost_label.modulate = Color(2.6, 1.4, 2.2, 1.0)  # Dorado-púrpura
+			name_label.modulate = Color(2.4, 1.2, 2.6, 1.0)
+			cost_label.modulate = Color(2.6, 1.4, 2.2, 1.0)
 			stat_value.modulate = stat_value.modulate * Color(2.2, 1.3, 2.0, 1.0)
 			card_icon.modulate = Color(2.0, 1.4, 2.4, 1.0)
-			# Brillo épico en toda la carta
 			modulate = Color(1.4, 1.1, 1.3, 1.0)
 			card_border.modulate = Color(1.6, 1.2, 1.5, 1.0)
-			
-			# Efecto de brillo adicional para épicas
+
 			var tween = create_tween()
 			tween.set_loops()
 			tween.tween_property(card_border, "modulate", Color(2.0, 1.5, 1.8, 1.0), 1.0)
 			tween.tween_property(card_border, "modulate", Color(1.6, 1.2, 1.5, 1.0), 1.0)
 		_:
-			# Común - sin efectos especiales
 			pass
 			
 func play_epic_entrance_animation():

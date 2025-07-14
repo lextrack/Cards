@@ -2,15 +2,12 @@ class_name DeckManager
 extends RefCounted
 
 static func create_basic_deck() -> Array:
-	# Usar el nuevo sistema de probabilidades
-	return CardProbability.create_balanced_deck(30, 0.8)  # 30 cartas, 80% ataques
+	return CardProbability.create_balanced_deck(30, 0.8)
 
 static func create_random_deck() -> Array:
-	# Mazo completamente aleatorio basado en pesos
 	return CardProbability.create_weighted_deck(30)
 
 static func create_discard_pile_deck(discard_pile: Array) -> Array:
-	# Crea un nuevo mazo a partir del cementerio
 	var new_deck = discard_pile.duplicate()
 	new_deck.shuffle()
 	return new_deck
@@ -42,33 +39,9 @@ static func get_strongest_attack_card(cards: Array) -> CardData:
 	return strongest
 
 static func should_restart_game(player_deck_size: int, ai_deck_size: int, player_hand_size: int, ai_hand_size: int) -> bool:
-	# Reiniciar si ambos jugadores no tienen cartas (ni en mazo ni en mano)
 	var player_no_cards = player_deck_size == 0 and player_hand_size == 0
 	var ai_no_cards = ai_deck_size == 0 and ai_hand_size == 0
 	return player_no_cards and ai_no_cards
-
-static func calculate_damage_bonus(turn_number: int) -> int:
-	# Bonus de daño progresivo para acelerar partidas
-	if turn_number >= 12:
-		return 2  # +2 daño después del turno 12
-	elif turn_number >= 6:
-		return 1  # +1 daño después del turno 6
-	else:
-		return 0  # Sin bonus los primeros 6 turnos
-
-# Nuevas funciones para estadísticas
-static func print_deck_stats(deck: Array, player_name: String = "Jugador"):
-	var stats = CardProbability.get_deck_stats(deck)
-	print("\n=== Estadísticas de " + player_name + " ===")
-	print("Total de cartas: " + str(stats.total_cards))
-	print("Ataques: " + str(stats.attack_cards) + " (" + str(int(stats.attack_cards * 100.0 / stats.total_cards)) + "%)")
-	print("Curaciones: " + str(stats.heal_cards) + " (" + str(int(stats.heal_cards * 100.0 / stats.total_cards)) + "%)")
-	print("Escudos: " + str(stats.shield_cards) + " (" + str(int(stats.shield_cards * 100.0 / stats.total_cards)) + "%)")
-	print("\nRareza:")
-	print("Comunes: " + str(stats.common))
-	print("Poco comunes: " + str(stats.uncommon))
-	print("Raras: " + str(stats.rare))
-	print("Épicas: " + str(stats.epic))
 
 static func get_card_rarity_text(card: CardData) -> String:
 	var rarity = CardProbability.calculate_card_rarity(card.damage, card.heal, card.shield)
@@ -83,3 +56,21 @@ static func get_card_rarity_text(card: CardData) -> String:
 			return "[ÉPICA]"
 		_:
 			return ""
+
+static func get_damage_bonus_for_turn(turn_number: int) -> int:
+	return GameBalance.get_damage_bonus(turn_number)
+
+static func is_special_damage_turn(turn_number: int) -> bool:
+	return GameBalance.is_damage_bonus_turn(turn_number)
+
+static func get_damage_bonus_info(turn_number: int) -> Dictionary:
+	var bonus = GameBalance.get_damage_bonus(turn_number)
+	var is_special = GameBalance.is_damage_bonus_turn(turn_number)
+	var description = GameBalance.get_damage_bonus_description(turn_number)
+	
+	return {
+		"bonus": bonus,
+		"is_special_turn": is_special,
+		"description": description,
+		"turn": turn_number
+	}

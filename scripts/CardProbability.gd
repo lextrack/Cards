@@ -9,8 +9,8 @@ class CardTemplate:
 	var shield: int
 	var type: String
 	var description: String
-	var rarity: String  # "common", "uncommon", "rare", "epic"
-	var weight: int     # Peso para probabilidad (mayor = más común)
+	var rarity: String
+	var weight: int
 	
 	func _init(n: String, c: int, dmg: int, h: int, s: int, t: String, desc: String, r: String, w: int):
 		name = n
@@ -26,7 +26,7 @@ class CardTemplate:
 static func get_all_card_templates() -> Array:
 	var templates = []
 	
-	# ATAQUES COMUNES (peso alto = aparecen más)
+	# ATAQUES COMUNES (peso alto = hay más de ellas en cada partida)
 	templates.append(CardTemplate.new("Golpe Básico", 1, 1, 0, 0, "attack", "Daño: 1", "common", 100))
 	templates.append(CardTemplate.new("Golpe Rápido", 1, 2, 0, 0, "attack", "Daño: 2", "common", 80))
 	templates.append(CardTemplate.new("Cuchillada", 2, 3, 0, 0, "attack", "Daño: 3", "common", 70))
@@ -41,13 +41,13 @@ static func get_all_card_templates() -> Array:
 	templates.append(CardTemplate.new("Corte Profundo", 4, 8, 0, 0, "attack", "Daño: 8", "rare", 20))
 	templates.append(CardTemplate.new("Golpe Crítico", 5, 10, 0, 0, "attack", "Daño: 10", "rare", 15))
 	
-	# FINISHERS ÉPICOS (muy raros)
+	# FINISHERS ÉPICOS
 	templates.append(CardTemplate.new("Golpe Devastador", 5, 12, 0, 0, "attack", "Daño: 12", "epic", 8))
 	templates.append(CardTemplate.new("Furia Berserker", 6, 14, 0, 0, "attack", "Daño: 14", "epic", 6))
 	templates.append(CardTemplate.new("Ejecución", 6, 16, 0, 0, "attack", "Daño: 16", "epic", 4))
 	templates.append(CardTemplate.new("Aniquilación", 7, 20, 0, 0, "attack", "Daño: 20", "epic", 2))
 	
-	# CURACIONES (pocas y menos comunes conforme más curan)
+	# CURACIONES
 	templates.append(CardTemplate.new("Vendaje", 1, 0, 2, 0, "heal", "Cura: 2", "common", 50))
 	templates.append(CardTemplate.new("Poción Menor", 2, 0, 3, 0, "heal", "Cura: 3", "common", 40))
 	templates.append(CardTemplate.new("Poción", 2, 0, 4, 0, "heal", "Cura: 4", "uncommon", 25))
@@ -55,7 +55,7 @@ static func get_all_card_templates() -> Array:
 	templates.append(CardTemplate.new("Curación Mayor", 4, 0, 8, 0, "heal", "Cura: 8", "rare", 12))
 	templates.append(CardTemplate.new("Regeneración", 5, 0, 12, 0, "heal", "Cura: 12", "epic", 5))
 	
-	# DEFENSAS (muy pocas y cada vez más raras)
+	# DEFENSAS
 	templates.append(CardTemplate.new("Bloqueo", 1, 0, 0, 2, "shield", "Escudo: 2", "common", 45))
 	templates.append(CardTemplate.new("Escudo Básico", 2, 0, 0, 3, "shield", "Escudo: 3", "uncommon", 25))
 	templates.append(CardTemplate.new("Escudo", 2, 0, 0, 4, "shield", "Escudo: 4", "uncommon", 20))
