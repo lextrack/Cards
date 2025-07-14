@@ -34,8 +34,15 @@ signal damage_taken(damage_amount: int)
 
 func _ready():
 	setup_from_difficulty()
-	deck = DeckManager.create_basic_deck()
+	if is_ai:
+		deck = DeckManager.create_basic_deck()
+	else:
+		deck = create_player_deck_by_difficulty()
 	draw_initial_hand()
+	
+func create_player_deck_by_difficulty() -> Array:
+	var distribution = GameBalance.get_card_distribution(difficulty)
+	return CardProbability.create_balanced_deck(30, distribution.attack_ratio, distribution.heal_ratio, distribution.shield_ratio)
 
 func setup_from_difficulty():
 	GameBalance.setup_player(self, difficulty, is_ai)
@@ -64,8 +71,8 @@ func draw_card() -> bool:
 	if deck.size() > 0 and hand.size() < max_hand_size:
 		hand.append(deck.pop_back())
 		hand_changed.emit()
-		if not is_ai: 
-			card_drawn.emit(1, true) 
+		if not is_ai:
+			card_drawn.emit(1, true)
 		return true
 	elif deck.size() == 0 and discard_pile.size() == 0:
 		deck_empty.emit()
@@ -91,7 +98,7 @@ func take_damage(damage: int):
 	shield_changed.emit(current_shield)
 
 func heal(amount: int):
-	current_hp = min(max_hp, current_hp + amount)
+	current_hp += amount
 	hp_changed.emit(current_hp)
 
 func add_shield(amount: int):
@@ -125,7 +132,7 @@ func play_card(card: CardData, target: Player = null) -> bool:
 	
 	spend_mana(card.cost)
 	hand.erase(card)
-	discard_pile.append(card) 
+	discard_pile.append(card)
 	cards_played_this_turn += 1
 	
 	hand_changed.emit()
@@ -195,7 +202,7 @@ func ai_turn(opponent: Player):
 		var playable_cards = DeckManager.get_playable_cards(hand, current_mana)
 		
 		if playable_cards.size() == 0:
-			break 
+			break
 		
 		var chosen_card: CardData = null
 		

@@ -112,9 +112,9 @@ static func get_card_distribution(difficulty: String) -> Dictionary:
 			}
 		"expert":
 			return {
-				"attack_ratio": 0.9,
+				"attack_ratio": 0.78,
 				"heal_ratio": 0.07,
-				"shield_ratio": 0.03
+				"shield_ratio": 0.20
 			}
 		_:
 			return get_card_distribution("normal")

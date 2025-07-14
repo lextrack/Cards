@@ -145,7 +145,7 @@ static func get_deck_stats(deck: Array) -> Dictionary:
 	
 	return stats
 
-static func create_balanced_deck(deck_size: int = 30, attack_ratio: float = 0.8) -> Array:
+static func create_balanced_deck(deck_size: int = 30, attack_ratio: float = 0.8, heal_ratio: float = 0.12, shield_ratio: float = 0.08) -> Array:
 	var templates = get_all_card_templates()
 	var deck = []
 	
@@ -163,9 +163,11 @@ static func create_balanced_deck(deck_size: int = 30, attack_ratio: float = 0.8)
 				shield_templates.append(template)
 	
 	var attack_count = int(deck_size * attack_ratio)
-	var remaining = deck_size - attack_count
-	var heal_count = int(remaining * 0.6)
-	var shield_count = remaining - heal_count
+	var heal_count = int(deck_size * heal_ratio)
+	var shield_count = int(deck_size * shield_ratio)
+	
+	var remaining = deck_size - (attack_count + heal_count + shield_count)
+	attack_count += remaining
 	
 	deck.append_array(_generate_cards_from_templates(attack_templates, attack_count))
 	deck.append_array(_generate_cards_from_templates(heal_templates, heal_count))
