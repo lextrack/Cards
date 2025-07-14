@@ -15,6 +15,7 @@ extends Control
 @onready var game_over_label = $UILayer/GameOverLabel
 @onready var ui_layer = $UILayer
 @onready var top_panel_bg = $UILayer/TopPanel/TopPanelBG
+@onready var damage_bonus_label = $UILayer/TopPanel/StatsContainer/CenterInfo/DamageBonusLabel
 
 var player: Player
 var ai: Player
@@ -118,9 +119,6 @@ func set_difficulty(new_difficulty: String):
 
 func update_all_labels():
 	var damage_bonus = player.get_damage_bonus()
-	var bonus_text = ""
-	if damage_bonus > 0:
-		bonus_text = " (+{0} dmg)".format([damage_bonus])
 	
 	player_hp_label.text = str(player.current_hp)
 	player_mana_label.text = str(player.current_mana)
@@ -129,6 +127,53 @@ func update_all_labels():
 	ai_hp_label.text = str(ai.current_hp)
 	ai_mana_label.text = str(ai.current_mana)
 	ai_shield_label.text = str(ai.current_shield)
+	
+func update_damage_bonus_indicator():
+	var damage_bonus = player.get_damage_bonus()
+	
+	if damage_bonus > 0:
+		var bonus_text = ""
+		var bonus_color = Color.WHITE
+		
+		match damage_bonus:
+			1:
+				bonus_text = "⚔️ +1 DMG"
+				bonus_color = Color(1.0, 0.8, 0.2, 1.0)  # Dorado
+			2:
+				bonus_text = "⚔️ +2 DMG"
+				bonus_color = Color(1.0, 0.4, 0.2, 1.0)  # Naranja-rojo
+			3:
+				bonus_text = "💀 +3 DMG"
+				bonus_color = Color(1.0, 0.2, 0.2, 1.0)  # Rojo
+			4:
+				bonus_text = "🔥 +4 DMG"
+				bonus_color = Color(0.8, 0.2, 0.8, 1.0)  # Púrpura
+			_:
+				bonus_text = "⚔️ +" + str(damage_bonus) + " DMG"
+				bonus_color = Color(0.6, 0.2, 0.6, 1.0)  # Púrpura oscuro
+		
+		# Actualizar el texto y color del indicador
+		if damage_bonus_label:
+			damage_bonus_label.text = bonus_text
+			damage_bonus_label.modulate = bonus_color
+			damage_bonus_label.visible = true
+			
+			# Efecto de pulso para llamar la atención
+			if damage_bonus >= 3:
+				animate_damage_bonus_pulse()
+	else:
+		# Ocultar el indicador si no hay bonus
+		if damage_bonus_label:
+			damage_bonus_label.visible = false
+			
+func animate_damage_bonus_pulse():
+	if not damage_bonus_label or not damage_bonus_label.visible:
+		return
+	
+	var tween = create_tween()
+	tween.set_loops()
+	tween.tween_property(damage_bonus_label, "scale", Vector2(1.2, 1.2), 0.5)
+	tween.tween_property(damage_bonus_label, "scale", Vector2(1.0, 1.0), 0.5)
 
 func update_hand_display():
 	for child in hand_container.get_children():
@@ -168,6 +213,7 @@ func start_player_turn():
 	game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty.to_upper() + " | [ENTER] cambiar dificultad"
 	
 	update_turn_button_text()
+	update_damage_bonus_indicator()
 	
 	if end_turn_button:
 		end_turn_button.disabled = false
@@ -181,6 +227,8 @@ func start_ai_turn():
 	ai.start_turn()
 	turn_label.text = "Turno de la IA"
 	game_info_label.text = "La IA está pensando..."
+	
+	update_damage_bonus_indicator() 
 	
 	if end_turn_button:
 		end_turn_button.disabled = true
@@ -273,10 +321,13 @@ func _on_player_turn_changed(turn_num: int, damage_bonus: int):
 	elif damage_bonus > 0:
 		turn_label.text = "Turno " + str(turn_num)
 		game_info_label.text = "¡Bonus de daño: +" + str(damage_bonus) + "!"
+	
 	update_all_labels()
+	update_damage_bonus_indicator()
 
 func _on_ai_turn_changed(turn_num: int, damage_bonus: int):
 	update_all_labels()
+	update_damage_bonus_indicator()
 
 func _on_ai_card_played(card: CardData):
 	if ai_notification:

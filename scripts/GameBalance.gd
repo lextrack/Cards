@@ -5,10 +5,14 @@ const DEFAULT_MANA: int = 10
 const DEFAULT_HAND_SIZE: int = 5
 const DEFAULT_DECK_SIZE: int = 30
 
-const DAMAGE_BONUS_TURN_1: int = 6
-const DAMAGE_BONUS_TURN_2: int = 12
+const DAMAGE_BONUS_TURN_1: int = 3
+const DAMAGE_BONUS_TURN_2: int = 6
+const DAMAGE_BONUS_TURN_3: int = 9
+const DAMAGE_BONUS_TURN_4: int = 15
 const DAMAGE_BONUS_1: int = 1
 const DAMAGE_BONUS_2: int = 2
+const DAMAGE_BONUS_3: int = 3
+const DAMAGE_BONUS_4: int = 4
 
 const TURN_END_DELAY: float = 0.5
 const GAME_RESTART_DELAY: float = 0.8
@@ -36,7 +40,7 @@ static func get_player_config(difficulty: String) -> Dictionary:
 	match difficulty:
 		"normal":
 			return {
-				"hp": 20,
+				"hp": 30,
 				"mana": DEFAULT_MANA,
 				"cards_per_turn": 2,
 				"hand_size": DEFAULT_HAND_SIZE,
@@ -44,7 +48,7 @@ static func get_player_config(difficulty: String) -> Dictionary:
 			}
 		"hard":
 			return {
-				"hp": 20,
+				"hp": 28,
 				"mana": DEFAULT_MANA,
 				"cards_per_turn": 1,
 				"hand_size": DEFAULT_HAND_SIZE,
@@ -52,7 +56,7 @@ static func get_player_config(difficulty: String) -> Dictionary:
 			}
 		"expert":
 			return {
-				"hp": 15,
+				"hp": 25,
 				"mana": 8,
 				"cards_per_turn": 1,
 				"hand_size": 4,
@@ -65,7 +69,7 @@ static func get_ai_config(difficulty: String) -> Dictionary:
 	match difficulty:
 		"normal":
 			return {
-				"hp": 20,
+				"hp": 30,
 				"mana": DEFAULT_MANA,
 				"cards_per_turn": 2,
 				"hand_size": DEFAULT_HAND_SIZE,
@@ -75,7 +79,7 @@ static func get_ai_config(difficulty: String) -> Dictionary:
 			}
 		"hard":
 			return {
-				"hp": 25,
+				"hp": 35,
 				"mana": DEFAULT_MANA,
 				"cards_per_turn": 2,
 				"hand_size": DEFAULT_HAND_SIZE,
@@ -85,7 +89,7 @@ static func get_ai_config(difficulty: String) -> Dictionary:
 			}
 		"expert":
 			return {
-				"hp": 30,
+				"hp": 38,
 				"mana": 12,
 				"cards_per_turn": 3,
 				"hand_size": 6,
@@ -97,6 +101,7 @@ static func get_ai_config(difficulty: String) -> Dictionary:
 			return get_ai_config("normal")
 
 static func get_card_distribution(difficulty: String) -> Dictionary:
+	# Player use this
 	match difficulty:
 		"normal":
 			return {
@@ -114,21 +119,41 @@ static func get_card_distribution(difficulty: String) -> Dictionary:
 			return {
 				"attack_ratio": 0.78,
 				"heal_ratio": 0.07,
-				"shield_ratio": 0.20
+				"shield_ratio": 0.25
 			}
 		_:
 			return get_card_distribution("normal")
 
 static func get_damage_bonus(turn_number: int) -> int:
-	if turn_number >= DAMAGE_BONUS_TURN_2:
+	if turn_number >= DAMAGE_BONUS_TURN_4:
+		return DAMAGE_BONUS_4 
+	elif turn_number >= DAMAGE_BONUS_TURN_3:
+		return DAMAGE_BONUS_3 
+	elif turn_number >= DAMAGE_BONUS_TURN_2:
 		return DAMAGE_BONUS_2
 	elif turn_number >= DAMAGE_BONUS_TURN_1:
-		return DAMAGE_BONUS_1
+		return DAMAGE_BONUS_1 
 	else:
 		return 0
 
 static func is_damage_bonus_turn(turn_number: int) -> bool:
-	return turn_number == DAMAGE_BONUS_TURN_1 or turn_number == DAMAGE_BONUS_TURN_2
+	return turn_number == DAMAGE_BONUS_TURN_1 or turn_number == DAMAGE_BONUS_TURN_2 or turn_number == DAMAGE_BONUS_TURN_3 or turn_number == DAMAGE_BONUS_TURN_4
+
+static func get_damage_bonus_description(turn_number: int) -> String:
+	var bonus = get_damage_bonus(turn_number)
+	match bonus:
+		0:
+			return "Sin bonus"
+		1:
+			return "Daño aumento en +1"
+		2:
+			return "Daño aumento en +2"
+		3:
+			return "Daño aumento en +3"
+		4:
+			return "Daño aumento en +4"
+		_:
+			return "Bonus: +" + str(bonus) + " daño"
 
 static func get_available_difficulties() -> Array:
 	return ["normal", "hard", "expert"]

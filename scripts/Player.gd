@@ -80,11 +80,8 @@ func draw_card() -> bool:
 	return false
 
 func take_damage(damage: int):
-	var bonus_damage = get_damage_bonus()
-	var total_damage = damage + bonus_damage
-	
-	var actual_damage = max(0, total_damage - current_shield)
-	current_shield = max(0, current_shield - total_damage)
+	var actual_damage = max(0, damage - current_shield)
+	current_shield = max(0, current_shield - damage)
 	current_hp -= actual_damage
 	
 	if actual_damage > 0:
@@ -141,7 +138,9 @@ func play_card(card: CardData, target: Player = null) -> bool:
 	match card.card_type:
 		"attack":
 			if target:
-				target.take_damage(card.damage)
+				var bonus_damage = get_damage_bonus()
+				var total_damage = card.damage + bonus_damage
+				target.take_damage(total_damage)
 		"heal":
 			heal(card.heal)
 		"shield":
