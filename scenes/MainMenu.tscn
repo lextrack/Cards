@@ -1,0 +1,188 @@
+[gd_scene load_steps=2 format=3 uid="uid://cxw6tc65b0iwr"]
+
+[ext_resource type="Script" uid="uid://cgqsikv5uk8v4" path="res://scripts/MainMenu.gd" id="1_main_menu"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main_menu")
+
+[node name="BackgroundLayer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BackgroundGradient" type="ColorRect" parent="BackgroundLayer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.05, 0.1, 0.2, 1)
+
+[node name="BackgroundPattern" type="ColorRect" parent="BackgroundLayer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.08, 0.15, 0.25, 0.3)
+
+[node name="MenuContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -200.0
+offset_right = 200.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleContainer" type="VBoxContainer" parent="MenuContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 2
+
+[node name="GameTitle" type="Label" parent="MenuContainer/TitleContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 0.8, 1)
+theme_override_font_sizes/font_size = 48
+text = "⚔️ CARD MASTER ⚔️"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GameSubtitle" type="Label" parent="MenuContainer/TitleContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.9, 1)
+theme_override_font_sizes/font_size = 18
+text = "Juego de Cartas Estratégico"
+horizontal_alignment = 1
+
+[node name="Spacer1" type="Control" parent="MenuContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="ButtonsContainer" type="VBoxContainer" parent="MenuContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="PlayButton" type="Button" parent="MenuContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(300, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 20
+text = "🎮 COMENZAR PARTIDA"
+
+[node name="Spacer2" type="Control" parent="MenuContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(0, 15)
+layout_mode = 2
+
+[node name="OptionsButton" type="Button" parent="MenuContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 18
+text = "⚙️ OPCIONES"
+
+[node name="Spacer3" type="Control" parent="MenuContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="CreditsButton" type="Button" parent="MenuContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 18
+text = "📜 CRÉDITOS"
+
+[node name="Spacer4" type="Control" parent="MenuContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="ExitButton" type="Button" parent="MenuContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 18
+text = "🚪 SALIR"
+
+[node name="Spacer5" type="Control" parent="MenuContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="FooterContainer" type="VBoxContainer" parent="MenuContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VersionLabel" type="Label" parent="MenuContainer/FooterContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "Versión 1.0 - Hecho en Godot 4.4"
+horizontal_alignment = 1
+
+[node name="AudioManager" type="Node" parent="."]
+
+[node name="MenuMusicPlayer" type="AudioStreamPlayer" parent="AudioManager"]
+volume_db = -8.0
+
+[node name="UIPlayer" type="AudioStreamPlayer" parent="AudioManager"]
+volume_db = -5.0
+
+[node name="HoverPlayer" type="AudioStreamPlayer" parent="AudioManager"]
+volume_db = -12.0
+
+[node name="TransitionLayer" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TransitionOverlay" type="ColorRect" parent="TransitionLayer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="TransitionLabel" type="Label" parent="TransitionLayer"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -25.0
+offset_right = 100.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "Cargando..."
+horizontal_alignment = 1
+vertical_alignment = 1

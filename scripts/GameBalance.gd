@@ -40,7 +40,7 @@ static func get_player_config(difficulty: String) -> Dictionary:
 	match difficulty:
 		"normal":
 			return {
-				"hp": 30,
+				"hp": 35,
 				"mana": DEFAULT_MANA,
 				"cards_per_turn": 2,
 				"hand_size": DEFAULT_HAND_SIZE,
@@ -48,7 +48,7 @@ static func get_player_config(difficulty: String) -> Dictionary:
 			}
 		"hard":
 			return {
-				"hp": 28,
+				"hp": 33,
 				"mana": DEFAULT_MANA,
 				"cards_per_turn": 1,
 				"hand_size": DEFAULT_HAND_SIZE,
@@ -56,7 +56,7 @@ static func get_player_config(difficulty: String) -> Dictionary:
 			}
 		"expert":
 			return {
-				"hp": 25,
+				"hp": 30,
 				"mana": 8,
 				"cards_per_turn": 1,
 				"hand_size": 4,
@@ -69,7 +69,7 @@ static func get_ai_config(difficulty: String) -> Dictionary:
 	match difficulty:
 		"normal":
 			return {
-				"hp": 30,
+				"hp": 35,
 				"mana": DEFAULT_MANA,
 				"cards_per_turn": 2,
 				"hand_size": DEFAULT_HAND_SIZE,
@@ -79,7 +79,7 @@ static func get_ai_config(difficulty: String) -> Dictionary:
 			}
 		"hard":
 			return {
-				"hp": 35,
+				"hp": 38,
 				"mana": DEFAULT_MANA,
 				"cards_per_turn": 2,
 				"hand_size": DEFAULT_HAND_SIZE,
@@ -89,7 +89,7 @@ static func get_ai_config(difficulty: String) -> Dictionary:
 			}
 		"expert":
 			return {
-				"hp": 38,
+				"hp": 40,
 				"mana": 12,
 				"cards_per_turn": 3,
 				"hand_size": 6,
@@ -106,19 +106,19 @@ static func get_card_distribution(difficulty: String) -> Dictionary:
 		"normal":
 			return {
 				"attack_ratio": 0.8,
-				"heal_ratio": 0.12,
+				"heal_ratio": 0.10,
 				"shield_ratio": 0.08
 			}
 		"hard":
 			return {
 				"attack_ratio": 0.85,
-				"heal_ratio": 0.10,
-				"shield_ratio": 0.05
+				"heal_ratio": 0.12,
+				"shield_ratio": 0.15
 			}
 		"expert":
 			return {
 				"attack_ratio": 0.78,
-				"heal_ratio": 0.07,
+				"heal_ratio": 0.08,
 				"shield_ratio": 0.25
 			}
 		_:

@@ -16,6 +16,7 @@ extends Control
 @onready var ui_layer = $UILayer
 @onready var top_panel_bg = $UILayer/TopPanel/TopPanelBG
 @onready var damage_bonus_label = $UILayer/TopPanel/StatsContainer/CenterInfo/DamageBonusLabel
+@onready var audio_manager = $AudioManager
 
 var player: Player
 var ai: Player
@@ -47,7 +48,41 @@ func _ready():
 	game_notification = game_notification_scene.instantiate()
 	add_child(game_notification)
 	
+	await handle_scene_entrance()
+	
 	setup_game()
+	
+func handle_scene_entrance():
+	await get_tree().process_frame
+	await get_tree().process_frame
+	
+	if TransitionManager and TransitionManager.current_overlay:
+		print("Main: TransitionManager y overlay disponibles")
+		
+		if TransitionManager.current_overlay.has_method("is_ready") and TransitionManager.current_overlay.is_ready():
+			await TransitionManager.current_overlay.fade_out(0.8)
+		else:
+			play_direct_entrance()
+	else:
+		play_direct_entrance()
+		
+func play_direct_entrance():
+	modulate.a = 0.0
+	var tween = create_tween()
+	tween.tween_property(self, "modulate:a", 1.0, 0.5)
+	await tween.finished
+
+func play_safe_audio(method_name: String, params: Array = []):
+	if audio_manager and audio_manager.has_method(method_name):
+		match params.size():
+			0:
+				audio_manager.call(method_name)
+			1:
+				audio_manager.call(method_name, params[0])
+			2:
+				audio_manager.call(method_name, params[0], params[1])
+			_:
+				print("Demasiados parámetros para: ", method_name)
 
 func setup_game():
 	if player:
@@ -65,7 +100,6 @@ func setup_game():
 	add_child(player)
 	add_child(ai)
 
-	
 	# Conectar señales del jugador
 	player.hp_changed.connect(_on_player_hp_changed)
 	player.mana_changed.connect(_on_player_mana_changed)
@@ -102,12 +136,18 @@ func restart_game():
 	game_count += 1
 	turn_label.text = "¡Nueva partida!"
 	game_info_label.text = "Partida #" + str(game_count)
+	
+	play_safe_audio("play_background_music")
+	
 	await get_tree().create_timer(GameBalance.get_timer_delay("new_game")).timeout
 	setup_game()
 
 func set_difficulty(new_difficulty: String):
 	var old_difficulty = difficulty
 	difficulty = new_difficulty
+	
+	# 🔊 Sonido de cambio de configuración
+	play_safe_audio("play_notification_sound")
 	
 	if player and ai:
 		player.change_difficulty_safe(difficulty)
@@ -120,7 +160,6 @@ func set_difficulty(new_difficulty: String):
 		update_all_labels()
 		update_hand_display()
 	else:
-
 		var description = GameBalance.get_difficulty_description(difficulty)
 		turn_label.text = difficulty.to_upper()
 		game_info_label.text = description
@@ -146,29 +185,27 @@ func update_damage_bonus_indicator():
 		match damage_bonus:
 			1:
 				bonus_text = "⚔️ +1 DMG"
-				bonus_color = Color(1.0, 0.8, 0.2, 1.0)  # Dorado
+				bonus_color = Color(1.0, 0.8, 0.2, 1.0)
 			2:
 				bonus_text = "⚔️ +2 DMG"
-				bonus_color = Color(1.0, 0.4, 0.2, 1.0)  # Naranja-rojo
+				bonus_color = Color(1.0, 0.4, 0.2, 1.0)
 			3:
 				bonus_text = "💀 +3 DMG"
-				bonus_color = Color(1.0, 0.2, 0.2, 1.0)  # Rojo
+				bonus_color = Color(1.0, 0.2, 0.2, 1.0)
 			4:
 				bonus_text = "🔥 +4 DMG"
-				bonus_color = Color(0.8, 0.2, 0.8, 1.0)  # Púrpura
+				bonus_color = Color(0.8, 0.2, 0.8, 1.0)
 			_:
 				bonus_text = "⚔️ +" + str(damage_bonus) + " DMG"
-				bonus_color = Color(0.6, 0.2, 0.6, 1.0)  # Púrpura oscuro
+				bonus_color = Color(0.6, 0.2, 0.6, 1.0)
 		
 		if damage_bonus_label:
 			damage_bonus_label.text = bonus_text
 			damage_bonus_label.modulate = bonus_color
 			damage_bonus_label.visible = true
 	else:
-		# Ocultar el indicador si no hay bonus
 		if damage_bonus_label:
 			damage_bonus_label.visible = false
-		
 
 func update_hand_display():
 	for child in hand_container.get_children():
@@ -178,16 +215,28 @@ func update_hand_display():
 		var card_instance = card_scene.instantiate()
 		card_instance.set_card_data(card_data)
 		card_instance.card_clicked.connect(_on_card_clicked)
+		
+		# 🔊 Conectar sonido de hover a las cartas
+		if card_instance.has_signal("mouse_entered"):
+			card_instance.mouse_entered.connect(_on_card_hover)
+		
 		hand_container.add_child(card_instance)
 		
 		var can_play = is_player_turn and player.can_play_card(card_data)
 		card_instance.set_playable(can_play)
+
+func _on_card_hover():
+	# 🔊 Sonido al pasar el mouse sobre las cartas
+	play_safe_audio("play_card_hover_sound")
 
 func _on_card_clicked(card: Card):
 	if not is_player_turn:
 		return
 	
 	if player.can_play_card(card.card_data):
+		# 🔊 Sonido al jugar carta según su tipo
+		play_safe_audio("play_card_play_sound", [card.card_data.card_type])
+		
 		match card.card_data.card_type:
 			"attack":
 				player.play_card(card.card_data, ai)
@@ -196,6 +245,9 @@ func _on_card_clicked(card: Card):
 
 func start_player_turn():
 	is_player_turn = true
+	
+	# 🔊 Sonido de cambio de turno
+	play_safe_audio("play_turn_change_sound", [true])
 	
 	var tween = create_tween()
 	tween.tween_property(top_panel_bg, "color", player_turn_color, transition_time)
@@ -215,6 +267,9 @@ func start_player_turn():
 
 func start_ai_turn():
 	is_player_turn = false
+	
+	# 🔊 Sonido de cambio de turno (IA)
+	play_safe_audio("play_turn_change_sound", [false])
 	
 	var tween = create_tween()
 	tween.tween_property(top_panel_bg, "color", ai_turn_color, transition_time)
@@ -262,6 +317,9 @@ func update_turn_button_text():
 func _on_end_turn_pressed():
 	if is_player_turn and end_turn_button:
 		end_turn_button.release_focus()
+		
+		# 🔊 Sonido de botón UI
+		play_safe_audio("play_notification_sound")
 		
 		if DeckManager.should_restart_game(player.get_deck_size(), ai.get_deck_size(), player.get_hand_size(), ai.get_hand_size()):
 			turn_label.text = "¡Ambos sin cartas!"
@@ -311,6 +369,9 @@ func _on_ai_cards_played_changed(cards_played: int, max_cards: int):
 
 func _on_player_turn_changed(turn_num: int, damage_bonus: int):
 	if damage_bonus > 0 and GameBalance.is_damage_bonus_turn(turn_num):
+		# 🔊 Sonido especial de bonus
+		play_safe_audio("play_bonus_sound")
+		
 		if game_notification:
 			game_notification.show_damage_bonus_notification(turn_num, damage_bonus)
 	elif damage_bonus > 0:
@@ -325,14 +386,23 @@ func _on_ai_turn_changed(turn_num: int, damage_bonus: int):
 	update_damage_bonus_indicator()
 
 func _on_ai_card_played(card: CardData):
+	# 🔊 Sonido cuando la IA juega carta
+	play_safe_audio("play_card_play_sound", [card.card_type])
+	
 	if ai_notification:
 		ai_notification.show_card_notification(card, "IA")
 
 func _on_player_card_drawn(cards_count: int, from_deck: bool):
+	# 🔊 Sonido de robar cartas
+	play_safe_audio("play_card_draw_sound")
+	
 	if game_notification:
 		game_notification.show_card_draw_notification("Jugador", cards_count, from_deck)
 
 func _on_player_deck_reshuffled():
+	# 🔊 Sonido de barajar cartas
+	play_safe_audio("play_deck_shuffle_sound")
+	
 	if game_notification:
 		var cards_reshuffled = player.deck.size()
 		game_notification.show_reshuffle_notification("Jugador", cards_reshuffled)
@@ -341,6 +411,9 @@ func _on_player_deck_reshuffled():
 	await get_tree().create_timer(2.0).timeout
 
 func _on_ai_deck_reshuffled():
+	# 🔊 Sonido de barajar cartas (IA)
+	play_safe_audio("play_deck_shuffle_sound")
+	
 	turn_label.text = "IA remezcló"
 	game_info_label.text = "Algunas cartas volvieron a su al mazo"
 	await get_tree().create_timer(2.0).timeout
@@ -373,6 +446,9 @@ func _on_ai_deck_empty():
 		game_info_label.text = "Verificando reinicio..."
 
 func _on_player_died():
+	# 🔊 Sonido de derrota
+	play_safe_audio("play_lose_sound")
+	
 	if game_notification:
 		game_notification.show_game_end_notification("Derrota", "hp_zero")
 	game_over_label.text = "¡PERDISTE! Reiniciando..."
@@ -383,6 +459,9 @@ func _on_player_died():
 	restart_game()
 
 func _on_ai_died():
+	# 🔊 Sonido de victoria
+	play_safe_audio("play_win_sound")
+	
 	if game_notification:
 		game_notification.show_game_end_notification("Victoria", "hp_zero")
 	game_over_label.text = "¡GANASTE! Reiniciando..."
@@ -404,8 +483,14 @@ func _input(event):
 			game_info_label.text = "No puedes cambiar dificultad ahora"
 	elif event.is_action_pressed("restart_game"):
 		restart_game()
+	elif event.is_action_pressed("ui_cancel"):
+		# ESC para volver al menú
+		return_to_menu()
 
 func _on_player_damage_taken(damage_amount: int):
+	# 🔊 Sonido de recibir daño
+	play_safe_audio("play_damage_sound", [damage_amount])
+	
 	play_damage_effects(damage_amount)
 
 func play_damage_effects(damage_amount: int):
@@ -413,7 +498,6 @@ func play_damage_effects(damage_amount: int):
 		return
 	
 	var shake_intensity = min(damage_amount * 2.0, 8.0)
-	
 	screen_shake(shake_intensity, 0.3)
 
 func screen_shake(intensity: float, duration: float):
@@ -440,3 +524,7 @@ func screen_shake(intensity: float, duration: float):
 	await final_tween.finished
 	
 	is_screen_shaking = false
+
+func return_to_menu():
+	"""Vuelve al menú principal con transición suave"""
+	TransitionManager.fade_to_scene("res://scenes/MainMenu.tscn", 1.0, "Volviendo al menú...")

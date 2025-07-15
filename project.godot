@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="Cards"
-run/main_scene="uid://cgocqq54tsr6v"
+run/main_scene="uid://cxw6tc65b0iwr"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+TransitionManager="*res://scripts/TransitionManager.gd"
 
 [display]
 
