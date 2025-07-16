@@ -53,9 +53,6 @@ func setup_buttons():
 		button.focus_entered.connect(_on_button_focus.bind(button))
 
 func setup_audio():
-	# Música del menu
-	# menu_music_player.stream = preload("res://audio/music/menu_music.ogg")
-	# menu_music_player.play()
 	pass
 
 func play_entrance_animation():
@@ -90,11 +87,7 @@ func _on_options_pressed():
 		return
 	
 	play_ui_sound("button_click")
-	show_coming_soon("Menú de opciones próximamente. [Presiona ESC para cerrar]")
-	
-	# Cuando tengas el menú de opciones:
-	# is_transitioning = true
-	# TransitionManager.fade_to_scene("res://scenes/OptionsMenu.tscn", 1.0)
+	show_coming_soon("Menú de opciones próximamente. [Presiona ESC o B para cerrar]")
 
 func _on_credits_pressed():
 	if is_transitioning:
@@ -164,7 +157,7 @@ func show_credits_popup():
 	🎨 Arte:
 	Iconos de la comunidad
 	
-	[Presiona ESC para cerrar]
+	[Presiona ESC o B para cerrar]
 	"""
 	
 	transition_label.text = credits_text
@@ -190,7 +183,6 @@ func exit_game():
 	get_tree().quit()
 
 func play_ui_sound(sound_type: String):
-	"""Reproduce sonido de UI"""
 	match sound_type:
 		"button_click":
 			ui_player.stream = preload("res://audio/ui/button_click.wav")
@@ -200,23 +192,19 @@ func play_ui_sound(sound_type: String):
 			pass
 
 func play_hover_sound():
-	"""Reproduce sonido de hover"""
-	# hover_player.stream = preload("res://audio/ui/hover.wav")
-	# hover_player.play()
 	pass
 
 func _input(event):
 	if is_transitioning:
 		return
 		
-	if event.is_action_pressed("ui_cancel"):
+	if event.is_action_pressed("ui_cancel") or event.is_action_pressed("gamepad_cancel"):
 		if transition_layer.visible and transition_layer.modulate.a > 0.5:
 			hide_popup()
 		else:
 			_on_exit_pressed()
 	
-	elif event.is_action_pressed("ui_accept"):
-		# Enter para comenzar partida
+	elif event.is_action_pressed("ui_accept") or event.is_action_pressed("gamepad_accept"):
 		if play_button.has_focus():
 			_on_play_pressed()
 		elif options_button.has_focus():

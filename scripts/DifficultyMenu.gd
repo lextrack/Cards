@@ -323,3 +323,14 @@ func _input(event):
 			_on_start_pressed()
 		elif back_button.has_focus():
 			_on_back_pressed()
+	
+	elif event.is_action_pressed("gamepad_accept"):
+		if normal_card.has_focus() or hard_card.has_focus() or expert_card.has_focus():
+			_on_start_pressed()
+		elif start_button.has_focus():
+			_on_start_pressed()
+		elif back_button.has_focus():
+			_on_back_pressed()
+	
+	elif event.is_action_pressed("gamepad_cancel"):
+		_on_back_pressed()
