@@ -98,6 +98,17 @@ text = "OPCIONES"
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 
+[node name="HelpButton" type="Button" parent="MenuContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 18
+text = "AYUDA"
+
+[node name="Spacer4" type="Control" parent="MenuContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
 [node name="CreditsButton" type="Button" parent="MenuContainer/ButtonsContainer"]
 custom_minimum_size = Vector2(300, 50)
 layout_mode = 2
@@ -105,7 +116,7 @@ size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 18
 text = "CRÉDITOS"
 
-[node name="Spacer4" type="Control" parent="MenuContainer/ButtonsContainer"]
+[node name="Spacer5" type="Control" parent="MenuContainer/ButtonsContainer"]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 

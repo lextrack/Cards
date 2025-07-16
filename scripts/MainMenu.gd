@@ -2,6 +2,7 @@ extends Control
 
 @onready var play_button = $MenuContainer/ButtonsContainer/PlayButton
 @onready var options_button = $MenuContainer/ButtonsContainer/OptionsButton
+@onready var help_button = $MenuContainer/ButtonsContainer/HelpButton
 @onready var credits_button = $MenuContainer/ButtonsContainer/CreditsButton
 @onready var exit_button = $MenuContainer/ButtonsContainer/ExitButton
 
@@ -44,10 +45,11 @@ func handle_scene_entrance():
 func setup_buttons():
 	play_button.pressed.connect(_on_play_pressed)
 	options_button.pressed.connect(_on_options_pressed)
+	help_button.pressed.connect(_on_help_pressed)
 	credits_button.pressed.connect(_on_credits_pressed)
 	exit_button.pressed.connect(_on_exit_pressed)
 	
-	var buttons = [play_button, options_button, credits_button, exit_button]
+	var buttons = [play_button, options_button, help_button, credits_button, exit_button]
 	for button in buttons:
 		button.mouse_entered.connect(_on_button_hover.bind(button))
 		button.focus_entered.connect(_on_button_focus.bind(button))
@@ -81,6 +83,15 @@ func _on_play_pressed():
 	play_ui_sound("button_click")
 
 	TransitionManager.fade_to_scene("res://scenes/DifficultyMenu.tscn", 1.0)
+
+func _on_help_pressed():
+	if is_transitioning:
+		return
+	
+	is_transitioning = true
+	play_ui_sound("button_click")
+	
+	TransitionManager.fade_to_scene("res://scenes/HelpMenu.tscn", 1.0)
 
 func _on_options_pressed():
 	if is_transitioning:
@@ -209,6 +220,8 @@ func _input(event):
 			_on_play_pressed()
 		elif options_button.has_focus():
 			_on_options_pressed()
+		elif help_button.has_focus():
+			_on_help_pressed()
 		elif credits_button.has_focus():
 			_on_credits_pressed()
 		elif exit_button.has_focus():
