@@ -73,7 +73,7 @@ func show_damage_bonus_notification(turn_number: int, bonus: int):
 	queue_notification(title, text, detail, color, GameBalance.get_timer_delay("notification_bonus"))
 
 func show_game_end_notification(winner: String, reason: String):
-	var title = winner + " ha ganado"
+	var title = winner + " Has ganado"
 	var text = ""
 	var detail = "Nueva partida comenzando..."
 	var color = Color(0.2, 0.8, 0.2, 0.95)

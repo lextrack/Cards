@@ -442,12 +442,11 @@ func _on_player_died():
 
 func _on_ai_died():
 	play_safe_audio("play_win_sound")
-	
-	# Registrar resultado en GameState
+
 	GameState.add_game_result(true)
 	
 	if game_notification:
-		game_notification.show_game_end_notification("Victoria", "hp_zero")
+		game_notification.show_game_end_notification("¡Victoria!", "hp_zero")
 	game_over_label.text = "¡GANASTE! Reiniciando..."
 	game_over_label.visible = true
 	if end_turn_button:
@@ -456,7 +455,6 @@ func _on_ai_died():
 	restart_game()
 
 func _input(event):
-	# Eliminar el cambio de dificultad con ENTER, ahora solo ESC para volver al menú
 	if event.is_action_pressed("restart_game"):
 		restart_game()
 	elif event.is_action_pressed("ui_cancel"):

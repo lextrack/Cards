@@ -29,7 +29,7 @@ volume_db = 2.0
 
 [node name="CardDrawPlayer" type="AudioStreamPlayer" parent="AudioManager/CardSounds"]
 stream = ExtResource("3_vcsgt")
-volume_db = 5.0
+volume_db = 8.0
 
 [node name="CardHoverPlayer" type="AudioStreamPlayer" parent="AudioManager/CardSounds"]
 volume_db = 5.0
@@ -42,15 +42,15 @@ volume_db = 5.0
 
 [node name="HealPlayer" type="AudioStreamPlayer" parent="AudioManager/CombatSounds"]
 stream = ExtResource("7_lhr70")
-volume_db = -3.0
+volume_db = -5.0
 
 [node name="ShieldPlayer" type="AudioStreamPlayer" parent="AudioManager/CombatSounds"]
 stream = ExtResource("8_wp0k4")
-volume_db = -12.0
+volume_db = -14.0
 
 [node name="DamagePlayer" type="AudioStreamPlayer" parent="AudioManager/CombatSounds"]
 stream = ExtResource("9_bjd11")
-volume_db = -10.0
+volume_db = -14.0
 
 [node name="GameSounds" type="Node" parent="AudioManager"]
 
