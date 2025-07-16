@@ -1,39 +1,32 @@
 extends Control
 
-# Referencias a los botones
 @onready var play_button = $MenuContainer/ButtonsContainer/PlayButton
 @onready var options_button = $MenuContainer/ButtonsContainer/OptionsButton
 @onready var credits_button = $MenuContainer/ButtonsContainer/CreditsButton
 @onready var exit_button = $MenuContainer/ButtonsContainer/ExitButton
 
-# Referencias a elementos visuales
 @onready var game_title = $MenuContainer/TitleContainer/GameTitle
 @onready var version_label = $MenuContainer/FooterContainer/VersionLabel
 @onready var transition_layer = $TransitionLayer
 @onready var transition_label = $TransitionLayer/TransitionLabel
 
-# Audio
 @onready var menu_music_player = $AudioManager/MenuMusicPlayer
 @onready var ui_player = $AudioManager/UIPlayer
 @onready var hover_player = $AudioManager/HoverPlayer
 
-# Variables de estado
 var is_transitioning: bool = false
 
 func _ready():
 	setup_buttons()
 	setup_audio()
 	
-	# Manejar entrada suave desde TransitionManager
 	await handle_scene_entrance()
 	
-	# Focus en el primer botón para navegación con teclado
 	play_button.grab_focus()
 
 func handle_scene_entrance():
 	await get_tree().process_frame
 	
-	# Verificar si hay TransitionManager y overlay disponible
 	if TransitionManager and TransitionManager.current_overlay:
 		print("MainMenu: TransitionManager disponible")
 		
@@ -60,34 +53,28 @@ func setup_buttons():
 		button.focus_entered.connect(_on_button_focus.bind(button))
 
 func setup_audio():
-	# Aquí puedes asignar música de menú si tienes
+	# Música del menu
 	# menu_music_player.stream = preload("res://audio/music/menu_music.ogg")
 	# menu_music_player.play()
 	pass
 
 func play_entrance_animation():
-	# Empezar invisible
 	modulate.a = 0.0
-	scale = Vector2(0.8, 0.8)
-	
-	# Animar entrada
+	scale = Vector2(5.0, 1.0)
+
 	var tween = create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(self, "modulate:a", 1.0, 0.8)
 	tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.6)
 	
-	# Animar título con efecto especial
 	await tween.finished
 	animate_title()
 
 func animate_title():
-	"""Animación especial para el título"""
 	var tween = create_tween()
 	tween.set_loops()
 	tween.tween_property(game_title, "modulate", Color(1.2, 1.2, 0.9, 1.0), 2.0)
 	tween.tween_property(game_title, "modulate", Color(1.0, 1.0, 0.8, 1.0), 2.0)
-
-# === EVENTOS DE BOTONES ===
 
 func _on_play_pressed():
 	if is_transitioning:
@@ -95,21 +82,19 @@ func _on_play_pressed():
 	
 	is_transitioning = true
 	play_ui_sound("button_click")
-	
-	# Usar TransitionManager para transición suave
-	TransitionManager.fade_to_scene("res://scenes/Main.tscn", 1.2, "Iniciando partida...")
+
+	TransitionManager.fade_to_scene("res://scenes/DifficultyMenu.tscn", 1.0)
 
 func _on_options_pressed():
 	if is_transitioning:
 		return
 	
 	play_ui_sound("button_click")
-	# Por ahora, mostrar mensaje de "próximamente"
 	show_coming_soon("Menú de opciones próximamente")
 	
 	# Cuando tengas el menú de opciones:
 	# is_transitioning = true
-	# TransitionManager.fade_to_scene("res://scenes/OptionsMenu.tscn", 1.0, "Cargando opciones...")
+	# TransitionManager.fade_to_scene("res://scenes/OptionsMenu.tscn", 1.0)
 
 func _on_credits_pressed():
 	if is_transitioning:
@@ -126,24 +111,18 @@ func _on_exit_pressed():
 	exit_game()
 
 func _on_button_hover(button: Button):
-	"""Efecto visual y sonoro al pasar mouse sobre botón"""
 	play_hover_sound()
-	
-	# Efecto visual de hover
 	var tween = create_tween()
 	tween.tween_property(button, "scale", Vector2(1.05, 1.05), 0.1)
-	
-	# Restaurar escala cuando el mouse sale
+
 	if not button.mouse_exited.is_connected(_on_button_unhover):
 		button.mouse_exited.connect(_on_button_unhover.bind(button))
 
 func _on_button_unhover(button: Button):
-	"""Restaura el botón cuando el mouse sale"""
 	var tween = create_tween()
 	tween.tween_property(button, "scale", Vector2(1.0, 1.0), 0.1)
 
 func _on_button_focus(button: Button):
-	"""Efecto cuando el botón recibe focus (navegación con teclado)"""
 	play_hover_sound()
 	
 	var tween = create_tween()
@@ -153,14 +132,10 @@ func _on_button_focus(button: Button):
 		button.focus_exited.connect(_on_button_unfocus.bind(button))
 
 func _on_button_unfocus(button: Button):
-	"""Restaura el botón cuando pierde focus"""
 	var tween = create_tween()
 	tween.tween_property(button, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.1)
 
-# === TRANSICIONES LOCALES (para popups del menú) ===
-
 func show_coming_soon(message: String):
-	"""Muestra mensaje de 'próximamente'"""
 	transition_label.text = message
 	transition_layer.visible = true
 	transition_layer.modulate.a = 0.0
@@ -200,10 +175,8 @@ func show_credits_popup():
 	tween.tween_property(transition_layer, "modulate:a", 0.9, 0.3)
 
 func exit_game():
-	"""Sale del juego con animación suave"""
 	is_transitioning = true
 	
-	# Usar TransitionManager para salida suave
 	if TransitionManager.current_overlay:
 		await TransitionManager.current_overlay.fade_in(0.8)
 		
@@ -262,9 +235,6 @@ func hide_popup():
 func _notification(what):
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		exit_game()
-
-func set_version_text(version: String):
-	version_label.text = "Versión " + version + " - Ariel Alejandro Muñoz (Lextrack)"
 
 func set_background_color(color: Color):
 	$BackgroundLayer/BackgroundGradient.color = color

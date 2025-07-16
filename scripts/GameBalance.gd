@@ -79,7 +79,7 @@ static func get_ai_config(difficulty: String) -> Dictionary:
 			}
 		"hard":
 			return {
-				"hp": 38,
+				"hp": 35,
 				"mana": DEFAULT_MANA,
 				"cards_per_turn": 2,
 				"hand_size": DEFAULT_HAND_SIZE,
@@ -89,7 +89,7 @@ static func get_ai_config(difficulty: String) -> Dictionary:
 			}
 		"expert":
 			return {
-				"hp": 40,
+				"hp": 38,
 				"mana": 12,
 				"cards_per_turn": 3,
 				"hand_size": 6,

@@ -67,13 +67,6 @@ text = "⚔️ CARD MASTER ⚔️"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="GameSubtitle" type="Label" parent="MenuContainer/TitleContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.8, 0.9, 1)
-theme_override_font_sizes/font_size = 18
-text = "Juego de Cartas Estratégico"
-horizontal_alignment = 1
-
 [node name="Spacer1" type="Control" parent="MenuContainer"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
@@ -135,7 +128,7 @@ size_flags_vertical = 3
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
 theme_override_font_sizes/font_size = 14
-text = "Versión 1.0 - Hecho en Godot 4.4"
+text = "Versión 1.0.0 - Ariel Alejandro Muñoz (Lextrack)"
 horizontal_alignment = 1
 
 [node name="AudioManager" type="Node" parent="."]

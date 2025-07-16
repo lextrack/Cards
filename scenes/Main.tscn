@@ -46,7 +46,7 @@ volume_db = -3.0
 
 [node name="ShieldPlayer" type="AudioStreamPlayer" parent="AudioManager/CombatSounds"]
 stream = ExtResource("8_wp0k4")
-volume_db = -10.0
+volume_db = -12.0
 
 [node name="DamagePlayer" type="AudioStreamPlayer" parent="AudioManager/CombatSounds"]
 stream = ExtResource("9_bjd11")

@@ -49,27 +49,6 @@ func setup_from_difficulty():
 	var config = GameBalance.get_ai_config(difficulty) if is_ai else GameBalance.get_player_config(difficulty)
 	max_cards_per_turn = config.cards_per_turn
 
-func change_difficulty_safe(new_difficulty: String):
-	difficulty = new_difficulty
-	
-	var saved_hp = current_hp
-	var saved_shield = current_shield
-
-	var config = GameBalance.get_ai_config(difficulty) if is_ai else GameBalance.get_player_config(difficulty)
-	
-	var old_max_mana = max_mana
-	max_mana = config.mana
-	max_cards_per_turn = config.cards_per_turn
-	max_hand_size = config.hand_size
-	
-	if old_max_mana != max_mana:
-		var mana_ratio = float(current_mana) / float(old_max_mana)
-		current_mana = int(max_mana * mana_ratio)
-		mana_changed.emit(current_mana)
-
-	current_hp = saved_hp
-	current_shield = saved_shield
-
 func get_max_cards_per_turn() -> int:
 	return max_cards_per_turn
 
@@ -225,6 +204,7 @@ func ai_turn(opponent: Player):
 		
 		var chosen_card: CardData = null
 		
+		# Estrategia de finisher: si el oponente tiene poca vida, buscar golpe final
 		if opponent.current_hp <= 12:
 			var finisher_cards = []
 			for card in playable_cards:
@@ -233,19 +213,23 @@ func ai_turn(opponent: Player):
 			if finisher_cards.size() > 0:
 				chosen_card = finisher_cards[0]
 		
+		# Estrategia de curación: si la IA tiene poca vida, priorizar curación
 		if not chosen_card and current_hp < max_hp * heal_threshold:
 			var heal_cards = DeckManager.get_cards_by_type(playable_cards, "heal")
 			if heal_cards.size() > 0:
 				chosen_card = heal_cards[0]
 		
+		# Estrategia defensiva: si no tiene escudo y el oponente puede atacar fuerte
 		if not chosen_card and current_shield == 0 and opponent.current_mana >= 4 and randf() > aggression:
 			var shield_cards = DeckManager.get_cards_by_type(playable_cards, "shield")
 			if shield_cards.size() > 0:
 				chosen_card = shield_cards[0]
 		
+		# Estrategia ofensiva: atacar con la carta más fuerte
 		if not chosen_card:
 			chosen_card = DeckManager.get_strongest_attack_card(playable_cards)
 		
+		# Fallback: tomar cualquier carta
 		if not chosen_card:
 			chosen_card = playable_cards[0]
 		

@@ -1,85 +1,113 @@
 extends CanvasLayer
 
 var overlay: ColorRect
-var loading_label: Label
+var loading_container: Control
+var loading_icon: TextureRect
+var rotation_tween: Tween
 
 func _ready():
 	layer = 1000
 
 	overlay = get_node("Overlay")
-	loading_label = get_node("LoadingLabel")
+	loading_container = get_node("LoadingContainer")
+	loading_icon = get_node("LoadingContainer/LoadingIcon")
 	
 	if not overlay:
 		push_error("No se encontró el nodo Overlay en TransitionOverlay")
 		return
-	if not loading_label:
-		push_error("No se encontró el nodo LoadingLabel en TransitionOverlay")
+	if not loading_container:
+		push_error("No se encontró el nodo LoadingContainer en TransitionOverlay")
+		return
+	if not loading_icon:
+		push_error("No se encontró el nodo LoadingIcon en TransitionOverlay")
 		return
 	
+	# Configurar el pivot al centro para rotación correcta
+	loading_icon.pivot_offset = Vector2(64, 64)  # Centro del contenedor de 128x128
+	
 	overlay.color.a = 0.0
-	loading_label.modulate.a = 0.0
+	loading_container.modulate.a = 0.0
+	loading_icon.rotation = 0.0
 	
 	print("TransitionOverlay inicializado correctamente")
 
-func set_message(message: String):
-	"""Configura el mensaje de carga"""
-	if not loading_label:
-		return
-		
-	loading_label.text = message
-	loading_label.visible = message != ""
+func start_loading_animation():
+	"""Inicia la animación de rotación del ícono de carga"""
+	if rotation_tween:
+		rotation_tween.kill()
+	
+	# Asegurar que la rotación inicial sea 0
+	loading_icon.rotation = 0.0
+	
+	rotation_tween = create_tween()
+	rotation_tween.set_loops()
+	rotation_tween.set_ease(Tween.EASE_IN_OUT)
+	rotation_tween.set_trans(Tween.TRANS_LINEAR)
+	rotation_tween.tween_property(loading_icon, "rotation", TAU, 1.5)  # Gira sobre su eje en 1.5 segundos
+
+func stop_loading_animation():
+	"""Detiene la animación de rotación"""
+	if rotation_tween:
+		rotation_tween.kill()
+		rotation_tween = null
+	
+	# Resetear rotación suavemente
+	var reset_tween = create_tween()
+	reset_tween.tween_property(loading_icon, "rotation", 0.0, 0.2)
 
 func fade_in(duration: float = 0.5):
-	"""Fade a negro (ocultar escena actual)"""
-	if not overlay:
-		push_error("Overlay no disponible en fade_in")
+	"""Fade a negro (ocultar escena actual) y mostrar loading"""
+	if not overlay or not loading_container:
+		push_error("Nodos no disponibles en fade_in")
 		return
-		
+	
+	# Iniciar animación de carga
+	start_loading_animation()
+	
 	var tween = create_tween()
 	tween.set_parallel(true)
 	
 	tween.tween_property(overlay, "color:a", 1.0, duration)
-
-	if loading_label and loading_label.visible:
-		tween.tween_property(loading_label, "modulate:a", 1.0, duration * 0.8)
+	tween.tween_property(loading_container, "modulate:a", 1.0, duration * 0.8)
 	
 	await tween.finished
 
 func fade_out(duration: float = 0.5):
-	"""Fade desde negro (mostrar nueva escena)"""
-	if not overlay:
-		push_error("Overlay no disponible en fade_out")
+	"""Fade desde negro (mostrar nueva escena) y ocultar loading"""
+	if not overlay or not loading_container:
+		push_error("Nodos no disponibles en fade_out")
 		return
-		
+	
 	var tween = create_tween()
 	tween.set_parallel(true)
 	
 	tween.tween_property(overlay, "color:a", 0.0, duration)
-
-	if loading_label:
-		tween.tween_property(loading_label, "modulate:a", 0.0, duration * 0.6)
+	tween.tween_property(loading_container, "modulate:a", 0.0, duration * 0.6)
 	
 	await tween.finished
+	
+	# Detener animación cuando ya no es visible
+	stop_loading_animation()
 
 func instant_black():
-	if not overlay:
-		push_error("Overlay no disponible en instant_black")
+	"""Mostrar overlay negro instantáneamente con loading"""
+	if not overlay or not loading_container:
+		push_error("Nodos no disponibles en instant_black")
 		return
 		
 	overlay.color.a = 1.0
-	
-	if loading_label:
-		loading_label.modulate.a = 1.0 if loading_label.visible else 0.0
+	loading_container.modulate.a = 1.0
+	start_loading_animation()
 
 func instant_clear():
-	if not overlay:
-		push_error("Overlay no disponible en instant_clear")
+	"""Ocultar overlay instantáneamente"""
+	if not overlay or not loading_container:
+		push_error("Nodos no disponibles en instant_clear")
 		return
 		
 	overlay.color.a = 0.0
-	
-	if loading_label:
-		loading_label.modulate.a = 0.0
+	loading_container.modulate.a = 0.0
+	stop_loading_animation()
 
 func is_covering():
 	if not overlay:
@@ -87,12 +115,11 @@ func is_covering():
 		
 	return overlay.color.a > 0.5
 
-func show_loading(message: String = "Cargando..."):
-	set_message(message)
+func show_loading():
 	instant_black()
 
 func hide_loading():
 	await fade_out(0.5)
 
 func is_ready() -> bool:
-	return overlay != null and loading_label != null
+	return overlay != null and loading_container != null and loading_icon != null
