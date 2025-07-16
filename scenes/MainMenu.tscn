@@ -81,7 +81,7 @@ custom_minimum_size = Vector2(300, 60)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 20
-text = "🎮 COMENZAR PARTIDA"
+text = "COMENZAR PARTIDA"
 
 [node name="Spacer2" type="Control" parent="MenuContainer/ButtonsContainer"]
 custom_minimum_size = Vector2(0, 15)
@@ -92,7 +92,7 @@ custom_minimum_size = Vector2(300, 50)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 18
-text = "⚙️ OPCIONES"
+text = "OPCIONES"
 
 [node name="Spacer3" type="Control" parent="MenuContainer/ButtonsContainer"]
 custom_minimum_size = Vector2(0, 10)
@@ -103,7 +103,7 @@ custom_minimum_size = Vector2(300, 50)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 18
-text = "📜 CRÉDITOS"
+text = "CRÉDITOS"
 
 [node name="Spacer4" type="Control" parent="MenuContainer/ButtonsContainer"]
 custom_minimum_size = Vector2(0, 10)
@@ -114,17 +114,23 @@ custom_minimum_size = Vector2(300, 50)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 18
-text = "🚪 SALIR"
+text = "SALIR"
 
-[node name="Spacer5" type="Control" parent="MenuContainer"]
-custom_minimum_size = Vector2(0, 40)
-layout_mode = 2
+[node name="FooterContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -242.5
+offset_top = -20.0
+offset_right = 242.5
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_vertical = 10
 
-[node name="FooterContainer" type="VBoxContainer" parent="MenuContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="VersionLabel" type="Label" parent="MenuContainer/FooterContainer"]
+[node name="VersionLabel" type="Label" parent="FooterContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
 theme_override_font_sizes/font_size = 14

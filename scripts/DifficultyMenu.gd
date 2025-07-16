@@ -57,7 +57,7 @@ func handle_scene_entrance():
 			TransitionManager.current_overlay.has_method("is_covering") and
 			TransitionManager.current_overlay.is_covering()):
 			
-			await TransitionManager.current_overlay.fade_out(0.8)
+			await TransitionManager.current_overlay.fade_out(0.1)
 		else:
 			play_entrance_animation()
 	else:

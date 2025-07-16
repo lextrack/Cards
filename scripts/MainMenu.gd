@@ -6,7 +6,7 @@ extends Control
 @onready var exit_button = $MenuContainer/ButtonsContainer/ExitButton
 
 @onready var game_title = $MenuContainer/TitleContainer/GameTitle
-@onready var version_label = $MenuContainer/FooterContainer/VersionLabel
+@onready var version_label: Label = $FooterContainer/VersionLabel
 @onready var transition_layer = $TransitionLayer
 @onready var transition_label = $TransitionLayer/TransitionLabel
 
@@ -90,7 +90,7 @@ func _on_options_pressed():
 		return
 	
 	play_ui_sound("button_click")
-	show_coming_soon("Menú de opciones próximamente")
+	show_coming_soon("Menú de opciones próximamente. [Presiona ESC para cerrar]")
 	
 	# Cuando tengas el menú de opciones:
 	# is_transitioning = true

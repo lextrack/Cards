@@ -99,9 +99,8 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 15.0
-offset_top = 15.0
 offset_right = -15.0
-offset_bottom = -15.0
+offset_bottom = -2.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -155,6 +154,7 @@ text = "35 HP | 10 Maná
 horizontal_alignment = 1
 
 [node name="NormalButton" type="Button" parent="MenuContainer/DifficultyContainer/NormalContainer"]
+visible = false
 custom_minimum_size = Vector2(240, 50)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -189,9 +189,8 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 15.0
-offset_top = 15.0
 offset_right = -15.0
-offset_bottom = -15.0
+offset_bottom = -2.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -245,6 +244,7 @@ text = "35 HP | 10 Maná
 horizontal_alignment = 1
 
 [node name="HardButton" type="Button" parent="MenuContainer/DifficultyContainer/HardContainer"]
+visible = false
 custom_minimum_size = Vector2(240, 50)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -279,9 +279,8 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 15.0
-offset_top = 15.0
 offset_right = -15.0
-offset_bottom = -15.0
+offset_bottom = -2.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -335,15 +334,12 @@ text = "38 HP | 12 Maná
 horizontal_alignment = 1
 
 [node name="ExpertButton" type="Button" parent="MenuContainer/DifficultyContainer/ExpertContainer"]
+visible = false
 custom_minimum_size = Vector2(240, 50)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 18
 text = "🎮 SELECCIONAR"
-
-[node name="Spacer4" type="Control" parent="MenuContainer"]
-custom_minimum_size = Vector2(0, 30)
-layout_mode = 2
 
 [node name="ButtonsContainer" type="HBoxContainer" parent="MenuContainer"]
 layout_mode = 2
