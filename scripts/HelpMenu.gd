@@ -125,12 +125,14 @@ Reduce la vida del oponente a 0 para ganar la partida.
 - [color=lime]B:[/color] Terminar turno
 - [color=lime]X:[/color] Reiniciar partida
 - [color=lime]Y:[/color] Salir al menú principal
+- [color=lime]START:[/color] Ver mapeo de teclas
 
 [color=white]Con Teclado/Ratón:[/color]
 - [color=lime]Click en carta:[/color] Jugar carta
 - [color=lime]Click en "Terminar Turno":[/color] Finalizar turno
 - [color=lime]R:[/color] Reiniciar partida
-- [color=lime]ESC:[/color] Salir al menú principal"""
+- [color=lime]ESC:[/color] Salir al menú principal
+- [color=lime]H:[/color] Ver mapeo de teclas"""
 }
 
 func _ready():

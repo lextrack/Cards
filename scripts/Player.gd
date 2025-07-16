@@ -204,7 +204,6 @@ func ai_turn(opponent: Player):
 		
 		var chosen_card: CardData = null
 		
-		# Estrategia de finisher: si el oponente tiene poca vida, buscar golpe final
 		if opponent.current_hp <= 12:
 			var finisher_cards = []
 			for card in playable_cards:
@@ -212,24 +211,20 @@ func ai_turn(opponent: Player):
 					finisher_cards.append(card)
 			if finisher_cards.size() > 0:
 				chosen_card = finisher_cards[0]
-		
-		# Estrategia de curación: si la IA tiene poca vida, priorizar curación
+				
 		if not chosen_card and current_hp < max_hp * heal_threshold:
 			var heal_cards = DeckManager.get_cards_by_type(playable_cards, "heal")
 			if heal_cards.size() > 0:
 				chosen_card = heal_cards[0]
 		
-		# Estrategia defensiva: si no tiene escudo y el oponente puede atacar fuerte
 		if not chosen_card and current_shield == 0 and opponent.current_mana >= 4 and randf() > aggression:
 			var shield_cards = DeckManager.get_cards_by_type(playable_cards, "shield")
 			if shield_cards.size() > 0:
 				chosen_card = shield_cards[0]
 		
-		# Estrategia ofensiva: atacar con la carta más fuerte
 		if not chosen_card:
 			chosen_card = DeckManager.get_strongest_attack_card(playable_cards)
-		
-		# Fallback: tomar cualquier carta
+
 		if not chosen_card:
 			chosen_card = playable_cards[0]
 		

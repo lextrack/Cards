@@ -12,8 +12,7 @@ var is_showing: bool = false
 func _ready():
 	modulate.a = 0.0
 	scale = Vector2(0.8, 0.8)
-	rotation = 0.1 
-	
+	rotation = deg_to_rad(5)
 	background.color = Color(0.1, 0.1, 0.1, 0.95)
 
 func show_card_notification(card: CardData, player_name: String = "IA"):
@@ -24,7 +23,6 @@ func show_card_notification(card: CardData, player_name: String = "IA"):
 	
 	card_name.text = player_name + " jugó: " + card.card_name
 	card_cost.text = "Costo: " + str(card.cost) + " maná"
-	
 	
 	match card.card_type:
 		"attack":
@@ -43,15 +41,22 @@ func show_card_notification(card: CardData, player_name: String = "IA"):
 	if tween:
 		tween.kill()
 	
+	visible = true
+	modulate.a = 0.0
+	scale = Vector2(0.7, 0.7)
+	rotation = deg_to_rad(5)
+	
 	tween = create_tween()
 	tween.set_parallel(true)
 	
-	tween.tween_property(self, "modulate:a", 1.0, 0.2)
-	tween.tween_property(self, "scale", Vector2(1.05, 1.05), 0.15)
-	tween.tween_property(self, "rotation", 0.0, 0.2)
+	tween.tween_property(self, "modulate:a", 1.0, 0.35).set_trans(Tween.TRANS_QUINT)
+	tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.3).set_trans(Tween.TRANS_ELASTIC)
+	tween.tween_property(self, "rotation", deg_to_rad(0), 0.25)
 	
 	await tween.finished
+	
 	tween = create_tween()
+	tween.tween_property(self, "scale", Vector2(1.05, 1.05), 0.1)
 	tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.1)
 
 	await tween.finished
@@ -68,14 +73,15 @@ func hide_notification():
 	
 	tween = create_tween()
 	tween.set_parallel(true)
-
-	tween.tween_property(self, "modulate:a", 0.0, 0.15)
-	tween.tween_property(self, "scale", Vector2(0.7, 0.7), 0.15)
-	tween.tween_property(self, "rotation", -0.05, 0.15)
+	
+	tween.tween_property(self, "modulate:a", 0.0, 0.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, "scale", Vector2(0.85, 0.85), 0.2).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, "rotation", deg_to_rad(-3), 0.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	
 	await tween.finished
 	is_showing = false
-
+	visible = false
+	
 func force_close():
 	if tween:
 		tween.kill()

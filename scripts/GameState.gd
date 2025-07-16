@@ -13,7 +13,6 @@ func get_selected_difficulty() -> String:
 
 func set_selected_difficulty(difficulty: String):
 	selected_difficulty = difficulty
-	print("Dificultad establecida: ", difficulty)
 
 func add_game_result(player_won: bool):
 	games_played += 1

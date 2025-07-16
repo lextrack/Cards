@@ -12,10 +12,69 @@ var notification_queue: Array = []
 
 func _ready():
 	modulate.a = 0.0
-	scale = Vector2(0.8, 0.8)
-	rotation = 0.0
+	scale = Vector2(0.7, 0.7)
+	rotation = deg_to_rad(5)
 	
 	background.color = Color(0.15, 0.15, 0.25, 0.95)
+
+func show_notification(title: String, text: String, detail: String, color: Color, duration: float):
+	if is_showing:
+		await hide_notification()
+	
+	is_showing = true
+	
+	notification_title.text = title
+	notification_text.text = text
+	notification_detail.text = detail
+	background.color = color
+	
+	if tween:
+		tween.kill()
+	
+	visible = true
+	modulate.a = 0.0
+	scale = Vector2(0.7, 0.7)
+	rotation = deg_to_rad(5)
+	
+	tween = create_tween()
+	tween.set_parallel(true)
+	
+	tween.tween_property(self, "modulate:a", 1.0, 0.35).set_trans(Tween.TRANS_QUINT)
+	tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.3).set_trans(Tween.TRANS_ELASTIC)
+	tween.tween_property(self, "rotation", deg_to_rad(0), 0.25)
+	
+	await tween.finished
+	
+	tween = create_tween()
+	tween.tween_property(self, "scale", Vector2(1.05, 1.05), 0.1)
+	tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.1)
+
+	await tween.finished
+	await get_tree().create_timer(duration).timeout
+
+	await hide_notification()
+	
+	if notification_queue.size() > 0:
+		await get_tree().create_timer(0.3).timeout
+		process_next_notification()
+
+func hide_notification():
+	if not is_showing:
+		return
+	
+	if tween:
+		tween.kill()
+	
+	tween = create_tween()
+	tween.set_parallel(true)
+	
+	tween.tween_property(self, "modulate:a", 0.0, 0.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, "scale", Vector2(0.85, 0.85), 0.2).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, "rotation", deg_to_rad(-3), 0.2).set_trans(Tween.TRANS_SINE)
+	
+	await tween.finished
+	is_showing = false
+	visible = false
 
 func show_card_draw_notification(player_name: String, cards_drawn: int, from_deck: bool = true):
 	var title = player_name + " sacó carta" + ("s" if cards_drawn > 1 else "")
@@ -44,7 +103,7 @@ func show_auto_end_turn_notification(reason: String):
 	var title = "Turno terminado automáticamente"
 	var text = ""
 	var detail = ""
-	var color = Color(0.6, 0.6, 0.6, 0.95) 
+	var color = Color(0.6, 0.6, 0.6, 0.95)
 	
 	match reason:
 		"no_cards":
@@ -109,57 +168,6 @@ func process_next_notification():
 	
 	var notification = notification_queue.pop_front()
 	show_notification(notification.title, notification.text, notification.detail, notification.color, notification.duration)
-
-func show_notification(title: String, text: String, detail: String, color: Color, duration: float):
-	if is_showing:
-		await hide_notification()
-	
-	is_showing = true
-	
-	notification_title.text = title
-	notification_text.text = text
-	notification_detail.text = detail
-	background.color = color
-	
-	if tween:
-		tween.kill()
-	
-	tween = create_tween()
-	tween.set_parallel(true)
-	
-	tween.tween_property(self, "modulate:a", 1.0, 0.2)
-	tween.tween_property(self, "scale", Vector2(1.05, 1.05), 0.15)
-	tween.tween_property(self, "rotation", 0.0, 0.2)
-	
-	await tween.finished
-	tween = create_tween()
-	tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.1)
-
-	await tween.finished
-	await get_tree().create_timer(duration).timeout
-
-	await hide_notification()
-	
-	if notification_queue.size() > 0:
-		await get_tree().create_timer(0.3).timeout
-		process_next_notification()
-
-func hide_notification():
-	if not is_showing:
-		return
-	
-	if tween:
-		tween.kill()
-	
-	tween = create_tween()
-	tween.set_parallel(true)
-	
-	tween.tween_property(self, "modulate:a", 0.0, 0.15)
-	tween.tween_property(self, "scale", Vector2(0.8, 0.8), 0.15)
-	tween.tween_property(self, "rotation", 0.02, 0.15)
-	
-	await tween.finished
-	is_showing = false
 
 func clear_all_notifications():
 	notification_queue.clear()

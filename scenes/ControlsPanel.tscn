@@ -1,0 +1,127 @@
+[gd_scene load_steps=2 format=3 uid="uid://cn42klqk17psn"]
+
+[ext_resource type="Script" uid="uid://c134k4mkdr6fj" path="res://scripts/ControlsPanel.gd" id="1_38ays"]
+
+[node name="ControlsPanel" type="Control"]
+z_index = 100
+layout_mode = 3
+anchor_left = 0.5
+anchor_top = 0.86
+anchor_right = 0.5
+anchor_bottom = 0.86
+offset_left = -112.0
+offset_top = -59.2
+offset_right = 118.0
+offset_bottom = 45.8
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_vertical = 4
+script = ExtResource("1_38ays")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelBG" type="ColorRect" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.12, 0.18, 0.9)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 0.5
+offset_right = -8.0
+offset_bottom = -0.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 3
+
+[node name="Title" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "CONTROLES"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="PlayHint" type="HBoxContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="PlayIcon" type="TextureRect" parent="Panel/VBoxContainer/PlayHint"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PlayLabel" type="Label" parent="Panel/VBoxContainer/PlayHint"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_font_sizes/font_size = 10
+vertical_alignment = 1
+
+[node name="EndHint" type="HBoxContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="EndIcon" type="TextureRect" parent="Panel/VBoxContainer/EndHint"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="EndLabel" type="Label" parent="Panel/VBoxContainer/EndHint"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_font_sizes/font_size = 10
+vertical_alignment = 1
+
+[node name="RestartHint" type="HBoxContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="RestartIcon" type="TextureRect" parent="Panel/VBoxContainer/RestartHint"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RestartLabel" type="Label" parent="Panel/VBoxContainer/RestartHint"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_font_sizes/font_size = 10
+vertical_alignment = 1
+
+[node name="MenuHint" type="HBoxContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="MenuIcon" type="TextureRect" parent="Panel/VBoxContainer/MenuHint"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MenuLabel" type="Label" parent="Panel/VBoxContainer/MenuHint"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_font_sizes/font_size = 10
+vertical_alignment = 1

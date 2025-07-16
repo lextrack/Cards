@@ -144,7 +144,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_colors/default_color = Color(0.9, 0.9, 0.9, 1)
-theme_override_font_sizes/normal_font_size = 16
+theme_override_font_sizes/normal_font_size = 15
 bbcode_enabled = true
 text = "Selecciona un tema de la izquierda para ver su contenido aquí.
 

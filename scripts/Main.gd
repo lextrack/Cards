@@ -47,7 +47,13 @@ var confirm_button: Button
 var cancel_button: Button
 var is_showing_confirmation: bool = false
 
+@export var controls_panel_scene: PackedScene = preload("res://scenes/ControlsPanel.tscn")
+var controls_panel: ControlsPanel
+
 func _ready():
+	gamepad_mode = false
+	last_input_was_gamepad = false
+	
 	if end_turn_button:
 		end_turn_button.pressed.connect(_on_end_turn_pressed)
 		setup_button_navigation()
@@ -63,6 +69,9 @@ func _ready():
 	add_child(game_notification)
 	
 	create_confirmation_dialog()
+
+	controls_panel = controls_panel_scene.instantiate()
+	ui_layer.add_child(controls_panel)
 	
 	difficulty = GameState.get_selected_difficulty()
 	print("Iniciando juego con dificultad: ", difficulty)
@@ -395,6 +404,7 @@ func update_hand_display():
 	
 	selected_card_index = clamp(selected_card_index, 0, max(0, card_instances.size() - 1))
 	update_card_selection()
+	controls_panel.update_cards_available(card_instances.size() > 0)
 
 func update_card_selection():
 	if not gamepad_mode or not is_player_turn:
@@ -447,8 +457,7 @@ func start_player_turn():
 	turn_label.text = "Tu turno"
 	
 	var difficulty_name = difficulty.to_upper()
-	var control_hint = " | [A] jugar, [B] terminar, [X] reiniciar, [Y] menú" if gamepad_mode else " | [ESC] menú, [R] reiniciar"
-	game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty_name + control_hint
+	game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty_name
 	
 	update_turn_button_text()
 	update_damage_bonus_indicator()
@@ -464,6 +473,8 @@ func start_player_turn():
 func start_ai_turn():
 	is_player_turn = false
 	gamepad_mode = false
+	
+	controls_panel.force_hide()
 	
 	play_safe_audio("play_turn_change_sound", [false])
 	
@@ -552,8 +563,7 @@ func _on_player_cards_played_changed(cards_played: int, max_cards: int):
 	update_turn_button_text()
 	
 	var difficulty_name = difficulty.to_upper()
-	var control_hint = " | [A] jugar, [B] terminar, [X] reiniciar, [Y] menú" if gamepad_mode else " | [ESC] menú, [R] reiniciar"
-	game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty_name + control_hint
+	game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty_name
 	
 	if cards_played >= max_cards:
 		turn_label.text = "¡Límite alcanzado!"
@@ -684,35 +694,37 @@ func _input(event):
 		elif event.is_action_pressed("ui_right"):
 			cancel_button.grab_focus()
 		return
-   
-	if event is InputEventJoypadButton or event is InputEventJoypadMotion:
+	
+	if event.is_action_pressed("gamepad_start"):
+		if controls_panel and is_player_turn:
+			controls_panel.toggle_visibility()
+			play_safe_audio("play_card_hover_sound")
+		return
+
+	if event is InputEventJoypadButton and event.pressed:
 		if not last_input_was_gamepad:
 			last_input_was_gamepad = true
-			if is_player_turn and player:  # ← Validación agregada
+			if is_player_turn and player:
 				gamepad_mode = true
 				update_card_selection()
 				update_turn_button_text()
-				var difficulty_name = difficulty.to_upper()
-				var cards_played = player.get_cards_played()
-				var max_cards = player.get_max_cards_per_turn()
-				game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty_name + " | [A] jugar, [B] terminar, [X] reiniciar, [Y] menú"
-	elif event is InputEventMouse:
+				if controls_panel:
+					controls_panel.update_gamepad_mode(true)
+	elif event is InputEventMouse or (event is InputEventKey and event.pressed):
 		if last_input_was_gamepad:
 			last_input_was_gamepad = false
-			if is_player_turn and player:  # ← Validación agregada
+			if is_player_turn and player:
 				gamepad_mode = false
 				update_card_selection()
 				update_turn_button_text()
-				var difficulty_name = difficulty.to_upper()
-				var cards_played = player.get_cards_played()
-				var max_cards = player.get_max_cards_per_turn()
-				game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty_name + " | [ESC] menú, [R] reiniciar"
+				if controls_panel:
+					controls_panel.update_gamepad_mode(false)
    
 	if event.is_action_pressed("restart_game") or event.is_action_pressed("gamepad_restart"):
 		restart_game()
 	elif event.is_action_pressed("ui_cancel") or event.is_action_pressed("gamepad_exit"):
 		show_exit_confirmation()
-	elif is_player_turn and gamepad_mode and player:  # ← Validación agregada
+	elif is_player_turn and gamepad_mode and player:
 		if event.is_action_pressed("ui_left"):
 			if card_instances.size() > 0:
 				selected_card_index = (selected_card_index - 1) % card_instances.size()
