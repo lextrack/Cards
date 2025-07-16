@@ -8,9 +8,6 @@ extends Control
 @onready var hard_bg = $MenuContainer/DifficultyContainer/HardContainer/HardCard/HardCardBG
 @onready var expert_bg = $MenuContainer/DifficultyContainer/ExpertContainer/ExpertCard/ExpertCardBG
 
-@onready var normal_button = $MenuContainer/DifficultyContainer/NormalContainer/NormalButton
-@onready var hard_button = $MenuContainer/DifficultyContainer/HardContainer/HardButton
-@onready var expert_button = $MenuContainer/DifficultyContainer/ExpertContainer/ExpertButton
 @onready var back_button = $MenuContainer/ButtonsContainer/BackButton
 @onready var start_button = $MenuContainer/ButtonsContainer/StartButton
 
@@ -46,7 +43,7 @@ func _ready():
 
 	select_difficulty("normal")
 
-	normal_button.grab_focus()
+	normal_card.grab_focus()
 
 func handle_scene_entrance():
 	await get_tree().process_frame
@@ -98,25 +95,50 @@ func animate_cards_entrance():
 	tween.tween_property(expert_card, "modulate:a", 1.0, 0.4)
 
 func setup_cards():
+	# Configurar el sistema de foco
+	normal_card.focus_mode = Control.FOCUS_ALL
+	hard_card.focus_mode = Control.FOCUS_ALL
+	expert_card.focus_mode = Control.FOCUS_ALL
+	
+	# Configurar la navegación entre tarjetas
+	normal_card.focus_neighbor_right = hard_card.get_path()
+	hard_card.focus_neighbor_left = normal_card.get_path()
+	hard_card.focus_neighbor_right = expert_card.get_path()
+	expert_card.focus_neighbor_left = hard_card.get_path()
+	
+	# Configurar navegación vertical
+	normal_card.focus_neighbor_bottom = start_button.get_path()
+	hard_card.focus_neighbor_bottom = start_button.get_path()
+	expert_card.focus_neighbor_bottom = start_button.get_path()
+	
 	normal_card.gui_input.connect(_on_card_input.bind("normal"))
 	hard_card.gui_input.connect(_on_card_input.bind("hard"))
 	expert_card.gui_input.connect(_on_card_input.bind("expert"))
+	
 	normal_card.mouse_entered.connect(_on_card_hover.bind("normal"))
 	normal_card.mouse_exited.connect(_on_card_unhover.bind("normal"))
 	hard_card.mouse_entered.connect(_on_card_hover.bind("hard"))
 	hard_card.mouse_exited.connect(_on_card_unhover.bind("hard"))
 	expert_card.mouse_entered.connect(_on_card_hover.bind("expert"))
 	expert_card.mouse_exited.connect(_on_card_unhover.bind("expert"))
+	
+	normal_card.focus_entered.connect(_on_card_focus.bind("normal"))
+	hard_card.focus_entered.connect(_on_card_focus.bind("hard"))
+	expert_card.focus_entered.connect(_on_card_focus.bind("expert"))
 
 func setup_buttons():
-	normal_button.pressed.connect(_on_difficulty_selected.bind("normal"))
-	hard_button.pressed.connect(_on_difficulty_selected.bind("hard"))
-	expert_button.pressed.connect(_on_difficulty_selected.bind("expert"))
-	
 	back_button.pressed.connect(_on_back_pressed)
 	start_button.pressed.connect(_on_start_pressed)
+	
+	# Configurar navegación de botones
+	back_button.focus_neighbor_right = start_button.get_path()
+	start_button.focus_neighbor_left = back_button.get_path()
+	
+	# Conectar con las tarjetas
+	back_button.focus_neighbor_top = normal_card.get_path()
+	start_button.focus_neighbor_top = hard_card.get_path()
 
-	var all_buttons = [normal_button, hard_button, expert_button, back_button, start_button]
+	var all_buttons = [back_button, start_button]
 	
 	for button in all_buttons:
 		button.mouse_entered.connect(_on_button_hover.bind(button))
@@ -152,6 +174,10 @@ func _on_card_unhover(difficulty: String):
 		var tween = create_tween()
 		tween.tween_property(card_bg, "color", colors.normal, 0.2)
 
+func _on_card_focus(difficulty: String):
+	play_hover_sound()
+	select_difficulty(difficulty)
+
 func get_card_bg(difficulty: String) -> ColorRect:
 	match difficulty:
 		"normal":
@@ -178,11 +204,14 @@ func _on_difficulty_selected(difficulty: String):
 	if is_transitioning:
 		return
 	
-	play_ui_sound("select")
 	select_difficulty(difficulty)
 
 func select_difficulty(difficulty: String):
+	if selected_difficulty == difficulty:
+		return
+		
 	selected_difficulty = difficulty
+	play_ui_sound("select")
 	
 	update_card_colors("normal")
 	update_card_colors("hard")
@@ -279,8 +308,6 @@ func play_ui_sound(sound_type: String):
 			pass
 
 func play_hover_sound():
-	# hover_player.stream = preload("res://audio/ui/hover.wav")
-	# hover_player.play()
 	pass
 
 func _input(event):
@@ -290,43 +317,9 @@ func _input(event):
 	if event.is_action_pressed("ui_cancel"):
 		_on_back_pressed()
 	elif event.is_action_pressed("ui_accept"):
-		if normal_button.has_focus():
-			_on_difficulty_selected("normal")
-		elif hard_button.has_focus():
-			_on_difficulty_selected("hard")
-		elif expert_button.has_focus():
-			_on_difficulty_selected("expert")
+		if normal_card.has_focus() or hard_card.has_focus() or expert_card.has_focus():
+			_on_start_pressed()
 		elif start_button.has_focus():
 			_on_start_pressed()
 		elif back_button.has_focus():
 			_on_back_pressed()
-	elif event.is_action_pressed("ui_left"):
-		if hard_button.has_focus():
-			normal_button.grab_focus()
-		elif expert_button.has_focus():
-			hard_button.grab_focus()
-	elif event.is_action_pressed("ui_right"):
-		if normal_button.has_focus():
-			hard_button.grab_focus()
-		elif hard_button.has_focus():
-			expert_button.grab_focus()
-	elif event.is_action_pressed("ui_up"):
-		if start_button.has_focus():
-			match selected_difficulty:
-				"normal":
-					normal_button.grab_focus()
-				"hard":
-					hard_button.grab_focus()
-				"expert":
-					expert_button.grab_focus()
-		elif back_button.has_focus():
-			match selected_difficulty:
-				"normal":
-					normal_button.grab_focus()
-				"hard":
-					hard_button.grab_focus()
-				"expert":
-					expert_button.grab_focus()
-	elif event.is_action_pressed("ui_down"):
-		if normal_button.has_focus() or hard_button.has_focus() or expert_button.has_focus():
-			start_button.grab_focus()

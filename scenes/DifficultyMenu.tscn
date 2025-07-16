@@ -83,6 +83,7 @@ size_flags_horizontal = 3
 custom_minimum_size = Vector2(240, 350)
 layout_mode = 2
 size_flags_horizontal = 4
+focus_mode = 2
 
 [node name="NormalCardBG" type="ColorRect" parent="MenuContainer/DifficultyContainer/NormalContainer/NormalCard"]
 layout_mode = 1
@@ -153,14 +154,6 @@ text = "35 HP | 10 Maná
 2 cartas | Equilibrada"
 horizontal_alignment = 1
 
-[node name="NormalButton" type="Button" parent="MenuContainer/DifficultyContainer/NormalContainer"]
-visible = false
-custom_minimum_size = Vector2(240, 50)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 18
-text = "🎮 SELECCIONAR"
-
 [node name="Spacer2" type="Control" parent="MenuContainer/DifficultyContainer"]
 custom_minimum_size = Vector2(20, 0)
 layout_mode = 2
@@ -173,6 +166,7 @@ size_flags_horizontal = 3
 custom_minimum_size = Vector2(240, 350)
 layout_mode = 2
 size_flags_horizontal = 4
+focus_mode = 2
 
 [node name="HardCardBG" type="ColorRect" parent="MenuContainer/DifficultyContainer/HardContainer/HardCard"]
 layout_mode = 1
@@ -243,14 +237,6 @@ text = "35 HP | 10 Maná
 2 cartas | Agresiva"
 horizontal_alignment = 1
 
-[node name="HardButton" type="Button" parent="MenuContainer/DifficultyContainer/HardContainer"]
-visible = false
-custom_minimum_size = Vector2(240, 50)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 18
-text = "🎮 SELECCIONAR"
-
 [node name="Spacer3" type="Control" parent="MenuContainer/DifficultyContainer"]
 custom_minimum_size = Vector2(20, 0)
 layout_mode = 2
@@ -263,6 +249,7 @@ size_flags_horizontal = 3
 custom_minimum_size = Vector2(240, 350)
 layout_mode = 2
 size_flags_horizontal = 4
+focus_mode = 2
 
 [node name="ExpertCardBG" type="ColorRect" parent="MenuContainer/DifficultyContainer/ExpertContainer/ExpertCard"]
 layout_mode = 1
@@ -332,14 +319,6 @@ theme_override_font_sizes/font_size = 12
 text = "38 HP | 12 Maná
 3 cartas | Brutal"
 horizontal_alignment = 1
-
-[node name="ExpertButton" type="Button" parent="MenuContainer/DifficultyContainer/ExpertContainer"]
-visible = false
-custom_minimum_size = Vector2(240, 50)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 18
-text = "🎮 SELECCIONAR"
 
 [node name="ButtonsContainer" type="HBoxContainer" parent="MenuContainer"]
 layout_mode = 2
