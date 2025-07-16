@@ -34,9 +34,23 @@ var player_turn_color = Color(0.08, 0.13, 0.18, 0.9)
 var ai_turn_color = Color(0.15, 0.08, 0.08, 0.9)
 var transition_time = 0.8
 
+var selected_card_index: int = 0
+var card_instances: Array = []
+var gamepad_mode: bool = false
+var last_input_was_gamepad: bool = false
+
+var confirmation_overlay: Control
+var confirmation_background: ColorRect
+var confirmation_panel: Panel
+var confirmation_label: Label
+var confirm_button: Button
+var cancel_button: Button
+var is_showing_confirmation: bool = false
+
 func _ready():
 	if end_turn_button:
 		end_turn_button.pressed.connect(_on_end_turn_pressed)
+		setup_button_navigation()
 	else:
 		push_error("EndTurnButton no encontrado en la escena")
 	
@@ -48,14 +62,182 @@ func _ready():
 	game_notification = game_notification_scene.instantiate()
 	add_child(game_notification)
 	
-	# Obtener la dificultad seleccionada del GameState
+	create_confirmation_dialog()
+	
 	difficulty = GameState.get_selected_difficulty()
 	print("Iniciando juego con dificultad: ", difficulty)
 	
 	await handle_scene_entrance()
 	
 	setup_game()
+
+func create_confirmation_dialog():
+	confirmation_overlay = Control.new()
+	confirmation_overlay.name = "ConfirmationOverlay"
+	confirmation_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	confirmation_overlay.visible = false
+	confirmation_overlay.z_index = 100
+	add_child(confirmation_overlay)
 	
+	confirmation_background = ColorRect.new()
+	confirmation_background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	confirmation_background.color = Color(0, 0, 0, 0.7)
+	confirmation_overlay.add_child(confirmation_background)
+	
+	confirmation_panel = Panel.new()
+	confirmation_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	confirmation_panel.custom_minimum_size = Vector2(400, 200)
+	confirmation_panel.size = Vector2(400, 200)
+	confirmation_panel.position = Vector2(-200, -100)
+	confirmation_overlay.add_child(confirmation_panel)
+	
+	var panel_bg = ColorRect.new()
+	panel_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	panel_bg.color = Color(0.15, 0.15, 0.25, 0.95)
+	confirmation_panel.add_child(panel_bg)
+	
+	var vbox = VBoxContainer.new()
+	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	vbox.add_theme_constant_override("separation", 20)
+	confirmation_panel.add_child(vbox)
+	
+	var spacer1 = Control.new()
+	spacer1.custom_minimum_size = Vector2(0, 20)
+	vbox.add_child(spacer1)
+	
+	confirmation_label = Label.new()
+	confirmation_label.text = "¿Volver al menú principal?\nSe perderá el progreso actual"
+	confirmation_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	confirmation_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	confirmation_label.add_theme_font_size_override("font_size", 16)
+	confirmation_label.add_theme_color_override("font_color", Color.WHITE)
+	confirmation_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	vbox.add_child(confirmation_label)
+	
+	var button_container = HBoxContainer.new()
+	button_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	button_container.add_theme_constant_override("separation", 30)
+	vbox.add_child(button_container)
+	
+	confirm_button = Button.new()
+	confirm_button.text = "✓ SÍ, VOLVER"
+	confirm_button.custom_minimum_size = Vector2(140, 45)
+	confirm_button.add_theme_font_size_override("font_size", 14)
+	confirm_button.focus_mode = Control.FOCUS_ALL
+	button_container.add_child(confirm_button)
+	
+	cancel_button = Button.new()
+	cancel_button.text = "✗ CANCELAR"
+	cancel_button.custom_minimum_size = Vector2(140, 45)
+	cancel_button.add_theme_font_size_override("font_size", 14)
+	cancel_button.focus_mode = Control.FOCUS_ALL
+	button_container.add_child(cancel_button)
+	
+	var spacer2 = Control.new()
+	spacer2.custom_minimum_size = Vector2(0, 20)
+	vbox.add_child(spacer2)
+	
+	confirm_button.focus_neighbor_right = cancel_button.get_path()
+	cancel_button.focus_neighbor_left = confirm_button.get_path()
+	
+	confirm_button.pressed.connect(_on_confirm_exit)
+	cancel_button.pressed.connect(_on_cancel_exit)
+	
+	confirm_button.mouse_entered.connect(_on_confirmation_button_hover.bind(confirm_button))
+	cancel_button.mouse_entered.connect(_on_confirmation_button_hover.bind(cancel_button))
+	confirm_button.focus_entered.connect(_on_confirmation_button_focus.bind(confirm_button))
+	cancel_button.focus_entered.connect(_on_confirmation_button_focus.bind(cancel_button))
+
+func _on_confirmation_button_hover(button: Button):
+	play_safe_audio("play_card_hover_sound")
+	var tween = create_tween()
+	tween.tween_property(button, "scale", Vector2(1.05, 1.05), 0.1)
+	
+	if not button.mouse_exited.is_connected(_on_confirmation_button_unhover):
+		button.mouse_exited.connect(_on_confirmation_button_unhover.bind(button))
+
+func _on_confirmation_button_unhover(button: Button):
+	var tween = create_tween()
+	tween.tween_property(button, "scale", Vector2(1.0, 1.0), 0.1)
+
+func _on_confirmation_button_focus(button: Button):
+	play_safe_audio("play_card_hover_sound")
+	var tween = create_tween()
+	tween.tween_property(button, "modulate", Color(1.2, 1.2, 1.2, 1.0), 0.1)
+	
+	if not button.focus_exited.is_connected(_on_confirmation_button_unfocus):
+		button.focus_exited.connect(_on_confirmation_button_unfocus.bind(button))
+
+func _on_confirmation_button_unfocus(button: Button):
+	var tween = create_tween()
+	tween.tween_property(button, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.1)
+
+func show_exit_confirmation():
+	if is_showing_confirmation:
+		return
+	
+	is_showing_confirmation = true
+	confirmation_overlay.visible = true
+	confirmation_overlay.modulate.a = 0.0
+	
+	var tween = create_tween()
+	tween.tween_property(confirmation_overlay, "modulate:a", 1.0, 0.3)
+	
+	await tween.finished
+	
+	if gamepad_mode or last_input_was_gamepad:
+		cancel_button.grab_focus()
+	else:
+		cancel_button.grab_focus()
+
+func hide_exit_confirmation():
+	if not is_showing_confirmation:
+		return
+	
+	var tween = create_tween()
+	tween.tween_property(confirmation_overlay, "modulate:a", 0.0, 0.2)
+	
+	await tween.finished
+	
+	confirmation_overlay.visible = false
+	is_showing_confirmation = false
+
+func _on_confirm_exit():
+	play_safe_audio("play_notification_sound")
+	is_showing_confirmation = false
+	return_to_menu()
+
+func _on_cancel_exit():
+	play_safe_audio("play_card_hover_sound")
+	hide_exit_confirmation()
+
+func setup_button_navigation():
+	end_turn_button.focus_mode = Control.FOCUS_ALL
+	
+	end_turn_button.mouse_entered.connect(_on_button_hover.bind(end_turn_button))
+	end_turn_button.focus_entered.connect(_on_button_focus.bind(end_turn_button))
+	end_turn_button.mouse_exited.connect(_on_button_unhover.bind(end_turn_button))
+	end_turn_button.focus_exited.connect(_on_button_unfocus.bind(end_turn_button))
+
+func _on_button_hover(button: Button):
+	if not gamepad_mode:
+		play_safe_audio("play_card_hover_sound")
+
+func _on_button_focus(button: Button):
+	play_safe_audio("play_card_hover_sound")
+	
+	var tween = create_tween()
+	tween.tween_property(button, "modulate", Color(1.2, 1.2, 1.2, 1.0), 0.1)
+
+func _on_button_unhover(button: Button):
+	if not gamepad_mode:
+		var tween = create_tween()
+		tween.tween_property(button, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.1)
+
+func _on_button_unfocus(button: Button):
+	var tween = create_tween()
+	tween.tween_property(button, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.1)
+
 func handle_scene_entrance():
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -98,14 +280,12 @@ func setup_game():
 	ai = Player.new()
 	ai.is_ai = true
 	
-	# Establecer la dificultad ANTES de agregar al árbol
 	player.difficulty = difficulty
 	ai.difficulty = difficulty
 	
 	add_child(player)
 	add_child(ai)
 
-	# Conectar señales del jugador
 	player.hp_changed.connect(_on_player_hp_changed)
 	player.mana_changed.connect(_on_player_mana_changed)
 	player.shield_changed.connect(_on_player_shield_changed)
@@ -119,7 +299,6 @@ func setup_game():
 	player.auto_turn_ended.connect(_on_player_auto_turn_ended)
 	player.damage_taken.connect(_on_player_damage_taken)
 	
-	# Conectar señales de la IA
 	ai.hp_changed.connect(_on_ai_hp_changed)
 	ai.mana_changed.connect(_on_ai_mana_changed)
 	ai.shield_changed.connect(_on_ai_shield_changed)
@@ -140,8 +319,8 @@ func setup_game():
 func restart_game():
 	game_count += 1
 	turn_label.text = "¡Nueva partida!"
+	selected_card_index = 0
 	
-	# Obtener descripción de la dificultad actual
 	var difficulty_desc = GameBalance.get_difficulty_description(difficulty)
 	game_info_label.text = "Partida #" + str(game_count) + " | " + difficulty.to_upper()
 	
@@ -197,7 +376,10 @@ func update_hand_display():
 	for child in hand_container.get_children():
 		child.queue_free()
 	
-	for card_data in player.hand:
+	card_instances.clear()
+	
+	for i in range(player.hand.size()):
+		var card_data = player.hand[i]
 		var card_instance = card_scene.instantiate()
 		card_instance.set_card_data(card_data)
 		card_instance.card_clicked.connect(_on_card_clicked)
@@ -206,12 +388,35 @@ func update_hand_display():
 			card_instance.mouse_entered.connect(_on_card_hover)
 		
 		hand_container.add_child(card_instance)
+		card_instances.append(card_instance)
 		
 		var can_play = is_player_turn and player.can_play_card(card_data)
 		card_instance.set_playable(can_play)
+	
+	selected_card_index = clamp(selected_card_index, 0, max(0, card_instances.size() - 1))
+	update_card_selection()
+
+func update_card_selection():
+	if not gamepad_mode or not is_player_turn:
+		return
+		
+	for i in range(card_instances.size()):
+		var card = card_instances[i]
+		if i == selected_card_index:
+			card.modulate = Color(1.3, 1.3, 1.0, 1.0)
+			card.z_index = 15
+			card.scale = card.original_scale * 1.1
+		else:
+			if player.can_play_card(player.hand[i]):
+				card.modulate = Color.WHITE
+			else:
+				card.modulate = Color(0.4, 0.4, 0.4, 0.7)
+			card.z_index = 0
+			card.scale = card.original_scale
 
 func _on_card_hover():
-	play_safe_audio("play_card_hover_sound")
+	if not gamepad_mode:
+		play_safe_audio("play_card_hover_sound")
 
 func _on_card_clicked(card: Card):
 	if not is_player_turn:
@@ -228,6 +433,7 @@ func _on_card_clicked(card: Card):
 
 func start_player_turn():
 	is_player_turn = true
+	gamepad_mode = last_input_was_gamepad
 	
 	play_safe_audio("play_turn_change_sound", [true])
 	
@@ -240,18 +446,24 @@ func start_player_turn():
 	
 	turn_label.text = "Tu turno"
 	
-	# Información mejorada sin opción de cambiar dificultad
 	var difficulty_name = difficulty.to_upper()
-	game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty_name + " | [ESC] menú"
+	var control_hint = " | [A] jugar, [B] terminar, [X] reiniciar, [Y] menú" if gamepad_mode else " | [ESC] menú, [R] reiniciar"
+	game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty_name + control_hint
 	
 	update_turn_button_text()
 	update_damage_bonus_indicator()
 	
 	if end_turn_button:
 		end_turn_button.disabled = false
+		if gamepad_mode:
+			end_turn_button.grab_focus()
+	
+	selected_card_index = 0
+	update_card_selection()
 
 func start_ai_turn():
 	is_player_turn = false
+	gamepad_mode = false
 	
 	play_safe_audio("play_turn_change_sound", [false])
 	
@@ -262,10 +474,11 @@ func start_ai_turn():
 	turn_label.text = "Turno de la IA"
 	game_info_label.text = "La IA está jugando..."
 	
-	update_damage_bonus_indicator() 
+	update_damage_bonus_indicator()
 	
 	if end_turn_button:
 		end_turn_button.disabled = true
+		end_turn_button.release_focus()
 	
 	update_hand_display()
 	
@@ -282,7 +495,7 @@ func start_ai_turn():
 	start_player_turn()
 
 func update_turn_button_text():
-	if not end_turn_button:
+	if not end_turn_button or not player:
 		return
 		
 	var cards_played = player.get_cards_played()
@@ -296,7 +509,10 @@ func update_turn_button_text():
 	elif player.get_hand_size() == 0:
 		end_turn_button.text = "Sin cartas en mano"
 	else:
-		end_turn_button.text = "Terminar Turno"
+		if gamepad_mode:
+			end_turn_button.text = "🎮 Terminar Turno"
+		else:
+			end_turn_button.text = "Terminar Turno"
 
 func _on_end_turn_pressed():
 	if is_player_turn and end_turn_button:
@@ -336,7 +552,8 @@ func _on_player_cards_played_changed(cards_played: int, max_cards: int):
 	update_turn_button_text()
 	
 	var difficulty_name = difficulty.to_upper()
-	game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty_name + " | [ESC] menú"
+	var control_hint = " | [A] jugar, [B] terminar, [X] reiniciar, [Y] menú" if gamepad_mode else " | [ESC] menú, [R] reiniciar"
+	game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty_name + control_hint
 	
 	if cards_played >= max_cards:
 		turn_label.text = "¡Límite alcanzado!"
@@ -428,7 +645,6 @@ func _on_ai_deck_empty():
 func _on_player_died():
 	play_safe_audio("play_lose_sound")
 	
-	# Registrar resultado en GameState
 	GameState.add_game_result(false)
 	
 	if game_notification:
@@ -455,49 +671,102 @@ func _on_ai_died():
 	restart_game()
 
 func _input(event):
-	if event.is_action_pressed("restart_game"):
+	if is_showing_confirmation:
+		if event.is_action_pressed("ui_accept") or event.is_action_pressed("gamepad_accept"):
+			if confirm_button.has_focus():
+				_on_confirm_exit()
+			elif cancel_button.has_focus():
+				_on_cancel_exit()
+		elif event.is_action_pressed("ui_cancel") or event.is_action_pressed("gamepad_cancel"):
+			_on_cancel_exit()
+		elif event.is_action_pressed("ui_left"):
+			confirm_button.grab_focus()
+		elif event.is_action_pressed("ui_right"):
+			cancel_button.grab_focus()
+		return
+   
+	if event is InputEventJoypadButton or event is InputEventJoypadMotion:
+		if not last_input_was_gamepad:
+			last_input_was_gamepad = true
+			if is_player_turn and player:  # ← Validación agregada
+				gamepad_mode = true
+				update_card_selection()
+				update_turn_button_text()
+				var difficulty_name = difficulty.to_upper()
+				var cards_played = player.get_cards_played()
+				var max_cards = player.get_max_cards_per_turn()
+				game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty_name + " | [A] jugar, [B] terminar, [X] reiniciar, [Y] menú"
+	elif event is InputEventMouse:
+		if last_input_was_gamepad:
+			last_input_was_gamepad = false
+			if is_player_turn and player:  # ← Validación agregada
+				gamepad_mode = false
+				update_card_selection()
+				update_turn_button_text()
+				var difficulty_name = difficulty.to_upper()
+				var cards_played = player.get_cards_played()
+				var max_cards = player.get_max_cards_per_turn()
+				game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty_name + " | [ESC] menú, [R] reiniciar"
+   
+	if event.is_action_pressed("restart_game") or event.is_action_pressed("gamepad_restart"):
 		restart_game()
-	elif event.is_action_pressed("ui_cancel"):
-		# ESC para volver al menú
-		return_to_menu()
+	elif event.is_action_pressed("ui_cancel") or event.is_action_pressed("gamepad_exit"):
+		show_exit_confirmation()
+	elif is_player_turn and gamepad_mode and player:  # ← Validación agregada
+		if event.is_action_pressed("ui_left"):
+			if card_instances.size() > 0:
+				selected_card_index = (selected_card_index - 1) % card_instances.size()
+				update_card_selection()
+				play_safe_audio("play_card_hover_sound")
+		elif event.is_action_pressed("ui_right"):
+			if card_instances.size() > 0:
+				selected_card_index = (selected_card_index + 1) % card_instances.size()
+				update_card_selection()
+				play_safe_audio("play_card_hover_sound")
+		elif event.is_action_pressed("ui_accept") or event.is_action_pressed("gamepad_accept"):
+			if card_instances.size() > 0 and selected_card_index < card_instances.size():
+				var selected_card = card_instances[selected_card_index]
+				_on_card_clicked(selected_card)
+		elif event.is_action_pressed("gamepad_cancel"):
+			if end_turn_button and not end_turn_button.disabled:
+				_on_end_turn_pressed()
 
 func _on_player_damage_taken(damage_amount: int):
 	play_safe_audio("play_damage_sound", [damage_amount])
-	
+   
 	play_damage_effects(damage_amount)
 
 func play_damage_effects(damage_amount: int):
 	if is_screen_shaking:
 		return
-	
+   
 	var shake_intensity = min(damage_amount * 2.0, 8.0)
 	screen_shake(shake_intensity, 0.3)
 
 func screen_shake(intensity: float, duration: float):
 	if is_screen_shaking:
 		return
-	
+   
 	is_screen_shaking = true
-	
+   
 	var shake_count = 8
 	var time_per_shake = duration / shake_count
-	
+   
 	for i in range(shake_count):
 		var current_intensity = intensity * (1.0 - float(i) / shake_count)
 		var shake_x = randf_range(-current_intensity, current_intensity)
 		var shake_y = randf_range(-current_intensity, current_intensity)
 		var shake_position = original_ui_position + Vector2(shake_x, shake_y)
-		
+   	
 		var tween = create_tween()
 		tween.tween_property(ui_layer, "position", shake_position, time_per_shake)
 		await tween.finished
-	
+   
 	var final_tween = create_tween()
 	final_tween.tween_property(ui_layer, "position", original_ui_position, 0.1)
 	await final_tween.finished
-	
+   
 	is_screen_shaking = false
 
 func return_to_menu():
-	"""Vuelve al menú principal con transición suave"""
 	TransitionManager.fade_to_scene("res://scenes/MainMenu.tscn", 1.0)
