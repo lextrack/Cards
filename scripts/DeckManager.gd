@@ -56,21 +56,3 @@ static func get_card_rarity_text(card: CardData) -> String:
 			return "[ÉPICA]"
 		_:
 			return ""
-
-static func get_damage_bonus_for_turn(turn_number: int) -> int:
-	return GameBalance.get_damage_bonus(turn_number)
-
-static func is_special_damage_turn(turn_number: int) -> bool:
-	return GameBalance.is_damage_bonus_turn(turn_number)
-
-static func get_damage_bonus_info(turn_number: int) -> Dictionary:
-	var bonus = GameBalance.get_damage_bonus(turn_number)
-	var is_special = GameBalance.is_damage_bonus_turn(turn_number)
-	var description = GameBalance.get_damage_bonus_description(turn_number)
-	
-	return {
-		"bonus": bonus,
-		"is_special_turn": is_special,
-		"description": description,
-		"turn": turn_number
-	}

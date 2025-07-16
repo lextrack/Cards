@@ -119,7 +119,7 @@ func play_card_animation():
 func update_display():
 	name_label.text = card_data.card_name
 	cost_label.text = str(card_data.cost)
-	
+
 	var rarity_text = DeckManager.get_card_rarity_text(card_data)
 	description_label.text = card_data.description
 	rarity_label.text = rarity_text

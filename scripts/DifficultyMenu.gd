@@ -95,18 +95,15 @@ func animate_cards_entrance():
 	tween.tween_property(expert_card, "modulate:a", 1.0, 0.4)
 
 func setup_cards():
-	# Configurar el sistema de foco
 	normal_card.focus_mode = Control.FOCUS_ALL
 	hard_card.focus_mode = Control.FOCUS_ALL
 	expert_card.focus_mode = Control.FOCUS_ALL
 	
-	# Configurar la navegación entre tarjetas
 	normal_card.focus_neighbor_right = hard_card.get_path()
 	hard_card.focus_neighbor_left = normal_card.get_path()
 	hard_card.focus_neighbor_right = expert_card.get_path()
 	expert_card.focus_neighbor_left = hard_card.get_path()
 	
-	# Configurar navegación vertical
 	normal_card.focus_neighbor_bottom = start_button.get_path()
 	hard_card.focus_neighbor_bottom = start_button.get_path()
 	expert_card.focus_neighbor_bottom = start_button.get_path()
@@ -130,11 +127,9 @@ func setup_buttons():
 	back_button.pressed.connect(_on_back_pressed)
 	start_button.pressed.connect(_on_start_pressed)
 	
-	# Configurar navegación de botones
 	back_button.focus_neighbor_right = start_button.get_path()
 	start_button.focus_neighbor_left = back_button.get_path()
-	
-	# Conectar con las tarjetas
+
 	back_button.focus_neighbor_top = normal_card.get_path()
 	start_button.focus_neighbor_top = hard_card.get_path()
 

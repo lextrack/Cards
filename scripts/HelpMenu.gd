@@ -102,37 +102,7 @@ Reduce la vida del oponente a 0 para ganar la partida.
 • Cuando se agota el mazo, las cartas usadas se reintegran
 • Nunca te quedarás completamente sin opciones
 • La estrategia cambia según las cartas disponibles
-• En general, el reciclaje y retiro/robo de cartas es automático, no debes hacer nada""",
-
-"🎮 Controles": """[font_size=24][color=yellow]🕹️ CONTROLES DEL JUEGO[/color][/font_size]
-
-[font_size=18][color=orange]🎯 PARA NAVEGAR:[/color][/font_size]
-
-[font_size=18][color=white]⌨️ TECLADO:[/color][/font_size]
-- [color=cyan]Flechas:[/color] Navegar por menús y cartas
-- [color=cyan]Enter:[/color] Confirmar selección
-- [color=cyan]Escape:[/color] Cancelar/Volver/Menú principal
-
-[font_size=18][color=white]🎮 MANDO:[/color][/font_size]
-- [color=cyan]D-Pad/Stick izquierdo:[/color] Navegación de menús y cartas
-- [color=cyan]Botón A:[/color] Confirmar/Seleccionar
-- [color=cyan]Botón B:[/color] Cancelar/Volver
-
-[font_size=18][color=orange]🎯 CONTROLES EN PARTIDA:[/color][/font_size]
-[color=white]Con Mando:[/color]
-- [color=lime]Izquierda/Derecha:[/color] Navegar entre cartas
-- [color=lime]A:[/color] Jugar carta seleccionada
-- [color=lime]B:[/color] Terminar turno
-- [color=lime]X:[/color] Reiniciar partida
-- [color=lime]Y:[/color] Salir al menú principal
-- [color=lime]START:[/color] Ver mapeo de teclas
-
-[color=white]Con Teclado/Ratón:[/color]
-- [color=lime]Click en carta:[/color] Jugar carta
-- [color=lime]Click en "Terminar Turno":[/color] Finalizar turno
-- [color=lime]R:[/color] Reiniciar partida
-- [color=lime]ESC:[/color] Salir al menú principal
-- [color=lime]H:[/color] Ver mapeo de teclas"""
+• En general, el reciclaje y retiro/robo de cartas es automático, no debes hacer nada"""
 }
 
 func _ready():
