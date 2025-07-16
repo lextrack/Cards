@@ -24,7 +24,7 @@ Reduce la vida del oponente a 0 para ganar la partida.
 [font_size=18][color=lightblue]💎 RECURSOS:[/color][/font_size]
 • [color=red]VIDA[/color]: Si llega a 0, pierdes la partida
 • [color=cyan]MANÁ[/color]: Se usa para jugar cartas, se regenera cada turno
-• [color=orange]CARTAS[/color]: Tu arsenal: según la dificultad, puedes usar hasta 4 o 5 cartas por turno
+• [color=orange]CARTAS[/color]: Tu arsenal: según la dificultad, puedes usar hasta 4 o 5 cartas por turno. Las especiales brillan más
 • [color=white]MAZOS[/color]: Cantidad de cartas disponible (se repone automáticamente, nunca te faltan)""",
 
 	"🃏 Tipos de Cartas": """[font_size=24][color=yellow]🗂️ TIPOS DE CARTAS[/color][/font_size]

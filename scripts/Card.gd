@@ -18,12 +18,25 @@ extends Control
 @onready var art_bg = $CardBackground/VBox/ArtContainer/ArtBG
 
 signal card_clicked(card: Card)
+signal card_played(card: Card)
 
 var original_scale: Vector2
+var original_position: Vector2
 var is_hovered: bool = false
+var is_playable: bool = true
+var hover_tween: Tween
+var entrance_tween: Tween
+var epic_border_tween: Tween
+var playable_tween: Tween
+var has_played_epic_animation: bool = false
+var has_played_entrance: bool = false
 
 func _ready():
 	original_scale = scale
+	original_position = position
+	
+	play_entrance_animation()
+	
 	if card_data:
 		update_display()
 	
@@ -32,6 +45,76 @@ func _ready():
 	mouse_exited.connect(_on_mouse_exited)
 
 	set_mouse_filter_recursive(self)
+
+func play_entrance_animation():
+	if has_played_entrance:
+		return
+		
+	has_played_entrance = true
+	modulate.a = 0.0
+	scale = Vector2(0.8, 0.8)
+	position.y += 15
+	
+	if entrance_tween:
+		entrance_tween.kill()
+	
+	entrance_tween = create_tween()
+	entrance_tween.set_parallel(true)
+	entrance_tween.tween_property(self, "modulate:a", 1.0, 0.2)
+	entrance_tween.tween_property(self, "scale", original_scale, 0.15)
+	entrance_tween.tween_property(self, "position:y", original_position.y, 0.15)
+
+func play_selection_animation():
+	if not is_playable:
+		play_disabled_animation()
+		return
+		
+	if hover_tween:
+		hover_tween.kill()
+	
+	var select_tween = create_tween()
+	select_tween.set_parallel(true)
+	
+	select_tween.tween_property(self, "scale", original_scale * 1.15, 0.06)
+	select_tween.tween_property(self, "rotation", 0.04, 0.06)
+	
+	await select_tween.finished
+	
+	var return_tween = create_tween()
+	return_tween.set_parallel(true)
+	return_tween.tween_property(self, "scale", original_scale, 0.12)
+	return_tween.tween_property(self, "rotation", 0.0, 0.12)
+
+func play_disabled_animation():
+	var shake_tween = create_tween()
+	shake_tween.set_parallel(true)
+	
+	shake_tween.tween_property(self, "position:x", original_position.x + 3, 0.05)
+	shake_tween.tween_property(self, "position:x", original_position.x - 3, 0.05)
+	shake_tween.tween_property(self, "position:x", original_position.x + 2, 0.05)
+	shake_tween.tween_property(self, "position:x", original_position.x, 0.05)
+
+func play_card_animation():
+	card_played.emit(self)
+	
+	if hover_tween:
+		hover_tween.kill()
+	if entrance_tween:
+		entrance_tween.kill()
+	if epic_border_tween:
+		epic_border_tween.kill()
+	if playable_tween:
+		playable_tween.kill()
+	
+	var play_tween = create_tween()
+	play_tween.set_parallel(true)
+	
+	play_tween.tween_property(self, "position", position + Vector2(0, -25), 0.2)
+	play_tween.tween_property(self, "scale", Vector2(1.15, 1.15), 0.12)
+	play_tween.tween_property(self, "modulate:a", 0.0, 0.25)
+	
+	await play_tween.finished
+	queue_free()
 
 func update_display():
 	name_label.text = card_data.card_name
@@ -124,36 +207,64 @@ func get_rarity_colors() -> Dictionary:
 
 func _on_card_input(event: InputEvent):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		card_clicked.emit(self)
+		play_selection_animation()
+		if is_playable:
+			card_clicked.emit(self)
 
 func _on_mouse_entered():
-	if not is_hovered:
+	if not is_hovered and is_playable:
 		is_hovered = true
-		var tween = create_tween()
-		tween.set_parallel(true)
-		tween.tween_property(self, "scale", original_scale * 1.1, 0.2)
-		tween.tween_property(self, "z_index", 10, 0.1)
+		
+		if hover_tween:
+			hover_tween.kill()
+		
+		hover_tween = create_tween()
+		hover_tween.set_parallel(true)
+		hover_tween.tween_property(self, "scale", original_scale * 1.08, 0.12)
+		hover_tween.tween_property(self, "z_index", 10, 0.06)
 
 func _on_mouse_exited():
 	if is_hovered:
 		is_hovered = false
-		var tween = create_tween()
-		tween.set_parallel(true)
-		tween.tween_property(self, "scale", original_scale, 0.2)
-		tween.tween_property(self, "z_index", 0, 0.1)
+		
+		if hover_tween:
+			hover_tween.kill()
+		
+		hover_tween = create_tween()
+		hover_tween.set_parallel(true)
+		hover_tween.tween_property(self, "scale", original_scale, 0.12)
+		hover_tween.tween_property(self, "z_index", 0, 0.06)
 
 func set_card_data(data: CardData):
 	card_data = data
 	if is_inside_tree():
 		update_display()
-
-		call_deferred("play_epic_entrance_animation")
+		if not has_played_epic_animation:
+			call_deferred("play_epic_entrance_animation")
 
 func set_playable(playable: bool):
+	is_playable = playable
+	
+	if playable_tween:
+		playable_tween.kill()
+	
+	playable_tween = create_tween()
+	
 	if playable:
-		modulate = Color.WHITE
+		playable_tween.tween_property(self, "modulate", Color.WHITE, 0.2)
+		mouse_filter = Control.MOUSE_FILTER_PASS
 	else:
-		modulate = Color(0.5, 0.5, 0.5, 0.8)
+		playable_tween.tween_property(self, "modulate", Color(0.4, 0.4, 0.4, 0.7), 0.15)
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+		if is_hovered:
+			is_hovered = false
+			if hover_tween:
+				hover_tween.kill()
+			hover_tween = create_tween()
+			hover_tween.set_parallel(true)
+			hover_tween.tween_property(self, "scale", original_scale, 0.12)
+			hover_tween.tween_property(self, "z_index", 0, 0.06)
 
 func set_mouse_filter_recursive(node: Node):
 	if node is Control:
@@ -166,43 +277,47 @@ func set_mouse_filter_recursive(node: Node):
 func apply_rarity_effects(rarity: String):
 	match rarity:
 		"uncommon":
-			name_label.modulate = Color(0.3, 1.8, 0.6, 1.0)
-			cost_label.modulate = Color(0.4, 1.9, 0.7, 1.0)
-			card_border.modulate = Color(1.2, 1.4, 1.1, 1.0)
+			name_label.modulate = Color(0.7, 1.4, 0.9, 1.0)
+			cost_label.modulate = Color(0.8, 1.5, 1.0, 1.0)
+			card_border.modulate = Color(1.05, 1.2, 1.03, 1.0)
 		"rare":
-			name_label.modulate = Color(0.4, 0.8, 2.2, 1.0)
-			cost_label.modulate = Color(0.5, 0.9, 2.4, 1.0)
+			name_label.modulate = Color(0.8, 1.0, 1.6, 1.0)
+			cost_label.modulate = Color(0.9, 1.1, 1.7, 1.0)
 			stat_value.modulate = stat_value.modulate * Color(0.7, 1.0, 1.8, 1.0)
-			card_icon.modulate = Color(0.6, 0.9, 1.6, 1.0)
-			card_border.modulate = Color(1.0, 1.3, 1.8, 1.0)
+			card_icon.modulate = Color(0.9, 1.0, 1.4, 1.0)
+			card_border.modulate = Color(1.0, 1.15, 1.5, 1.0)
 		"epic":
-			name_label.modulate = Color(2.4, 1.2, 2.6, 1.0)
-			cost_label.modulate = Color(2.6, 1.4, 2.2, 1.0)
+			name_label.modulate = Color(1.6, 1.1, 1.8, 1.0)
+			cost_label.modulate = Color(1.7, 1.2, 1.6, 1.0)
 			stat_value.modulate = stat_value.modulate * Color(2.2, 1.3, 2.0, 1.0)
-			card_icon.modulate = Color(2.0, 1.4, 2.4, 1.0)
-			modulate = Color(1.4, 1.1, 1.3, 1.0)
+			card_icon.modulate = Color(1.5, 1.2, 1.7, 1.0)
+			modulate = Color(1.15, 1.05, 1.2, 1.0)
 			card_border.modulate = Color(1.6, 1.2, 1.5, 1.0)
 
-			var tween = create_tween()
-			tween.set_loops()
-			tween.tween_property(card_border, "modulate", Color(2.0, 1.5, 1.8, 1.0), 1.0)
-			tween.tween_property(card_border, "modulate", Color(1.6, 1.2, 1.5, 1.0), 1.0)
+			if epic_border_tween:
+				epic_border_tween.kill()
+			epic_border_tween = create_tween()
+			epic_border_tween.set_loops()
+			epic_border_tween.tween_property(card_border, "modulate", Color(1.4, 1.2, 1.5, 1.0), 0.6)
+			epic_border_tween.tween_property(card_border, "modulate", Color(1.2, 1.1, 1.3, 1.0), 0.6)
 		_:
 			pass
 			
 func play_epic_entrance_animation():
-	if not card_data:
+	if not card_data or has_played_epic_animation:
 		return
 	
 	var rarity = CardProbability.calculate_card_rarity(card_data.damage, card_data.heal, card_data.shield)
 	if rarity == "epic":
-		var tween = create_tween()
-		tween.set_loops(3)
-		tween.set_parallel(true)
+		has_played_epic_animation = true
 		
-		tween.tween_property(self, "scale", original_scale * 1.15, 0.3)
-		tween.tween_property(self, "scale", original_scale, 0.3)
+		var epic_tween = create_tween()
+		epic_tween.set_loops(3)
+		epic_tween.set_parallel(true)
+		
+		epic_tween.tween_property(self, "scale", original_scale * 1.12, 0.18)
+		epic_tween.tween_property(self, "scale", original_scale, 0.18)
 		
 		var original_modulate = modulate
-		tween.tween_property(self, "modulate", Color(1.3, 1.1, 1.4, 1.0), 0.3)
-		tween.tween_property(self, "modulate", original_modulate, 0.3)
+		epic_tween.tween_property(self, "modulate", Color(1.25, 1.08, 1.3, 1.0), 0.18)
+		epic_tween.tween_property(self, "modulate", original_modulate, 0.18)
