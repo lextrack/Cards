@@ -144,7 +144,29 @@ func play_card(card: CardData, target: Player = null) -> bool:
 		"shield":
 			add_shield(card.shield)
 	
+	call_deferred("check_auto_end_turn")
+	
 	return true
+
+func check_auto_end_turn():
+	if cards_played_this_turn >= get_max_cards_per_turn():
+		#auto_turn_ended.emit("limit_reached")
+		return true
+	
+	if hand.size() == 0:
+		auto_turn_ended.emit("no_cards")
+		return true
+	
+	var playable_cards = []
+	for card in hand:
+		if can_play_card(card):
+			playable_cards.append(card)
+	
+	if playable_cards.size() == 0 and current_mana > 0:
+		auto_turn_ended.emit("no_mana")
+		return true
+	
+	return false
 
 func get_hand_size() -> int:
 	return hand.size()

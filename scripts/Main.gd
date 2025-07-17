@@ -41,7 +41,6 @@ func _ready():
 	await initialize_game()
 
 func initialize_game():
-	"""Initializes all game components"""
 	_setup_components()
 	_setup_notifications()
 	_setup_controls_panel()
@@ -54,7 +53,6 @@ func initialize_game():
 	setup_game()
 	
 func _validate_card_system():
-	"""Validates that the card system works correctly"""
 	var validation = CardProbability.run_full_validation()
 	
 	if not validation.database_valid:
@@ -73,12 +71,10 @@ func _validate_card_system():
 	if validation.database_valid and validation.generation_working:
 		print("✅ Card system validated successfully")
 		
-		# Show statistics
 		var counts = CardDatabase.get_card_count()
 		print("📊 Available cards: ", counts.total, " (", counts.attack, " attacks, ", counts.heal, " heals, ", counts.shield, " shields)")
 
 func _setup_components():
-	"""Sets up main components"""
 	ui_manager = UIManager.new()
 	ui_manager.setup(self)
 	
@@ -95,24 +91,45 @@ func _setup_components():
 	confirmation_dialog.setup(self)
 
 func _setup_notifications():
-	"""Sets up notifications"""
 	ai_notification = ai_notification_scene.instantiate()
 	game_notification = game_notification_scene.instantiate()
 	add_child(ai_notification)
 	add_child(game_notification)
+	
+	if OS.is_debug_build():
+		ai_notification.ai_notification_shown.connect(_on_ai_notification_shown)
+		ai_notification.ai_notification_hidden.connect(_on_ai_notification_hidden)
+		
+func _on_ai_notification_shown(card_name: String):
+	print("🤖 AI notification shown: ", card_name)
+
+func _on_ai_notification_hidden():
+	print("🤖 AI notification hidden")
+
+# REVISAR ESTO LUEGO
+func cleanup_notifications():
+	if ai_notification:
+		ai_notification.force_close()
+	
+	if game_notification:
+		game_notification.clear_all_notifications()
+	
+	if controls_panel:
+		controls_panel.force_hide()
+	
+	if OS.is_debug_build():
+		print("🧹 Notifications cleaned up")
+#######################################################
 
 func _setup_controls_panel():
-	"""Sets up controls panel"""
 	controls_panel = controls_panel_scene.instantiate()
 	ui_layer.add_child(controls_panel)
 
 func _load_difficulty():
-	"""Loads selected difficulty"""
 	difficulty = GameState.get_selected_difficulty()
 	print("Starting game with difficulty: ", difficulty)
 
 func handle_scene_entrance():
-	"""Handles scene entrance with transitions"""
 	await get_tree().process_frame
 	await get_tree().process_frame
 	
@@ -126,14 +143,12 @@ func handle_scene_entrance():
 		_play_direct_entrance()
 
 func _play_direct_entrance():
-	"""Direct entrance animation"""
 	modulate.a = 0.0
 	var tween = create_tween()
 	tween.tween_property(self, "modulate:a", 1.0, 0.5)
 	await tween.finished
 
 func setup_game():
-	"""Sets up a new game"""
 	game_manager.setup_new_game(difficulty)
 	player = game_manager.player
 	ai = game_manager.ai
@@ -149,17 +164,14 @@ func setup_game():
 	start_player_turn()
 	
 func _analyze_starting_decks():
-	"""Basic analysis without new system dependencies"""
 	print("\n🎴 BASIC DECK ANALYSIS:")
 	
-	# Simple player analysis
 	if player:
 		print("👤 PLAYER (", difficulty.to_upper(), "):")
 		print("   Cards in deck: ", player.deck.size())
 		print("   Cards in hand: ", player.hand.size())
 		print("   Discarded cards: ", player.discard_pile.size())
 		
-		# Count basic types
 		var attack_count = 0
 		var heal_count = 0
 		var shield_count = 0
@@ -177,7 +189,6 @@ func _analyze_starting_decks():
 		
 		print("   Distribution: ", attack_count, " attacks, ", heal_count, " heals, ", shield_count, " shields")
 	
-	# Simple AI analysis
 	if ai:
 		print("🤖 AI (", difficulty.to_upper(), "):")
 		print("   Cards in deck: ", ai.deck.size())
@@ -185,7 +196,6 @@ func _analyze_starting_decks():
 		print("   Discarded cards: ", ai.discard_pile.size())
 					
 func debug_analyze_current_decks():
-	"""Method to analyze decks during game (use in debug console)"""
 	if not OS.is_debug_build():
 		print("Only available in debug builds")
 		return
@@ -201,7 +211,6 @@ func debug_analyze_current_decks():
 		ai.debug_print_deck_info()
 
 func _connect_player_signals():
-	"""Connects player signals"""
 	player.hp_changed.connect(ui_manager.update_player_hp)
 	player.mana_changed.connect(ui_manager.update_player_mana)
 	player.shield_changed.connect(ui_manager.update_player_shield)
@@ -215,7 +224,6 @@ func _connect_player_signals():
 	player.damage_taken.connect(_on_player_damage_taken)
 
 func _connect_ai_signals():
-	"""Connects AI signals"""
 	ai.hp_changed.connect(ui_manager.update_ai_hp)
 	ai.mana_changed.connect(ui_manager.update_ai_mana)
 	ai.shield_changed.connect(ui_manager.update_ai_shield)
@@ -224,7 +232,6 @@ func _connect_ai_signals():
 	ai.ai_card_played.connect(_on_ai_card_played)
 
 func start_player_turn():
-	"""Starts player turn"""
 	is_player_turn = true
 	input_manager.start_player_turn()
 	
@@ -235,7 +242,6 @@ func start_player_turn():
 	controls_panel.update_cards_available(player.hand.size() > 0)
 
 func start_ai_turn():
-	"""Starts AI turn"""
 	is_player_turn = false
 	input_manager.start_ai_turn()
 	
@@ -253,7 +259,8 @@ func start_ai_turn():
 	start_player_turn()
 
 func restart_game():
-	"""Restarts the complete game"""
+	cleanup_notifications()
+	
 	game_count += 1
 	game_manager.restart_game(game_count, difficulty)
 	audio_helper.play_background_music()
@@ -262,7 +269,6 @@ func restart_game():
 	setup_game()
 
 func _on_player_damage_taken(damage_amount: int):
-	"""Handles when player takes damage"""
 	audio_helper.play_damage_sound(damage_amount)
 	ui_manager.play_damage_effects(damage_amount)
 
@@ -271,6 +277,8 @@ func _on_player_hand_changed():
 	ui_manager.update_turn_button_text(player, end_turn_button, input_manager.gamepad_mode)
 	
 	if is_player_turn and player.get_hand_size() == 0:
+		# ✅ Emitir señal para sin cartas
+		game_notification.show_auto_end_turn_notification("no_cards")
 		await game_manager.end_turn_no_cards()
 		start_ai_turn()
 
@@ -280,9 +288,11 @@ func _on_player_cards_played_changed(cards_played: int, max_cards: int):
 	ui_manager.update_cards_played_info(cards_played, max_cards, difficulty)
 	
 	if cards_played >= max_cards:
+		#game_notification.show_auto_end_turn_notification("limit_reached")
 		await game_manager.end_turn_limit_reached()
 		start_ai_turn()
 	elif is_player_turn and player.get_hand_size() == 0:
+		game_notification.show_auto_end_turn_notification("no_cards")
 		await game_manager.end_turn_no_cards()
 		start_ai_turn()
 
@@ -291,12 +301,10 @@ func _on_card_drawn(player_name: String, cards_count: int, from_deck: bool):
 	game_notification.show_card_draw_notification(player_name, cards_count, from_deck)
 
 func _on_player_card_drawn(cards_count: int, from_deck: bool):
-	"""Handles when player draws cards"""
 	audio_helper.play_card_draw_sound()
 	game_notification.show_card_draw_notification("Player", cards_count, from_deck)
 
 func _on_turn_changed(turn_num: int, damage_bonus: int):
-	"""Handles turn change and damage bonus"""
 	if damage_bonus > 0 and GameBalance.is_damage_bonus_turn(turn_num):
 		audio_helper.play_bonus_sound()
 		game_notification.show_damage_bonus_notification(turn_num, damage_bonus)
@@ -315,8 +323,16 @@ func _on_deck_reshuffled(player_name: String):
 
 func _on_auto_turn_ended(reason: String):
 	game_notification.show_auto_end_turn_notification(reason)
+	await get_tree().create_timer(0.5).timeout
+	
+	if game_manager.should_restart_for_no_cards():
+		await game_manager.restart_for_no_cards()
+		return
+	
+	start_ai_turn()
 
 func _on_player_died():
+	cleanup_notifications()
 	audio_helper.play_lose_sound()
 	GameState.add_game_result(false)
 	game_notification.show_game_end_notification("Defeat", "hp_zero")
@@ -328,6 +344,7 @@ func _on_ai_card_played(card: CardData):
 	ai_notification.show_card_notification(card, "AI")
 
 func _on_ai_died():
+	cleanup_notifications()
 	audio_helper.play_win_sound()
 	GameState.add_game_result(true)
 	game_notification.show_game_end_notification("Victory!", "hp_zero")
@@ -353,6 +370,8 @@ func _on_end_turn_pressed():
 	end_turn_button.release_focus()
 	audio_helper.play_notification_sound()
 	
+	game_notification.show_auto_end_turn_notification("pass_turn")
+	
 	if game_manager.should_restart_for_no_cards():
 		await game_manager.restart_for_no_cards()
 		return
@@ -370,4 +389,5 @@ func show_exit_confirmation():
 	confirmation_dialog.show()
 
 func return_to_menu():
+	cleanup_notifications()
 	TransitionManager.fade_to_scene("res://scenes/MainMenu.tscn", 1.0)

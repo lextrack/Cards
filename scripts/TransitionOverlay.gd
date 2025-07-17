@@ -22,7 +22,7 @@ func _ready():
 		push_error("LoadingIcon node not found in TransitionOverlay")
 		return
 	
-	loading_icon.pivot_offset = Vector2(64, 64)
+	#loading_icon.pivot_offset = Vector2(64, 64)
 	
 	overlay.color.a = 0.0
 	loading_container.modulate.a = 0.0
