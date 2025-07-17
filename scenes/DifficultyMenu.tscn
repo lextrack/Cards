@@ -72,7 +72,7 @@ layout_mode = 2
 
 [node name="DifficultyContainer" type="HBoxContainer" parent="MenuContainer"]
 layout_mode = 2
-size_flags_vertical = 3
+size_flags_vertical = 6
 alignment = 1
 
 [node name="NormalContainer" type="VBoxContainer" parent="MenuContainer/DifficultyContainer"]
@@ -100,8 +100,9 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 15.0
+offset_top = -1.0
 offset_right = -15.0
-offset_bottom = -2.0
+offset_bottom = -3.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -183,8 +184,9 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 15.0
+offset_top = -1.0
 offset_right = -15.0
-offset_bottom = -2.0
+offset_bottom = -3.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -266,8 +268,9 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 15.0
+offset_top = -1.0
 offset_right = -15.0
-offset_bottom = -2.0
+offset_bottom = -3.0
 grow_horizontal = 2
 grow_vertical = 2
 

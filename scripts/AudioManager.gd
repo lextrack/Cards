@@ -1,18 +1,15 @@
 class_name AudioManager
 extends Node
 
-# Card Sounds
 @onready var card_play_player = $CardSounds/CardPlayPlayer
 @onready var card_draw_player = $CardSounds/CardDrawPlayer
 @onready var card_hover_player = $CardSounds/CardHoverPlayer
 
-# Combat Sounds
 @onready var attack_player = $CombatSounds/AttackPlayer
 @onready var heal_player = $CombatSounds/HealPlayer
 @onready var shield_player = $CombatSounds/ShieldPlayer
 @onready var damage_player = $CombatSounds/DamagePlayer
 
-# Game Sounds
 @onready var turn_change_player = $GameSounds/TurnChangePlayer
 @onready var win_player = $GameSounds/WinPlayer
 @onready var lose_player = $GameSounds/LosePlayer
