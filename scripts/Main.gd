@@ -95,16 +95,6 @@ func _setup_notifications():
 	game_notification = game_notification_scene.instantiate()
 	add_child(ai_notification)
 	add_child(game_notification)
-	
-	if OS.is_debug_build():
-		ai_notification.ai_notification_shown.connect(_on_ai_notification_shown)
-		ai_notification.ai_notification_hidden.connect(_on_ai_notification_hidden)
-		
-func _on_ai_notification_shown(card_name: String):
-	print("🤖 AI notification shown: ", card_name)
-
-func _on_ai_notification_hidden():
-	print("🤖 AI notification hidden")
 
 func cleanup_notifications():
 	if ai_notification:

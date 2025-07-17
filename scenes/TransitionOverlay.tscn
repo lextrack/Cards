@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://b6lblhgqcudee"]
+[gd_scene load_steps=2 format=3 uid="uid://b6lblhgqcudee"]
 
 [ext_resource type="Script" uid="uid://b3pl0rfe1vekj" path="res://scripts/TransitionOverlay.gd" id="1_lakim"]
-[ext_resource type="Texture2D" uid="uid://blergv66gkryl" path="res://assets/ui/loading_icon.png" id="2_loading"]
 
 [node name="TransitionOverlay" type="CanvasLayer"]
 layer = 1000
@@ -36,6 +35,5 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(64, 64)
-texture = ExtResource("2_loading")
 expand_mode = 1
 stretch_mode = 5

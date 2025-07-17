@@ -38,12 +38,30 @@ var expert_colors = {
 func _ready():
 	setup_cards()
 	setup_buttons()
+
+	_setup_default_selection()
 	
 	await handle_scene_entrance()
+	
+	_ensure_normal_selected()
 
-	select_difficulty("normal")
+func _setup_default_selection():
+	selected_difficulty = "normal"
+	
+	normal_bg.color = normal_colors.selected
+	hard_bg.color = hard_colors.normal
+	expert_bg.color = expert_colors.normal
+	
+	update_start_button_text()
+	
+	normal_card.modulate = Color(1.1, 1.1, 1.05, 1.0)
+	hard_card.modulate = Color(1.0, 1.0, 1.0, 1.0)
+	expert_card.modulate = Color(1.0, 1.0, 1.0, 1.0)
 
-	normal_card.grab_focus()
+func _ensure_normal_selected():
+	if selected_difficulty == "normal":
+		select_difficulty("normal")
+		normal_card.grab_focus()
 
 func handle_scene_entrance():
 	await get_tree().process_frame
@@ -73,6 +91,9 @@ func play_entrance_animation():
 	animate_cards_entrance()
 
 func animate_cards_entrance():
+	var original_normal_color = normal_bg.color
+	var original_normal_modulate = normal_card.modulate
+	
 	normal_card.position.y -= 50
 	hard_card.position.y -= 50
 	expert_card.position.y -= 50
@@ -84,15 +105,21 @@ func animate_cards_entrance():
 	tween.set_parallel(true)
 	
 	tween.tween_property(normal_card, "position:y", normal_card.position.y + 50, 0.4)
-	tween.tween_property(normal_card, "modulate:a", 1.0, 0.4)
+	tween.tween_property(normal_card, "modulate:a", original_normal_modulate.a, 0.4)
 
 	await get_tree().create_timer(0.15).timeout
+
 	tween.tween_property(hard_card, "position:y", hard_card.position.y + 50, 0.4)
 	tween.tween_property(hard_card, "modulate:a", 1.0, 0.4)
 	
 	await get_tree().create_timer(0.15).timeout
 	tween.tween_property(expert_card, "position:y", expert_card.position.y + 50, 0.4)
 	tween.tween_property(expert_card, "modulate:a", 1.0, 0.4)
+	
+	await tween.finished
+	
+	normal_bg.color = original_normal_color
+	normal_card.modulate = original_normal_modulate
 
 func setup_cards():
 	normal_card.focus_mode = Control.FOCUS_ALL
@@ -202,31 +229,34 @@ func _on_difficulty_selected(difficulty: String):
 	select_difficulty(difficulty)
 
 func select_difficulty(difficulty: String):
-	if selected_difficulty == difficulty:
-		return
-		
+	var was_same_difficulty = selected_difficulty == difficulty
 	selected_difficulty = difficulty
-	play_ui_sound("select")
+	
+	if not was_same_difficulty:
+		play_ui_sound("select")
 	
 	update_card_colors("normal")
 	update_card_colors("hard")
 	update_card_colors("expert")
 	
 	animate_selected_card(difficulty)
-	
 	update_start_button_text()
 
 func update_card_colors(difficulty: String):
 	var card_bg = get_card_bg(difficulty)
+	var card_node = get_card_node(difficulty)
 	var colors = get_colors(difficulty)
 	
-	if not card_bg:
+	if not card_bg or not card_node:
 		return
 	
 	var target_color = colors.selected if selected_difficulty == difficulty else colors.normal
+	var target_modulate = Color(1.1, 1.1, 1.05, 1.0) if selected_difficulty == difficulty else Color(1.0, 1.0, 1.0, 1.0)
 	
 	var tween = create_tween()
+	tween.set_parallel(true)
 	tween.tween_property(card_bg, "color", target_color, 0.3)
+	tween.tween_property(card_node, "modulate", target_modulate, 0.3)
 
 func animate_selected_card(difficulty: String):
 	var card = get_card_node(difficulty)
@@ -235,8 +265,12 @@ func animate_selected_card(difficulty: String):
 		var tween = create_tween()
 		tween.set_parallel(true)
 		
-		tween.tween_property(card, "scale", Vector2(1.05, 1.05), 0.15)
-		tween.tween_property(card, "scale", Vector2(1.0, 1.0), 0.15)
+		tween.tween_property(card, "scale", Vector2(1.08, 1.08), 0.12)
+		tween.tween_property(card, "scale", Vector2(1.0, 1.0), 0.12)
+		
+		var original_modulate = card.modulate
+		tween.tween_property(card, "modulate", Color(1.2, 1.2, 1.1, 1.0), 0.1)
+		tween.tween_property(card, "modulate", original_modulate, 0.1)
 
 func get_card_node(difficulty: String) -> Control:
 	match difficulty:
@@ -251,7 +285,11 @@ func get_card_node(difficulty: String) -> Control:
 
 func update_start_button_text():
 	var difficulty_name = selected_difficulty.to_upper()
-	start_button.text = "🎮 JUGAR " + difficulty_name
+	start_button.text = "🎮 PLAY " + difficulty_name
+	
+	var tween = create_tween()
+	tween.tween_property(start_button, "modulate", Color(1.15, 1.15, 1.0, 1.0), 0.1)
+	tween.tween_property(start_button, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.2)
 
 func _on_back_pressed():
 	if is_transitioning:
@@ -270,6 +308,10 @@ func _on_start_pressed():
 	play_ui_sound("button_click")
 	
 	GameState.selected_difficulty = selected_difficulty
+	
+	var tween = create_tween()
+	tween.tween_property(start_button, "scale", Vector2(1.1, 1.1), 0.1)
+	tween.tween_property(start_button, "scale", Vector2(1.0, 1.0), 0.1)
 	
 	TransitionManager.fade_to_scene("res://scenes/Main.tscn", 1.2)
 

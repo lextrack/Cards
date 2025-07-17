@@ -25,20 +25,19 @@ script = ExtResource("2_vcsgt")
 
 [node name="CardPlayPlayer" type="AudioStreamPlayer" parent="AudioManager/CardSounds"]
 stream = ExtResource("2_rarhs")
-volume_db = 2.0
+volume_db = -3.0
 
 [node name="CardDrawPlayer" type="AudioStreamPlayer" parent="AudioManager/CardSounds"]
 stream = ExtResource("3_vcsgt")
-volume_db = 8.0
+volume_db = 9.0
 
 [node name="CardHoverPlayer" type="AudioStreamPlayer" parent="AudioManager/CardSounds"]
-volume_db = 5.0
 
 [node name="CombatSounds" type="Node" parent="AudioManager"]
 
 [node name="AttackPlayer" type="AudioStreamPlayer" parent="AudioManager/CombatSounds"]
 stream = ExtResource("4_c01mt")
-volume_db = 7.0
+volume_db = 5.0
 
 [node name="HealPlayer" type="AudioStreamPlayer" parent="AudioManager/CombatSounds"]
 stream = ExtResource("7_lhr70")
@@ -55,7 +54,6 @@ volume_db = -10.0
 [node name="GameSounds" type="Node" parent="AudioManager"]
 
 [node name="TurnChangePlayer" type="AudioStreamPlayer" parent="AudioManager/GameSounds"]
-volume_db = -1.0
 
 [node name="WinPlayer" type="AudioStreamPlayer" parent="AudioManager/GameSounds"]
 volume_db = 5.0
@@ -67,7 +65,6 @@ volume_db = 3.0
 volume_db = -2.0
 
 [node name="NotificationPlayer" type="AudioStreamPlayer" parent="AudioManager/GameSounds"]
-volume_db = -4.0
 
 [node name="BonusPlayer" type="AudioStreamPlayer" parent="AudioManager/GameSounds"]
 volume_db = 2.0
