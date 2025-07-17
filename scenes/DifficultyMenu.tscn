@@ -66,10 +66,6 @@ theme_override_font_sizes/font_size = 16
 text = "Elige tu nivel de desafío"
 horizontal_alignment = 1
 
-[node name="Spacer1" type="Control" parent="MenuContainer"]
-custom_minimum_size = Vector2(0, 30)
-layout_mode = 2
-
 [node name="DifficultyContainer" type="HBoxContainer" parent="MenuContainer"]
 layout_mode = 2
 size_flags_vertical = 6
@@ -136,8 +132,8 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.9, 0.7, 1)
 theme_override_font_sizes/font_size = 12
-text = "35 HP | 10 Maná
-2 cartas por turno | 5 en mano"
+text = "44 HP | 10 Maná
+2 cartas por turno | 4 en mano"
 horizontal_alignment = 1
 
 [node name="AIStats" type="Label" parent="MenuContainer/DifficultyContainer/NormalContainer/NormalCard/NormalContent/NormalStats"]
@@ -151,8 +147,8 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.7, 1)
 theme_override_font_sizes/font_size = 12
-text = "35 HP | 10 Maná
-2 cartas | Equilibrada"
+text = "44 HP | 10 Maná
+2 cartas por turno| Equilibrada"
 horizontal_alignment = 1
 
 [node name="Spacer2" type="Control" parent="MenuContainer/DifficultyContainer"]
@@ -220,7 +216,7 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.9, 0.7, 1)
 theme_override_font_sizes/font_size = 12
-text = "33 HP | 10 Maná
+text = "44 HP | 10 Maná
 1 carta por turno | 5 en mano"
 horizontal_alignment = 1
 
@@ -235,8 +231,8 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.7, 1)
 theme_override_font_sizes/font_size = 12
-text = "35 HP | 10 Maná
-2 cartas | Agresiva"
+text = "45 HP | 10 Maná
+2 cartas por turno | Agresiva"
 horizontal_alignment = 1
 
 [node name="Spacer3" type="Control" parent="MenuContainer/DifficultyContainer"]
@@ -304,8 +300,8 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.9, 0.7, 1)
 theme_override_font_sizes/font_size = 12
-text = "30 HP | 8 Maná
-1 carta por turno | 4 en mano"
+text = "42 HP | 9 Maná
+1 carta por turno | 6 en mano"
 horizontal_alignment = 1
 
 [node name="AIStats" type="Label" parent="MenuContainer/DifficultyContainer/ExpertContainer/ExpertCard/ExpertContent/ExpertStats"]
@@ -319,8 +315,8 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.7, 1)
 theme_override_font_sizes/font_size = 12
-text = "38 HP | 12 Maná
-3 cartas | Brutal"
+text = "45 HP | 11 Maná
+3 cartas por turno | Brutal"
 horizontal_alignment = 1
 
 [node name="ButtonsContainer" type="HBoxContainer" parent="MenuContainer"]
