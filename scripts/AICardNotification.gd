@@ -21,18 +21,18 @@ func show_card_notification(card: CardData, player_name: String = "IA"):
 	
 	is_showing = true
 	
-	card_name.text = player_name + " jugó: " + card.card_name
-	card_cost.text = "Costo: " + str(card.cost) + " maná"
+	card_name.text = player_name + " played: " + card.card_name
+	card_cost.text = "Cost: " + str(card.cost) + " mana"
 	
 	match card.card_type:
 		"attack":
-			card_effect.text = "⚔️ Daño: " + str(card.damage)
+			card_effect.text = "⚔️ Damage: " + str(card.damage)
 			background.color = Color(0.9, 0.2, 0.2, 0.95)
 		"heal":
-			card_effect.text = "💚 Cura: " + str(card.heal)
+			card_effect.text = "💚 Heal: " + str(card.heal)
 			background.color = Color(0.2, 0.9, 0.2, 0.95)
 		"shield":
-			card_effect.text = "🛡️ Escudo: " + str(card.shield)
+			card_effect.text = "🛡️ Shield: " + str(card.shield)
 			background.color = Color(0.2, 0.4, 0.9, 0.95)
 		_:
 			card_effect.text = card.description

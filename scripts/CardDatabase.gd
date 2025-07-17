@@ -4,9 +4,9 @@ extends RefCounted
 # Definiciones de cartas organizadas por tipo y rareza
 static func get_attack_cards() -> Array[Dictionary]:
 	return [
-		# ATAQUES COMUNES
+		# COMMON ATTACKS
 		{
-			"name": "Golpe Básico",
+			"name": "Basic Strike",
 			"cost": 1,
 			"damage": 1,
 			"type": "attack",
@@ -14,7 +14,7 @@ static func get_attack_cards() -> Array[Dictionary]:
 			"weight": 100
 		},
 		{
-			"name": "Golpe Rápido",
+			"name": "Quick Strike",
 			"cost": 1,
 			"damage": 2,
 			"type": "attack",
@@ -22,7 +22,7 @@ static func get_attack_cards() -> Array[Dictionary]:
 			"weight": 80
 		},
 		{
-			"name": "Cuchillada",
+			"name": "Slash",
 			"cost": 2,
 			"damage": 3,
 			"type": "attack",
@@ -30,7 +30,7 @@ static func get_attack_cards() -> Array[Dictionary]:
 			"weight": 70
 		},
 		{
-			"name": "Espada",
+			"name": "Sword",
 			"cost": 2,
 			"damage": 4,
 			"type": "attack",
@@ -38,9 +38,9 @@ static func get_attack_cards() -> Array[Dictionary]:
 			"weight": 60
 		},
 		
-		# ATAQUES POCO COMUNES
+		# UNCOMMON ATTACKS
 		{
-			"name": "Espada Afilada",
+			"name": "Sharp Sword",
 			"cost": 3,
 			"damage": 5,
 			"type": "attack",
@@ -48,7 +48,7 @@ static func get_attack_cards() -> Array[Dictionary]:
 			"weight": 40
 		},
 		{
-			"name": "Hacha de Guerra",
+			"name": "War Axe",
 			"cost": 3,
 			"damage": 6,
 			"type": "attack",
@@ -56,7 +56,7 @@ static func get_attack_cards() -> Array[Dictionary]:
 			"weight": 35
 		},
 		{
-			"name": "Ataque Feroz",
+			"name": "Fierce Attack",
 			"cost": 4,
 			"damage": 7,
 			"type": "attack",
@@ -64,9 +64,9 @@ static func get_attack_cards() -> Array[Dictionary]:
 			"weight": 30
 		},
 		
-		# ATAQUES RAROS
+		# RARE ATTACKS
 		{
-			"name": "Corte Profundo",
+			"name": "Deep Cut",
 			"cost": 4,
 			"damage": 8,
 			"type": "attack",
@@ -74,7 +74,7 @@ static func get_attack_cards() -> Array[Dictionary]:
 			"weight": 20
 		},
 		{
-			"name": "Golpe Crítico",
+			"name": "Critical Strike",
 			"cost": 5,
 			"damage": 10,
 			"type": "attack",
@@ -82,9 +82,9 @@ static func get_attack_cards() -> Array[Dictionary]:
 			"weight": 15
 		},
 		
-		# ATAQUES ÉPICOS
+		# EPIC ATTACKS
 		{
-			"name": "Golpe Devastador",
+			"name": "Devastating Blow",
 			"cost": 5,
 			"damage": 12,
 			"type": "attack",
@@ -92,7 +92,7 @@ static func get_attack_cards() -> Array[Dictionary]:
 			"weight": 8
 		},
 		{
-			"name": "Furia Berserker",
+			"name": "Berserker Fury",
 			"cost": 6,
 			"damage": 14,
 			"type": "attack",
@@ -100,7 +100,7 @@ static func get_attack_cards() -> Array[Dictionary]:
 			"weight": 6
 		},
 		{
-			"name": "Ejecución",
+			"name": "Execution",
 			"cost": 6,
 			"damage": 16,
 			"type": "attack",
@@ -108,7 +108,7 @@ static func get_attack_cards() -> Array[Dictionary]:
 			"weight": 4
 		},
 		{
-			"name": "Aniquilación",
+			"name": "Annihilation",
 			"cost": 7,
 			"damage": 20,
 			"type": "attack",
@@ -119,9 +119,9 @@ static func get_attack_cards() -> Array[Dictionary]:
 
 static func get_heal_cards() -> Array[Dictionary]:
 	return [
-		# CURACIONES COMUNES
+		# COMMON HEALS
 		{
-			"name": "Vendaje",
+			"name": "Bandage",
 			"cost": 1,
 			"heal": 2,
 			"type": "heal",
@@ -129,7 +129,7 @@ static func get_heal_cards() -> Array[Dictionary]:
 			"weight": 50
 		},
 		{
-			"name": "Poción Menor",
+			"name": "Minor Potion",
 			"cost": 2,
 			"heal": 3,
 			"type": "heal",
@@ -137,9 +137,9 @@ static func get_heal_cards() -> Array[Dictionary]:
 			"weight": 40
 		},
 		
-		# CURACIONES POCO COMUNES
+		# UNCOMMON HEALS
 		{
-			"name": "Poción",
+			"name": "Potion",
 			"cost": 2,
 			"heal": 4,
 			"type": "heal",
@@ -147,7 +147,7 @@ static func get_heal_cards() -> Array[Dictionary]:
 			"weight": 25
 		},
 		{
-			"name": "Curación",
+			"name": "Healing",
 			"cost": 3,
 			"heal": 6,
 			"type": "heal",
@@ -155,9 +155,9 @@ static func get_heal_cards() -> Array[Dictionary]:
 			"weight": 20
 		},
 		
-		# CURACIONES RARAS
+		# RARE HEALS
 		{
-			"name": "Curación Mayor",
+			"name": "Major Healing",
 			"cost": 4,
 			"heal": 8,
 			"type": "heal",
@@ -165,9 +165,9 @@ static func get_heal_cards() -> Array[Dictionary]:
 			"weight": 12
 		},
 		
-		# CURACIONES ÉPICAS
+		# EPIC HEALS
 		{
-			"name": "Regeneración",
+			"name": "Regeneration",
 			"cost": 5,
 			"heal": 12,
 			"type": "heal",
@@ -178,9 +178,9 @@ static func get_heal_cards() -> Array[Dictionary]:
 
 static func get_shield_cards() -> Array[Dictionary]:
 	return [
-		# DEFENSAS COMUNES
+		# COMMON SHIELDS
 		{
-			"name": "Bloqueo",
+			"name": "Block",
 			"cost": 1,
 			"shield": 2,
 			"type": "shield",
@@ -188,9 +188,9 @@ static func get_shield_cards() -> Array[Dictionary]:
 			"weight": 45
 		},
 		
-		# DEFENSAS POCO COMUNES
+		# UNCOMMON SHIELDS
 		{
-			"name": "Escudo Básico",
+			"name": "Basic Shield",
 			"cost": 2,
 			"shield": 3,
 			"type": "shield",
@@ -198,7 +198,7 @@ static func get_shield_cards() -> Array[Dictionary]:
 			"weight": 25
 		},
 		{
-			"name": "Escudo",
+			"name": "Shield",
 			"cost": 2,
 			"shield": 4,
 			"type": "shield",
@@ -206,9 +206,9 @@ static func get_shield_cards() -> Array[Dictionary]:
 			"weight": 20
 		},
 		
-		# DEFENSAS RARAS
+		# RARE SHIELDS
 		{
-			"name": "Escudo Reforzado",
+			"name": "Reinforced Shield",
 			"cost": 3,
 			"shield": 6,
 			"type": "shield",
@@ -216,9 +216,9 @@ static func get_shield_cards() -> Array[Dictionary]:
 			"weight": 10
 		},
 		
-		# DEFENSAS ÉPICAS
+		# EPIC SHIELDS
 		{
-			"name": "Fortaleza",
+			"name": "Fortress",
 			"cost": 4,
 			"shield": 8,
 			"type": "shield",
@@ -273,7 +273,7 @@ static func find_card_by_name(name: String) -> Dictionary:
 		if card.get("name", "") == name:
 			return card
 	
-	push_warning("Carta no encontrada: " + name)
+	push_warning("Card not found: " + name)
 	return {}
 
 static func get_card_count() -> Dictionary:
@@ -297,28 +297,28 @@ static func validate_database() -> Dictionary:
 	
 	for card in all_cards:
 		if not card.has("name") or card.get("name", "") == "":
-			validation.errors.append("Carta sin nombre encontrada")
+			validation.errors.append("Nameless card found")
 			validation.valid = false
 		
 		if not card.has("type") or card.get("type", "") == "":
-			validation.errors.append("Carta sin tipo: " + str(card.get("name", "Sin nombre")))
+			validation.errors.append("Card without type: " + str(card.get("name", "No name")))
 			validation.valid = false
 		
 		if not card.has("cost") or card.get("cost", 0) <= 0:
-			validation.errors.append("Costo inválido para: " + str(card.get("name", "Sin nombre")))
+			validation.errors.append("Invalid cost for: " + str(card.get("name", "No name")))
 			validation.valid = false
 		
 		var name = card.get("name", "")
 		if name in card_names:
-			validation.errors.append("Nombre duplicado: " + name)
+			validation.errors.append("Duplicate name: " + name)
 			validation.valid = false
 		else:
 			card_names.append(name)
 		
 		var power = card.get("damage", 0) + card.get("heal", 0) + card.get("shield", 0)
 		if power == 0:
-			validation.warnings.append("Carta sin efecto: " + name)
+			validation.warnings.append("Card with no effect: " + name)
 		elif power > 25:
-			validation.warnings.append("Carta posiblemente demasiado poderosa: " + name + " (poder: " + str(power) + ")")
+			validation.warnings.append("Card possibly too powerful: " + name + " (power: " + str(power) + ")")
 	
 	return validation

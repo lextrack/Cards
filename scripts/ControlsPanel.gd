@@ -55,7 +55,7 @@ func setup_panel_style():
 	panel.add_theme_stylebox_override("panel", style)
    
 	var title = $Panel/VBoxContainer/Title
-	title.text = "CONTROLES"
+	title.text = "CONTROLS"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 11)
 	title.add_theme_color_override("font_color", Color(1, 0.9, 0.6, 1))
@@ -95,28 +95,28 @@ func update_cards_available(new_has_cards: bool):
 func update_display():
 	if gamepad_mode:
 		play_icon.texture = xbox_a_texture
-		play_label.text = "Jugar carta"
+		play_label.text = "Play card"
    	
 		end_icon.texture = xbox_b_texture
-		end_label.text = "Terminar turno"
+		end_label.text = "End turn"
    	
 		restart_icon.texture = xbox_x_texture
-		restart_label.text = "Reiniciar"
+		restart_label.text = "Restart"
    	
 		menu_icon.texture = xbox_y_texture
-		menu_label.text = "Menú"
+		menu_label.text = "Menu"
 	else:
 		play_icon.texture = mouse_click_texture
-		play_label.text = "Jugar carta"
+		play_label.text = "Play card"
    	
 		end_icon.texture = mouse_click_texture
-		end_label.text = "Terminar turno"
+		end_label.text = "End turn"
    	
 		restart_icon.texture = key_r_texture
-		restart_label.text = "Reiniciar"
+		restart_label.text = "Restart"
    	
 		menu_icon.texture = key_esc_texture
-		menu_label.text = "Menú"
+		menu_label.text = "Menu"
    
 	play_hint.visible = is_player_turn and has_cards
 	end_hint.visible = is_player_turn

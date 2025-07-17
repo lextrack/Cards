@@ -57,7 +57,7 @@ static func create_for_difficulty(difficulty: String) -> DeckConfig:
 	)
 
 func get_description() -> String:
-	return "Tamaño: %d | Ataque: %d%% | Curación: %d%% | Escudo: %d%%" % [
+	return "Size: %d | Attack: %d%% | Heal: %d%% | Shield: %d%%" % [
 		deck_size,
 		int(attack_ratio * 100),
 		int(heal_ratio * 100),

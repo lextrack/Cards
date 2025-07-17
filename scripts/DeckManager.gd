@@ -47,12 +47,12 @@ static func get_card_rarity_text(card: CardData) -> String:
 	var rarity = CardProbability.calculate_card_rarity(card.damage, card.heal, card.shield)
 	match rarity:
 		"common":
-			return "[Común]"
+			return "[Common]"
 		"uncommon":
-			return "[Poco Común]"
+			return "[Uncommon]"
 		"rare":
-			return "[Rara]"
+			return "[Rare]"
 		"epic":
-			return "[ÉPICA]"
+			return "[Epic]"
 		_:
 			return ""

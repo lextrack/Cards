@@ -77,73 +77,73 @@ func hide_notification():
 	visible = false
 
 func show_card_draw_notification(player_name: String, cards_drawn: int, from_deck: bool = true):
-	var title = player_name + " sacó carta" + ("s" if cards_drawn > 1 else "")
+	var title = player_name + " drew card" + ("s" if cards_drawn > 1 else "")
 	var text = ""
 	var detail = ""
 	var color = Color(0.2, 0.6, 0.9, 0.95)
 	
 	if from_deck:
-		text = "📥 " + str(cards_drawn) + " carta" + ("s" if cards_drawn > 1 else "") + " del mazo"
-		detail = "Nuevas opciones disponibles"
+		text = "📥 " + str(cards_drawn) + " card" + ("s" if cards_drawn > 1 else "") + " from deck"
+		detail = "New options available"
 	else:
-		text = "🔄 Mano inicial: " + str(cards_drawn) + " cartas"
-		detail = "¡Que comience la batalla!"
+		text = "🔄 Starting hand: " + str(cards_drawn) + " cards"
+		detail = "Let the battle begin!"
 	
 	queue_notification(title, text, detail, color, GameBalance.get_timer_delay("notification_draw"))
 
 func show_reshuffle_notification(player_name: String, cards_reshuffled: int):
-	var title = player_name + " remezcló las cartas"
-	var text = "♻️ " + str(cards_reshuffled) + " cartas al mazo"
-	var detail = "¡Cartas usadas vuelven a estar disponibles!"
+	var title = player_name + " reshuffled cards"
+	var text = "♻️ " + str(cards_reshuffled) + " cards to deck"
+	var detail = "Used cards are available again!"
 	var color = Color(0.8, 0.6, 0.2, 0.95)
 	
 	queue_notification(title, text, detail, color, GameBalance.get_timer_delay("notification_reshuffle"))
 
 func show_auto_end_turn_notification(reason: String):
-	var title = "Turno terminado automáticamente"
+	var title = "Turn ended automatically"
 	var text = ""
 	var detail = ""
 	var color = Color(0.6, 0.6, 0.6, 0.95)
 	
 	match reason:
 		"no_cards":
-			text = "🚫 Sin cartas en mano"
-			detail = "No hay más cartas para jugar"
+			text = "🚫 No cards in hand"
+			detail = "No more cards to play"
 		"limit_reached":
-			text = "🎯 Límite de cartas alcanzado"
-			detail = "Ya jugaste todas las cartas permitidas"
+			text = "🎯 Card limit reached"
+			detail = "You've played all allowed cards"
 		"no_mana":
-			text = "⚡ Sin maná suficiente"
-			detail = "Ninguna carta se puede jugar"
+			text = "⚡ Not enough mana"
+			detail = "No cards can be played"
 		"pass_turn":
-			title = "Turno pasado"
-			text = "⏭️ Decidiste pasar el turno"
-			detail = "Sin cartas jugadas"
+			title = "Turn passed"
+			text = "⏭️ You chose to pass turn"
+			detail = "No cards played"
 			color = Color(0.4, 0.7, 0.9, 0.95)
 	
 	queue_notification(title, text, detail, color, GameBalance.get_timer_delay("notification_auto_turn"))
 
 func show_damage_bonus_notification(turn_number: int, bonus: int):
-	var title = "¡Bonus de daño activado!"
-	var text = "⚔️ +" + str(bonus) + " de daño a todos los ataques"
-	var detail = "Turno " + str(turn_number)
+	var title = "Damage bonus activated!"
+	var text = "⚔️ +" + str(bonus) + " damage to all attacks"
+	var detail = "Turn " + str(turn_number)
 	var color = Color(0.9, 0.3, 0.1, 0.95)
 	
 	queue_notification(title, text, detail, color, GameBalance.get_timer_delay("notification_bonus"))
 
 func show_game_end_notification(winner: String, reason: String):
-	var title = winner + " Has ganado"
+	var title = winner + " has won"
 	var text = ""
-	var detail = "Nueva partida comenzando..."
+	var detail = "New match starting..."
 	var color = Color(0.2, 0.8, 0.2, 0.95)
 	
 	match reason:
 		"hp_zero":
-			text = "💀 HP reducido a 0"
+			text = "💀 HP reduced to 0"
 		"no_cards":
-			text = "🃏 Sin cartas disponibles"
+			text = "🃏 No cards available"
 	
-	if winner == "Derrota":
+	if winner == "Defeat":
 		color = Color(0.8, 0.2, 0.2, 0.95)
 	
 	queue_notification(title, text, detail, color, GameBalance.get_timer_delay("notification_end"))

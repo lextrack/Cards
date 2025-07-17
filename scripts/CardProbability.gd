@@ -1,10 +1,6 @@
 class_name CardProbability
 extends RefCounted
 
-# NOTA: Este archivo mantiene compatibilidad con el código existente
-# mientras redirige a la nueva arquitectura modular
-
-# Métodos de compatibilidad hacia atrás
 static func get_all_card_templates() -> Array:
 	var templates = CardDatabase.get_all_card_templates()
 	var old_format = []
@@ -59,7 +55,6 @@ static func get_deck_stats(deck: Array) -> Dictionary:
 		"shield_cards": analysis.type_distribution.get("shield", 0)
 	}
 
-# Nuevos métodos que aprovechan la arquitectura mejorada
 static func create_deck_for_difficulty(difficulty: String, deck_size: int = 30) -> Array:
 	return DeckGenerator.create_difficulty_deck(difficulty, deck_size)
 
@@ -104,7 +99,6 @@ static func get_cards_by_type(card_type: String) -> Array:
 static func create_optimized_deck(difficulty: String, player_stats: Dictionary = {}) -> Array:
 	var config = DeckConfig.create_for_difficulty(difficulty)
 	
-	# Ajustar configuración basada en estadísticas del jugador
 	if player_stats.has("preferred_style"):
 		match player_stats.preferred_style:
 			"aggressive":
@@ -132,7 +126,6 @@ static func simulate_deck_draws(deck: Array, draws: int = 1000) -> Dictionary:
 		"average_cost": 0.0
 	}
 	
-	# Inicializar contadores
 	for rarity in ["common", "uncommon", "rare", "epic"]:
 		simulation.rarity_draws[rarity] = 0
 	
@@ -141,7 +134,6 @@ static func simulate_deck_draws(deck: Array, draws: int = 1000) -> Dictionary:
 	
 	var total_cost = 0
 	
-	# Simular draws
 	for i in range(draws):
 		if deck.size() == 0:
 			break
@@ -150,15 +142,12 @@ static func simulate_deck_draws(deck: Array, draws: int = 1000) -> Dictionary:
 		if not random_card is CardData:
 			continue
 		
-		# Contar rareza
 		var rarity = calculate_card_rarity(random_card.damage, random_card.heal, random_card.shield)
 		simulation.rarity_draws[rarity] += 1
 		
-		# Contar tipo
 		if simulation.type_draws.has(random_card.card_type):
 			simulation.type_draws[random_card.card_type] += 1
 		
-		# Costo
 		total_cost += random_card.cost
 		if not simulation.cost_distribution.has(random_card.cost):
 			simulation.cost_distribution[random_card.cost] = 0
@@ -196,15 +185,15 @@ static func _generate_old_description(template: Dictionary) -> String:
 	var effects = []
 	
 	if template.get("damage", 0) > 0:
-		effects.append("Daño: " + str(template.damage))
+		effects.append("Damage: " + str(template.damage))
 	
 	if template.get("heal", 0) > 0:
-		effects.append("Cura: " + str(template.heal))
+		effects.append("Heal: " + str(template.heal))
 	
 	if template.get("shield", 0) > 0:
-		effects.append("Escudo: " + str(template.shield))
+		effects.append("Shield: " + str(template.shield))
 	
-	return " | ".join(effects) if effects.size() > 0 else "Sin efecto"
+	return " | ".join(effects) if effects.size() > 0 else "No effect"
 
 static func _generate_cards_from_templates(templates: Array, count: int) -> Array:
 	var pool = WeightedCardPool.new()
@@ -225,7 +214,6 @@ static func _generate_cards_from_templates(templates: Array, count: int) -> Arra
 	
 	return pool.generate_cards(count)
 
-# Funciones de utilidad mejoradas
 static func benchmark_deck_generation(iterations: int = 100) -> Dictionary:
 	var start_time = Time.get_ticks_msec()
 	
@@ -243,11 +231,9 @@ static func benchmark_deck_generation(iterations: int = 100) -> Dictionary:
 	}
 
 static func find_optimal_deck_config(target_winrate: float = 0.6) -> DeckConfig:
-	# Algoritmo simple para encontrar configuración óptima
 	var best_config = DeckConfig.new()
 	var best_score = 0.0
 	
-	# Probar diferentes configuraciones
 	var test_configs = [
 		DeckConfig.new(30, 0.70, 0.20, 0.10),  # Balanceado
 		DeckConfig.new(30, 0.80, 0.15, 0.05),  # Agresivo
@@ -292,7 +278,7 @@ static func import_deck_from_json(json_string: String) -> Array:
 	var parse_result = json.parse(json_string)
 	
 	if parse_result != OK:
-		push_error("Error al parsear JSON del mazo")
+		push_error("Error parsing deck JSON")
 		return []
 	
 	var deck_data = json.get_data()
@@ -388,7 +374,7 @@ static func generate_random_viable_deck(min_score: float = 6.0, max_attempts: in
 			return deck
 	
 	# Si no se encuentra uno viable, crear uno balanceado
-	push_warning("No se pudo generar un mazo aleatorio viable, creando uno balanceado")
+	push_warning("Unable to generate a viable randomized deck, creating a balanced deck.")
 	return DeckGenerator.create_balanced_deck()
 
 static func test_deck_consistency(deck: Array, simulations: int = 1000) -> Dictionary:
@@ -447,23 +433,23 @@ static func test_deck_consistency(deck: Array, simulations: int = 1000) -> Dicti
 
 # Funciones de debug y testing
 static func debug_print_deck_info(deck: Array):
-	print("=== INFORMACIÓN DEL MAZO ===")
+	print("=== DECK INFORMATION ===")
 	var analysis = DeckGenerator.analyze_deck(deck)
 	
-	print("Tamaño: ", analysis.total_cards)
-	print("Costo promedio: ", "%.2f" % analysis.average_cost)
-	print("Poder total: ", analysis.power_level)
-	print("Score de balance: ", "%.2f" % analysis.balance_score)
+	print("Size: ", analysis.total_cards)
+	print("Average cost: ", "%.2f" % analysis.average_cost)
+	print("Total power: ", analysis.power_level)
+	print("Balance score: ", "%.2f" % analysis.balance_score)
 	
-	print("\nDistribución por tipo:")
+	print("\nType distribution:")
 	for type in analysis.type_distribution:
 		print("  ", type, ": ", analysis.type_distribution[type])
 	
-	print("\nDistribución por rareza:")
+	print("\nRarity distribution:")
 	for rarity in analysis.rarity_distribution:
 		print("  ", rarity, ": ", analysis.rarity_distribution[rarity])
 	
-	print("\nSugerencias:")
+	print("\nSuggestions:")
 	var suggestions = DeckGenerator.suggest_deck_improvements(deck)
 	for suggestion in suggestions:
 		print("  - ", suggestion)
@@ -487,6 +473,6 @@ static func run_full_validation() -> Dictionary:
 	var test_deck = DeckGenerator.create_random_deck()
 	if test_deck == null or test_deck.size() == 0:
 		validation.generation_working = false
-		validation.errors.append("La generación de mazos no produce cartas")
+		validation.errors.append("Deck generation not producing cards")
 	
 	return validation
