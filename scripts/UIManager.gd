@@ -75,10 +75,10 @@ func start_player_turn(player: Player, difficulty: String):
 	var max_cards = player.get_max_cards_per_turn()
 	var cards_played = player.get_cards_played()
 	
-	turn_label.text = "Tu turno"
+	turn_label.text = "Your turn"
 	
 	var difficulty_name = difficulty.to_upper()
-	game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty_name
+	game_info_label.text = "Cards: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty_name
 	
 	var end_turn_button = main_scene.end_turn_button
 	if end_turn_button:
@@ -89,8 +89,8 @@ func start_ai_turn(ai: Player):
 	tween.tween_property(top_panel_bg, "color", ai_turn_color, transition_time)
 	
 	ai.start_turn()
-	turn_label.text = "Turno de la IA"
-	game_info_label.text = "La IA está jugando..."
+	turn_label.text = "AI turn"
+	game_info_label.text = "AI is playing..."
 	
 	var end_turn_button = main_scene.end_turn_button
 	if end_turn_button:
@@ -140,20 +140,20 @@ func update_turn_button_text(player: Player, end_turn_button: Button, gamepad_mo
 	var playable_cards = DeckManager.get_playable_cards(player.hand, player.current_mana)
 	
 	if cards_played >= max_cards:
-		end_turn_button.text = "Esperando"
+		end_turn_button.text = "Waiting"
 	elif playable_cards.size() == 0:
-		end_turn_button.text = "Sin cartas jugables"
+		end_turn_button.text = "No playable cards"
 	elif player.get_hand_size() == 0:
-		end_turn_button.text = "Sin cartas en mano"
+		end_turn_button.text = "No cards in hand"
 	else:
 		if gamepad_mode:
-			end_turn_button.text = "🎮 Terminar Turno"
+			end_turn_button.text = "🎮 End Turn"
 		else:
-			end_turn_button.text = "Terminar Turno"
+			end_turn_button.text = "End Turn"
 
 func update_cards_played_info(cards_played: int, max_cards: int, difficulty: String):
 	var difficulty_name = difficulty.to_upper()
-	game_info_label.text = "Cartas: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty_name
+	game_info_label.text = "Cards: " + str(cards_played) + "/" + str(max_cards) + " | " + difficulty_name
 
 func update_damage_bonus_indicator(player: Player, damage_bonus_label: Label):
 	var damage_bonus = player.get_damage_bonus()
@@ -188,15 +188,15 @@ func update_damage_bonus_indicator(player: Player, damage_bonus_label: Label):
 			damage_bonus_label.visible = false
 
 func show_damage_bonus_info(turn_num: int, damage_bonus: int):
-	turn_label.text = "Turno " + str(turn_num)
-	game_info_label.text = "¡Bonus de daño: +" + str(damage_bonus) + "!"
+	turn_label.text = "Turn " + str(turn_num)
+	game_info_label.text = "Damage bonus: +" + str(damage_bonus) + "!"
 
 func show_reshuffle_info(player_name: String):
-	turn_label.text = player_name + " remezcló"
-	if player_name == "Jugador":
-		game_info_label.text = "Cartas devueltas al mazo"
+	turn_label.text = player_name + " reshuffled"
+	if player_name == "Player":
+		game_info_label.text = "Cards returned to the deck"
 	else:
-		game_info_label.text = "Algunas cartas volvieron a su mazo"
+		game_info_label.text = "Some cards returned to their deck"
 
 func play_damage_effects(damage_amount: int):
 	if is_screen_shaking:
@@ -249,7 +249,6 @@ func update_card_selection(gamepad_mode: bool, player: Player):
 			card.scale = card.original_scale
 
 func navigate_cards(direction: int, player: Player):
-	"""Navega por las cartas con gamepad. direction: -1 para izquierda, 1 para derecha"""
 	if card_instances.size() == 0:
 		return false
 		

@@ -41,7 +41,7 @@ func _ready():
 	await initialize_game()
 
 func initialize_game():
-	"""Inicializa todos los componentes del juego"""
+	"""Initializes all game components"""
 	_setup_components()
 	_setup_notifications()
 	_setup_controls_panel()
@@ -54,31 +54,31 @@ func initialize_game():
 	setup_game()
 	
 func _validate_card_system():
-	"""Valida que el sistema de cartas funcione correctamente"""
+	"""Validates that the card system works correctly"""
 	var validation = CardProbability.run_full_validation()
 	
 	if not validation.database_valid:
-		print("❌ ERROR: Base de datos de cartas inválida:")
+		print("❌ ERROR: Invalid card database:")
 		for error in validation.errors:
 			print("   ", error)
 	
 	if not validation.generation_working:
-		print("❌ ERROR: Generación de mazos no funciona")
+		print("❌ ERROR: Deck generation not working")
 	
 	if validation.warnings.size() > 0:
-		print("⚠️  ADVERTENCIAS del sistema de cartas:")
+		print("⚠️  WARNINGS from card system:")
 		for warning in validation.warnings:
 			print("   ", warning)
 	
 	if validation.database_valid and validation.generation_working:
-		print("✅ Sistema de cartas validado correctamente")
+		print("✅ Card system validated successfully")
 		
-		# Mostrar estadísticas
+		# Show statistics
 		var counts = CardDatabase.get_card_count()
-		print("📊 Cartas disponibles: ", counts.total, " (", counts.attack, " ataques, ", counts.heal, " curaciones, ", counts.shield, " escudos)")
+		print("📊 Available cards: ", counts.total, " (", counts.attack, " attacks, ", counts.heal, " heals, ", counts.shield, " shields)")
 
 func _setup_components():
-	"""Configura los componentes principales"""
+	"""Sets up main components"""
 	ui_manager = UIManager.new()
 	ui_manager.setup(self)
 	
@@ -95,29 +95,29 @@ func _setup_components():
 	confirmation_dialog.setup(self)
 
 func _setup_notifications():
-	"""Configura las notificaciones"""
+	"""Sets up notifications"""
 	ai_notification = ai_notification_scene.instantiate()
 	game_notification = game_notification_scene.instantiate()
 	add_child(ai_notification)
 	add_child(game_notification)
 
 func _setup_controls_panel():
-	"""Configura el panel de controles"""
+	"""Sets up controls panel"""
 	controls_panel = controls_panel_scene.instantiate()
 	ui_layer.add_child(controls_panel)
 
 func _load_difficulty():
-	"""Carga la dificultad seleccionada"""
+	"""Loads selected difficulty"""
 	difficulty = GameState.get_selected_difficulty()
-	print("Iniciando juego con dificultad: ", difficulty)
+	print("Starting game with difficulty: ", difficulty)
 
 func handle_scene_entrance():
-	"""Maneja la entrada de la escena con transiciones"""
+	"""Handles scene entrance with transitions"""
 	await get_tree().process_frame
 	await get_tree().process_frame
 	
 	if TransitionManager and TransitionManager.current_overlay:
-		print("Main: TransitionManager y overlay disponibles")
+		print("Main: TransitionManager and overlay available")
 		if TransitionManager.current_overlay.has_method("is_ready") and TransitionManager.current_overlay.is_ready():
 			await TransitionManager.current_overlay.fade_out(0.8)
 		else:
@@ -126,14 +126,14 @@ func handle_scene_entrance():
 		_play_direct_entrance()
 
 func _play_direct_entrance():
-	"""Animación directa de entrada"""
+	"""Direct entrance animation"""
 	modulate.a = 0.0
 	var tween = create_tween()
 	tween.tween_property(self, "modulate:a", 1.0, 0.5)
 	await tween.finished
 
 func setup_game():
-	"""Configura una nueva partida"""
+	"""Sets up a new game"""
 	game_manager.setup_new_game(difficulty)
 	player = game_manager.player
 	ai = game_manager.ai
@@ -149,17 +149,17 @@ func setup_game():
 	start_player_turn()
 	
 func _analyze_starting_decks():
-	"""Análisis básico sin dependencias del nuevo sistema"""
-	print("\n🎴 ANÁLISIS BÁSICO DE MAZOS:")
+	"""Basic analysis without new system dependencies"""
+	print("\n🎴 BASIC DECK ANALYSIS:")
 	
-	# Análisis simple del jugador
+	# Simple player analysis
 	if player:
-		print("👤 JUGADOR (", difficulty.to_upper(), "):")
-		print("   Cartas en mazo: ", player.deck.size())
-		print("   Cartas en mano: ", player.hand.size())
-		print("   Cartas descartadas: ", player.discard_pile.size())
+		print("👤 PLAYER (", difficulty.to_upper(), "):")
+		print("   Cards in deck: ", player.deck.size())
+		print("   Cards in hand: ", player.hand.size())
+		print("   Discarded cards: ", player.discard_pile.size())
 		
-		# Contar tipos básicos
+		# Count basic types
 		var attack_count = 0
 		var heal_count = 0
 		var shield_count = 0
@@ -175,39 +175,39 @@ func _analyze_starting_decks():
 					"shield":
 						shield_count += 1
 		
-		print("   Distribución: ", attack_count, " ataques, ", heal_count, " curaciones, ", shield_count, " escudos")
+		print("   Distribution: ", attack_count, " attacks, ", heal_count, " heals, ", shield_count, " shields")
 	
-	# Análisis simple de la IA
+	# Simple AI analysis
 	if ai:
-		print("🤖 IA (", difficulty.to_upper(), "):")
-		print("   Cartas en mazo: ", ai.deck.size())
-		print("   Cartas en mano: ", ai.hand.size())
-		print("   Cartas descartadas: ", ai.discard_pile.size())
+		print("🤖 AI (", difficulty.to_upper(), "):")
+		print("   Cards in deck: ", ai.deck.size())
+		print("   Cards in hand: ", ai.hand.size())
+		print("   Discarded cards: ", ai.discard_pile.size())
 					
 func debug_analyze_current_decks():
-	"""Método para analizar mazos durante el juego (usar en consola de debug)"""
+	"""Method to analyze decks during game (use in debug console)"""
 	if not OS.is_debug_build():
-		print("Solo disponible en builds de debug")
+		print("Only available in debug builds")
 		return
 	
-	print("\n🔍 ANÁLISIS ACTUAL DE MAZOS:")
+	print("\n🔍 CURRENT DECK ANALYSIS:")
 	
 	if player:
-		print("👤 JUGADOR:")
+		print("👤 PLAYER:")
 		player.debug_print_deck_info()
 	
 	if ai:
-		print("\n🤖 IA:")
+		print("\n🤖 AI:")
 		ai.debug_print_deck_info()
 
 func _connect_player_signals():
-	"""Conecta las señales del jugador"""
+	"""Connects player signals"""
 	player.hp_changed.connect(ui_manager.update_player_hp)
 	player.mana_changed.connect(ui_manager.update_player_mana)
 	player.shield_changed.connect(ui_manager.update_player_shield)
 	player.player_died.connect(_on_player_died)
 	player.hand_changed.connect(_on_player_hand_changed)
-	player.deck_reshuffled.connect(_on_deck_reshuffled.bind("Jugador"))
+	player.deck_reshuffled.connect(_on_deck_reshuffled.bind("Player"))
 	player.cards_played_changed.connect(_on_player_cards_played_changed)
 	player.turn_changed.connect(_on_turn_changed)
 	player.card_drawn.connect(_on_player_card_drawn)
@@ -215,16 +215,16 @@ func _connect_player_signals():
 	player.damage_taken.connect(_on_player_damage_taken)
 
 func _connect_ai_signals():
-	"""Conecta las señales de la IA"""
+	"""Connects AI signals"""
 	ai.hp_changed.connect(ui_manager.update_ai_hp)
 	ai.mana_changed.connect(ui_manager.update_ai_mana)
 	ai.shield_changed.connect(ui_manager.update_ai_shield)
 	ai.player_died.connect(_on_ai_died)
-	ai.deck_reshuffled.connect(_on_deck_reshuffled.bind("IA"))
+	ai.deck_reshuffled.connect(_on_deck_reshuffled.bind("AI"))
 	ai.ai_card_played.connect(_on_ai_card_played)
 
 func start_player_turn():
-	"""Inicia el turno del jugador"""
+	"""Starts player turn"""
 	is_player_turn = true
 	input_manager.start_player_turn()
 	
@@ -235,7 +235,7 @@ func start_player_turn():
 	controls_panel.update_cards_available(player.hand.size() > 0)
 
 func start_ai_turn():
-	"""Inicia el turno de la IA"""
+	"""Starts AI turn"""
 	is_player_turn = false
 	input_manager.start_ai_turn()
 	
@@ -253,7 +253,7 @@ func start_ai_turn():
 	start_player_turn()
 
 func restart_game():
-	"""Reinicia el juego completo"""
+	"""Restarts the complete game"""
 	game_count += 1
 	game_manager.restart_game(game_count, difficulty)
 	audio_helper.play_background_music()
@@ -262,7 +262,7 @@ func restart_game():
 	setup_game()
 
 func _on_player_damage_taken(damage_amount: int):
-	"""Maneja cuando el jugador recibe daño"""
+	"""Handles when player takes damage"""
 	audio_helper.play_damage_sound(damage_amount)
 	ui_manager.play_damage_effects(damage_amount)
 
@@ -291,12 +291,12 @@ func _on_card_drawn(player_name: String, cards_count: int, from_deck: bool):
 	game_notification.show_card_draw_notification(player_name, cards_count, from_deck)
 
 func _on_player_card_drawn(cards_count: int, from_deck: bool):
-	"""Maneja cuando el jugador roba cartas"""
+	"""Handles when player draws cards"""
 	audio_helper.play_card_draw_sound()
-	game_notification.show_card_draw_notification("Jugador", cards_count, from_deck)
+	game_notification.show_card_draw_notification("Player", cards_count, from_deck)
 
 func _on_turn_changed(turn_num: int, damage_bonus: int):
-	"""Maneja el cambio de turno y bonus de daño"""
+	"""Handles turn change and damage bonus"""
 	if damage_bonus > 0 and GameBalance.is_damage_bonus_turn(turn_num):
 		audio_helper.play_bonus_sound()
 		game_notification.show_damage_bonus_notification(turn_num, damage_bonus)
@@ -308,7 +308,7 @@ func _on_turn_changed(turn_num: int, damage_bonus: int):
 
 func _on_deck_reshuffled(player_name: String):
 	audio_helper.play_deck_shuffle_sound()
-	var cards_reshuffled = player.deck.size() if player_name == "Jugador" else ai.deck.size()
+	var cards_reshuffled = player.deck.size() if player_name == "Player" else ai.deck.size()
 	game_notification.show_reshuffle_notification(player_name, cards_reshuffled)
 	ui_manager.show_reshuffle_info(player_name)
 	await get_tree().create_timer(2.0).timeout
@@ -319,19 +319,19 @@ func _on_auto_turn_ended(reason: String):
 func _on_player_died():
 	audio_helper.play_lose_sound()
 	GameState.add_game_result(false)
-	game_notification.show_game_end_notification("Derrota", "hp_zero")
-	await game_manager.handle_game_over("¡PERDISTE! Reiniciando...", end_turn_button)
+	game_notification.show_game_end_notification("Defeat", "hp_zero")
+	await game_manager.handle_game_over("YOU LOST! Restarting...", end_turn_button)
 	restart_game()
 
 func _on_ai_card_played(card: CardData):
 	audio_helper.play_card_play_sound(card.card_type)
-	ai_notification.show_card_notification(card, "IA")
+	ai_notification.show_card_notification(card, "AI")
 
 func _on_ai_died():
 	audio_helper.play_win_sound()
 	GameState.add_game_result(true)
-	game_notification.show_game_end_notification("¡Victoria!", "hp_zero")
-	await game_manager.handle_game_over("¡GANASTE! Reiniciando...", end_turn_button)
+	game_notification.show_game_end_notification("Victory!", "hp_zero")
+	await game_manager.handle_game_over("YOU WON! Restarting...", end_turn_button)
 	restart_game()
 
 func _on_card_clicked(card: Card):

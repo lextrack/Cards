@@ -140,5 +140,4 @@ static func _is_distribution_balanced(counts: Dictionary, total: int) -> bool:
 	var common_ratio = float(counts[Rarity.COMMON]) / total
 	var epic_ratio = float(counts[Rarity.EPIC]) / total
 	
-	# Verificar que hay suficientes comunes y no demasiadas épicas
 	return common_ratio >= 0.4 and epic_ratio <= 0.15

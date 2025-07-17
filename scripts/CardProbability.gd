@@ -43,7 +43,6 @@ static func calculate_card_rarity(damage: int, heal: int, shield: int) -> String
 static func get_deck_stats(deck: Array) -> Dictionary:
 	var analysis = DeckGenerator.analyze_deck(deck)
 	
-	# Convertir al formato esperado por el código existente
 	return {
 		"total_cards": analysis.total_cards,
 		"common": analysis.rarity_distribution.get("common", 0),
@@ -245,7 +244,6 @@ static func find_optimal_deck_config(target_winrate: float = 0.6) -> DeckConfig:
 		var test_deck = DeckGenerator.create_deck(config)
 		var analysis = DeckGenerator.analyze_deck(test_deck)
 		
-		# Calcular score basado en balance y winrate objetivo
 		var score = analysis.balance_score
 		if analysis.balance_score >= target_winrate * 10:
 			score += 2.0
@@ -294,7 +292,6 @@ static func import_deck_from_json(json_string: String) -> Array:
 	return deck
 
 static func get_meta_analysis() -> Dictionary:
-	# Análisis del "meta" actual basado en todas las cartas disponibles
 	var all_templates = CardDatabase.get_all_card_templates()
 	var meta = {
 		"most_efficient_cards": [],
@@ -303,7 +300,6 @@ static func get_meta_analysis() -> Dictionary:
 		"rarity_value_analysis": {}
 	}
 	
-	# Encontrar cartas más eficientes
 	var efficiency_list = []
 	for template in all_templates:
 		var power = template.get("damage", 0) + template.get("heal", 0) + template.get("shield", 0)
@@ -319,11 +315,9 @@ static func get_meta_analysis() -> Dictionary:
 			"rarity": RaritySystem.get_rarity_string(template.get("rarity", RaritySystem.Rarity.COMMON))
 		})
 	
-	# Ordenar por eficiencia
 	efficiency_list.sort_custom(func(a, b): return a.efficiency > b.efficiency)
 	meta.most_efficient_cards = efficiency_list.slice(0, 10)  # Top 10
 	
-	# Análisis por tipo
 	var types = ["attack", "heal", "shield"]
 	for type in types:
 		var type_cards = CardDatabase.get_cards_by_type(type)
@@ -341,22 +335,18 @@ static func get_meta_analysis() -> Dictionary:
 	return meta
 
 static func create_counter_deck(opponent_deck: Array) -> Array:
-	# Crear un mazo que contrarreste el mazo del oponente
 	var analysis = DeckGenerator.analyze_deck(opponent_deck)
 	var config = DeckConfig.new()
 	
-	# Si el oponente es muy agresivo, ser más defensivo
 	var opponent_attack_ratio = float(analysis.type_distribution.get("attack", 0)) / analysis.total_cards
 	if opponent_attack_ratio > 0.8:
 		config.attack_ratio = 0.50
 		config.heal_ratio = 0.30
 		config.shield_ratio = 0.20
-	# Si el oponente es muy defensivo, ser más agresivo
 	elif opponent_attack_ratio < 0.5:
 		config.attack_ratio = 0.85
 		config.heal_ratio = 0.10
 		config.shield_ratio = 0.05
-	# Balance normal
 	else:
 		config.attack_ratio = 0.70
 		config.heal_ratio = 0.20
@@ -365,7 +355,6 @@ static func create_counter_deck(opponent_deck: Array) -> Array:
 	return DeckGenerator.create_deck(config)
 
 static func generate_random_viable_deck(min_score: float = 6.0, max_attempts: int = 50) -> Array:
-	# Generar mazos aleatorios hasta encontrar uno viable
 	for attempt in range(max_attempts):
 		var deck = DeckGenerator.create_random_deck()
 		var analysis = DeckGenerator.analyze_deck(deck)
@@ -373,12 +362,10 @@ static func generate_random_viable_deck(min_score: float = 6.0, max_attempts: in
 		if analysis.balance_score >= min_score:
 			return deck
 	
-	# Si no se encuentra uno viable, crear uno balanceado
 	push_warning("Unable to generate a viable randomized deck, creating a balanced deck.")
 	return DeckGenerator.create_balanced_deck()
 
 static func test_deck_consistency(deck: Array, simulations: int = 1000) -> Dictionary:
-	# Probar qué tan consistente es un mazo
 	var results = {
 		"simulations": simulations,
 		"playable_turn_1": 0,
@@ -394,10 +381,8 @@ static func test_deck_consistency(deck: Array, simulations: int = 1000) -> Dicti
 		var test_deck = deck.duplicate()
 		test_deck.shuffle()
 		
-		# Simular mano inicial (5 cartas)
 		var hand = test_deck.slice(0, 5)
 		
-		# Contar cartas jugables por turno
 		var turn_1_playable = 0
 		var turn_2_playable = 0
 		var turn_3_playable = 0
@@ -422,7 +407,6 @@ static func test_deck_consistency(deck: Array, simulations: int = 1000) -> Dicti
 	
 	results.average_playable_cards = float(total_playable) / (simulations * 3)
 	
-	# Calcular score de consistencia
 	var turn_1_rate = float(results.playable_turn_1) / simulations
 	var turn_2_rate = float(results.playable_turn_2) / simulations
 	var turn_3_rate = float(results.playable_turn_3) / simulations
@@ -431,7 +415,6 @@ static func test_deck_consistency(deck: Array, simulations: int = 1000) -> Dicti
 	
 	return results
 
-# Funciones de debug y testing
 static func debug_print_deck_info(deck: Array):
 	print("=== DECK INFORMATION ===")
 	var analysis = DeckGenerator.analyze_deck(deck)
@@ -462,14 +445,12 @@ static func run_full_validation() -> Dictionary:
 		"warnings": []
 	}
 	
-	# Validar base de datos
 	var db_validation = CardDatabase.validate_database()
 	if not db_validation.valid:
 		validation.database_valid = false
 		validation.errors.append_array(db_validation.errors)
 	validation.warnings.append_array(db_validation.warnings)
 	
-	# Probar generación de mazos
 	var test_deck = DeckGenerator.create_random_deck()
 	if test_deck == null or test_deck.size() == 0:
 		validation.generation_working = false

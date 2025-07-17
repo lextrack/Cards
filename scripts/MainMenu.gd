@@ -29,7 +29,7 @@ func handle_scene_entrance():
 	await get_tree().process_frame
 	
 	if TransitionManager and TransitionManager.current_overlay:
-		print("MainMenu: TransitionManager disponible")
+		print("MainMenu: TransitionManager available")
 		
 		if (TransitionManager.current_overlay.has_method("is_ready") and 
 			TransitionManager.current_overlay.is_ready() and 
@@ -98,7 +98,7 @@ func _on_options_pressed():
 		return
 	
 	play_ui_sound("button_click")
-	show_coming_soon("Menú de opciones próximamente. [Presiona ESC o B para cerrar]")
+	show_coming_soon("Coming soon. [Press ESC or B in gamepad to close]")
 
 func _on_credits_pressed():
 	if is_transitioning:
@@ -160,15 +160,15 @@ func show_credits_popup():
 	var credits_text = """
 	🎮 CARD MASTER
 	
-	🎵 Audio (Usuarios):
+	🎵 Audio:
 			freesound.org: 
 	Raclure, Diasyl, Loyalty_Freak_Music,
 	designerschoice, BeezleFM
 	
-	🎨 Arte:
-	Iconos de la comunidad
+	🎨 Art:
+	Icons from Flaticon
 	
-	[Presiona ESC o B para cerrar]
+	[Press ESC or B in gamepad to close]
 	"""
 	
 	transition_label.text = credits_text

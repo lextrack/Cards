@@ -49,7 +49,7 @@ func add_cards_by_rarity(rarity: RaritySystem.Rarity, target_count: int):
 
 func generate_deck(deck_size: int, config: DeckConfig = null) -> Array:
 	if _card_pool.size() == 0:
-		push_error("Pool de cartas vacío")
+		push_error("Empty card pool")
 		return []
 	
 	var deck: Array = []
@@ -100,11 +100,9 @@ func get_pool_stats() -> Dictionary:
 		"type_distribution": {}
 	}
 	
-	# Contar por rareza
 	for rarity in RaritySystem.get_all_rarities():
 		stats.rarity_distribution[rarity] = 0
 	
-	# Contar por tipo
 	var types = ["attack", "heal", "shield"]
 	for type in types:
 		stats.type_distribution[type] = 0
@@ -141,7 +139,7 @@ func get_rarity_probability(rarity: RaritySystem.Rarity) -> float:
 
 func _select_weighted_template() -> Dictionary:
 	if _card_pool.size() == 0:
-		push_error("No hay cartas en el pool")
+		push_error("No cards in the pool")
 		return {}
 	
 	if _total_weight <= 0:
@@ -238,11 +236,11 @@ func validate_pool() -> Dictionary:
 	}
 	
 	if _card_pool.size() == 0:
-		validation.errors.append("Pool de cartas vacío")
+		validation.errors.append("Empty card pool")
 		validation.valid = false
 	
 	if _total_weight <= 0:
-		validation.errors.append("Peso total del pool es 0 o negativo")
+		validation.errors.append("Total pool weight is 0 or negative")
 		validation.valid = false
 	
 	var types_found = {}
@@ -253,6 +251,6 @@ func validate_pool() -> Dictionary:
 	var required_types = ["attack", "heal", "shield"]
 	for type in required_types:
 		if not types_found.has(type):
-			validation.warnings.append("No hay cartas de tipo: " + type)
+			validation.warnings.append("No " + type + " cards found")
 	
 	return validation

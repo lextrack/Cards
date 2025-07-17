@@ -16,7 +16,7 @@ func create_overlay():
 	current_overlay = transition_scene.instantiate()
 	
 	if not current_overlay:
-		push_error("No se pudo instanciar TransitionOverlay")
+		push_error("Failed to instantiate TransitionOverlay")
 		is_creating_overlay = false
 		return
 	
@@ -42,14 +42,14 @@ func wait_for_overlay_ready():
 		
 		attempts += 1
 	
-	push_error("Timeout esperando que TransitionOverlay esté listo")
+	push_error("Timeout waiting for TransitionOverlay to be ready")
 	return false
 
 func fade_to_scene(scene_path: String, duration: float = 1.0):
 	await ensure_overlay_exists()
 	
 	if not current_overlay or not current_overlay.has_method("is_ready") or not current_overlay.is_ready():
-		push_error("TransitionOverlay no está disponible, cambiando escena directamente")
+		push_error("TransitionOverlay is not available, changing scene directly")
 		get_tree().change_scene_to_file(scene_path)
 		return
 	

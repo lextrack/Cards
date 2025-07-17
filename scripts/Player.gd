@@ -184,8 +184,6 @@ func reset_player():
 	hand_changed.emit()
 	cards_played_changed.emit(cards_played_this_turn, get_max_cards_per_turn())
 	turn_changed.emit(turn_number, get_damage_bonus())
-	
-# OPCIONALES: 
 
 func analyze_deck() -> Dictionary:
 	var all_cards = deck + discard_pile + hand
@@ -198,7 +196,7 @@ func get_deck_suggestions() -> Array:
 func debug_print_deck_info():
 	if OS.is_debug_build():
 		var all_cards = deck + discard_pile + hand
-		print("=== MAZO ", "IA" if is_ai else "JUGADOR", " (", difficulty.to_upper(), ") ===")
+		print("=== DECK ", "AI" if is_ai else "PLAYER", " (", difficulty.to_upper(), ") ===")
 		CardProbability.debug_print_deck_info(all_cards)
 
 func ai_turn(opponent: Player):

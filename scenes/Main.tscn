@@ -171,7 +171,7 @@ horizontal_alignment = 1
 [node name="HPTitle" type="Label" parent="UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer/HPStat"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "❤️ VIDA"
+text = "❤️ HEALTH"
 horizontal_alignment = 1
 
 [node name="ManaStat" type="VBoxContainer" parent="UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer"]
@@ -189,7 +189,7 @@ horizontal_alignment = 1
 [node name="ManaTitle" type="Label" parent="UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer/ManaStat"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "⚡ MANÁ"
+text = "⚡ MANA"
 horizontal_alignment = 1
 
 [node name="ShieldStat" type="VBoxContainer" parent="UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer"]
@@ -207,7 +207,7 @@ horizontal_alignment = 1
 [node name="ShieldTitle" type="Label" parent="UILayer/TopPanel/StatsContainer/PlayerStatsPanel/PlayerStatsContainer/ShieldStat"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "🛡️ ESCUDO"
+text = "🛡️ SHIELD"
 horizontal_alignment = 1
 
 [node name="CenterInfo" type="VBoxContainer" parent="UILayer/TopPanel/StatsContainer"]
@@ -219,13 +219,13 @@ alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 0.6, 1)
 theme_override_font_sizes/font_size = 18
-text = "Tu turno"
+text = "Your turn"
 horizontal_alignment = 1
 
 [node name="GameInfoLabel" type="Label" parent="UILayer/TopPanel/StatsContainer/CenterInfo"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
-text = "Puedes jugar 2 cartas"
+text = "You can play 2 cards"
 horizontal_alignment = 1
 
 [node name="DamageBonusLabel" type="Label" parent="UILayer/TopPanel/StatsContainer/CenterInfo"]
@@ -276,7 +276,7 @@ horizontal_alignment = 1
 [node name="HPTitle" type="Label" parent="UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer/HPStat"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "❤️ IA VIDA"
+text = "❤️ AI HEALTH"
 horizontal_alignment = 1
 
 [node name="ManaStat" type="VBoxContainer" parent="UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer"]
@@ -294,7 +294,7 @@ horizontal_alignment = 1
 [node name="ManaTitle" type="Label" parent="UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer/ManaStat"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "⚡ IA MANÁ"
+text = "⚡ AI MANA"
 horizontal_alignment = 1
 
 [node name="ShieldStat" type="VBoxContainer" parent="UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer"]
@@ -312,7 +312,7 @@ horizontal_alignment = 1
 [node name="ShieldTitle" type="Label" parent="UILayer/TopPanel/StatsContainer/AIStatsPanel/AIStatsContainer/ShieldStat"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "🛡️ IA ESCUDO"
+text = "🛡️ AI SHIELD"
 horizontal_alignment = 1
 
 [node name="CenterArea" type="Control" parent="UILayer"]
@@ -377,7 +377,7 @@ alignment = 1
 layout_mode = 2
 focus_mode = 0
 theme_override_font_sizes/font_size = 18
-text = "Terminar Turno"
+text = "End Turn"
 
 [node name="GameOverLabel" type="Label" parent="UILayer"]
 visible = false
@@ -394,5 +394,5 @@ offset_bottom = 5.96001
 grow_horizontal = 2
 theme_override_colors/font_color = Color(1, 1, 0, 1)
 theme_override_font_sizes/font_size = 24
-text = "¡Juego Terminado!"
+text = "Game Over!"
 horizontal_alignment = 1

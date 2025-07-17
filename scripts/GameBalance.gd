@@ -146,17 +146,17 @@ static func get_damage_bonus_description(turn_number: int) -> String:
 	var bonus = get_damage_bonus(turn_number)
 	match bonus:
 		0:
-			return "Sin bonus"
+			return "No bonus"
 		1:
-			return "Daño aumentado en +1"
+			return "Damage increased by +1"
 		2:
-			return "Daño aumentado en +2"
+			return "Damage increased by +2"
 		3:
-			return "Daño aumentado en +3"
+			return "Damage increased by +3"
 		4:
-			return "Daño aumentado en +4"
+			return "Damage increased by +4"
 		_:
-			return "Bonus: +" + str(bonus) + " daño"
+			return "Bonus: +" + str(bonus) + " damage"
 
 static func get_available_difficulties() -> Array:
 	return ["normal", "hard", "expert"]
@@ -164,13 +164,13 @@ static func get_available_difficulties() -> Array:
 static func get_difficulty_description(difficulty: String) -> String:
 	match difficulty:
 		"normal":
-			return "Equilibrado"
+			return "Balanced"
 		"hard":
-			return "Desafiante"
+			return "Challenging"
 		"expert":
 			return "Brutal"
 		_:
-			return "Dificultad desconocida"
+			return "Unknown difficulty"
 
 static func setup_player(player: Player, difficulty: String, is_ai: bool = false):
 	var config = get_ai_config(difficulty) if is_ai else get_player_config(difficulty)
@@ -362,12 +362,12 @@ static func validate_balance() -> Dictionary:
 
 static func _get_balance_recommendation(ratio: float) -> String:
 	if ratio > 1.3:
-		return "IA demasiado fuerte - considera reducir su poder"
+		return "AI too strong - consider reducing its power"
 	elif ratio < 0.8:
-		return "Jugador demasiado fuerte - considera aumentar desafío"
+		return "Player too strong - consider increasing challenge"
 	elif ratio > 1.15:
-		return "Ligeramente favorable a IA - balance bueno para dificultad alta"
+		return "Slightly favorable to AI - good balance for high difficulty"
 	elif ratio < 0.9:
-		return "Ligeramente favorable al jugador - consider para dificultad baja"
+		return "Slightly pro-player - consider for low difficulty"
 	else:
-		return "Balance excelente"
+		return "Excellent balance"

@@ -15,7 +15,6 @@ func setup(main: Control):
 	_create_confirmation_dialog()
 
 func _create_confirmation_dialog():
-	"""Crea el diálogo de confirmación"""
 	confirmation_overlay = Control.new()
 	confirmation_overlay.name = "ConfirmationOverlay"
 	confirmation_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -40,7 +39,6 @@ func _create_confirmation_dialog():
 	_connect_signals()
 
 func _setup_panel_content():
-	"""Configura el contenido del panel"""
 	var panel_bg = ColorRect.new()
 	panel_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	panel_bg.color = Color(0.15, 0.15, 0.25, 0.95)
@@ -56,7 +54,7 @@ func _setup_panel_content():
 	vbox.add_child(spacer1)
 
 	confirmation_label = Label.new()
-	confirmation_label.text = "¿Volver al menú principal?\nSe perderá el progreso actual"
+	confirmation_label.text = "Return to main menu?\nCurrent progress will be lost"
 	confirmation_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	confirmation_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	confirmation_label.add_theme_font_size_override("font_size", 16)
@@ -70,14 +68,14 @@ func _setup_panel_content():
 	vbox.add_child(button_container)
 	
 	confirm_button = Button.new()
-	confirm_button.text = "✓ SÍ, VOLVER"
+	confirm_button.text = "✓ YES, RETURN"
 	confirm_button.custom_minimum_size = Vector2(140, 45)
 	confirm_button.add_theme_font_size_override("font_size", 14)
 	confirm_button.focus_mode = Control.FOCUS_ALL
 	button_container.add_child(confirm_button)
 	
 	cancel_button = Button.new()
-	cancel_button.text = "✗ CANCELAR"
+	cancel_button.text = "✗ CANCEL"
 	cancel_button.custom_minimum_size = Vector2(140, 45)
 	cancel_button.add_theme_font_size_override("font_size", 14)
 	cancel_button.focus_mode = Control.FOCUS_ALL
@@ -88,12 +86,10 @@ func _setup_panel_content():
 	vbox.add_child(spacer2)
 
 func _setup_buttons():
-	"""Configura la navegación de botones"""
 	confirm_button.focus_neighbor_right = cancel_button.get_path()
 	cancel_button.focus_neighbor_left = confirm_button.get_path()
 
 func _connect_signals():
-	"""Conecta las señales de los botones"""
 	confirm_button.pressed.connect(_on_confirm_exit)
 	cancel_button.pressed.connect(_on_cancel_exit)
 	
@@ -103,7 +99,6 @@ func _connect_signals():
 	cancel_button.focus_entered.connect(_on_button_focus.bind(cancel_button))
 
 func show():
-	"""Muestra el diálogo de confirmación"""
 	if is_showing:
 		return
 	
@@ -123,7 +118,6 @@ func show():
 		cancel_button.grab_focus()
 
 func hide():
-	"""Oculta el diálogo de confirmación"""
 	if not is_showing:
 		return
 	
@@ -136,7 +130,6 @@ func hide():
 	is_showing = false
 
 func handle_input(event: InputEvent):
-	"""Maneja la entrada cuando el diálogo está visible"""
 	if event.is_action_pressed("ui_accept") or event.is_action_pressed("gamepad_accept"):
 		if confirm_button.has_focus():
 			_on_confirm_exit()
@@ -150,18 +143,15 @@ func handle_input(event: InputEvent):
 		cancel_button.grab_focus()
 
 func _on_confirm_exit():
-	"""Maneja la confirmación de salida"""
 	main_scene.audio_helper.play_notification_sound()
 	is_showing = false
 	main_scene.return_to_menu()
 
 func _on_cancel_exit():
-	"""Maneja la cancelación de salida"""
 	main_scene.audio_helper.play_card_hover_sound()
 	hide()
 
 func _on_button_hover(button: Button):
-	"""Maneja el hover de botones"""
 	main_scene.audio_helper.play_card_hover_sound()
 	var tween = main_scene.create_tween()
 	tween.tween_property(button, "scale", Vector2(1.05, 1.05), 0.1)
@@ -170,12 +160,10 @@ func _on_button_hover(button: Button):
 		button.mouse_exited.connect(_on_button_unhover.bind(button))
 
 func _on_button_unhover(button: Button):
-	"""Maneja cuando se quita el hover"""
 	var tween = main_scene.create_tween()
 	tween.tween_property(button, "scale", Vector2(1.0, 1.0), 0.1)
 
 func _on_button_focus(button: Button):
-	"""Maneja el focus de botones"""
 	main_scene.audio_helper.play_card_hover_sound()
 	
 	var tween = main_scene.create_tween()
@@ -185,6 +173,5 @@ func _on_button_focus(button: Button):
 		button.focus_exited.connect(_on_button_unfocus.bind(button))
 
 func _on_button_unfocus(button: Button):
-	"""Maneja cuando se quita el focus"""
 	var tween = main_scene.create_tween()
 	tween.tween_property(button, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.1)

@@ -56,14 +56,14 @@ alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 0.8, 1)
 theme_override_font_sizes/font_size = 36
-text = "⚔️ SELECCIONA DIFICULTAD ⚔️"
+text = "⚔️ SELECT DIFFICULTY ⚔️"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="MenuContainer/TitleContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.8, 0.9, 1)
 theme_override_font_sizes/font_size = 16
-text = "Elige tu nivel de desafío"
+text = "Choose your challenge level"
 horizontal_alignment = 1
 
 [node name="DifficultyContainer" type="HBoxContainer" parent="MenuContainer"]
@@ -125,30 +125,30 @@ size_flags_vertical = 3
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 theme_override_font_sizes/font_size = 14
-text = "👤 JUGADOR:"
+text = "👤 PLAYER:"
 horizontal_alignment = 1
 
 [node name="PlayerDetails" type="Label" parent="MenuContainer/DifficultyContainer/NormalContainer/NormalCard/NormalContent/NormalStats"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.9, 0.7, 1)
 theme_override_font_sizes/font_size = 12
-text = "44 HP | 10 Maná
-2 cartas por turno | 4 en mano"
+text = "44 HP | 10 Mana
+2 cards per turn | 4 in hand"
 horizontal_alignment = 1
 
 [node name="AIStats" type="Label" parent="MenuContainer/DifficultyContainer/NormalContainer/NormalCard/NormalContent/NormalStats"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 theme_override_font_sizes/font_size = 14
-text = "🤖 IA:"
+text = "🤖 AI:"
 horizontal_alignment = 1
 
 [node name="AIDetails" type="Label" parent="MenuContainer/DifficultyContainer/NormalContainer/NormalCard/NormalContent/NormalStats"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.7, 1)
 theme_override_font_sizes/font_size = 12
-text = "44 HP | 10 Maná
-2 cartas por turno| Equilibrada"
+text = "44 HP | 10 Mana
+2 cards per turn | Balanced"
 horizontal_alignment = 1
 
 [node name="Spacer2" type="Control" parent="MenuContainer/DifficultyContainer"]
@@ -190,7 +190,7 @@ grow_vertical = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.6, 0.2, 1)
 theme_override_font_sizes/font_size = 24
-text = "DIFÍCIL"
+text = "HARD"
 horizontal_alignment = 1
 
 [node name="HardImage" type="TextureRect" parent="MenuContainer/DifficultyContainer/HardContainer/HardCard/HardContent"]
@@ -209,30 +209,30 @@ size_flags_vertical = 3
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 theme_override_font_sizes/font_size = 14
-text = "👤 JUGADOR:"
+text = "👤 PLAYER:"
 horizontal_alignment = 1
 
 [node name="PlayerDetails" type="Label" parent="MenuContainer/DifficultyContainer/HardContainer/HardCard/HardContent/HardStats"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.9, 0.7, 1)
 theme_override_font_sizes/font_size = 12
-text = "44 HP | 10 Maná
-1 carta por turno | 5 en mano"
+text = "44 HP | 10 Mana
+1 card per turn | 5 in hand"
 horizontal_alignment = 1
 
 [node name="AIStats" type="Label" parent="MenuContainer/DifficultyContainer/HardContainer/HardCard/HardContent/HardStats"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 theme_override_font_sizes/font_size = 14
-text = "🤖 IA:"
+text = "🤖 AI:"
 horizontal_alignment = 1
 
 [node name="AIDetails" type="Label" parent="MenuContainer/DifficultyContainer/HardContainer/HardCard/HardContent/HardStats"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.7, 1)
 theme_override_font_sizes/font_size = 12
-text = "45 HP | 10 Maná
-2 cartas por turno | Agresiva"
+text = "45 HP | 10 Mana
+2 cards per turn | Aggressive"
 horizontal_alignment = 1
 
 [node name="Spacer3" type="Control" parent="MenuContainer/DifficultyContainer"]
@@ -274,7 +274,7 @@ grow_vertical = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
 theme_override_font_sizes/font_size = 24
-text = "EXPERTO"
+text = "EXPERT"
 horizontal_alignment = 1
 
 [node name="ExpertImage" type="TextureRect" parent="MenuContainer/DifficultyContainer/ExpertContainer/ExpertCard/ExpertContent"]
@@ -293,30 +293,30 @@ size_flags_vertical = 3
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 theme_override_font_sizes/font_size = 14
-text = "👤 JUGADOR:"
+text = "👤 PLAYER:"
 horizontal_alignment = 1
 
 [node name="PlayerDetails" type="Label" parent="MenuContainer/DifficultyContainer/ExpertContainer/ExpertCard/ExpertContent/ExpertStats"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.9, 0.7, 1)
 theme_override_font_sizes/font_size = 12
-text = "42 HP | 9 Maná
-1 carta por turno | 6 en mano"
+text = "42 HP | 9 Mana
+1 card per turn | 6 in hand"
 horizontal_alignment = 1
 
 [node name="AIStats" type="Label" parent="MenuContainer/DifficultyContainer/ExpertContainer/ExpertCard/ExpertContent/ExpertStats"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 theme_override_font_sizes/font_size = 14
-text = "🤖 IA:"
+text = "🤖 AI:"
 horizontal_alignment = 1
 
 [node name="AIDetails" type="Label" parent="MenuContainer/DifficultyContainer/ExpertContainer/ExpertCard/ExpertContent/ExpertStats"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.7, 1)
 theme_override_font_sizes/font_size = 12
-text = "45 HP | 11 Maná
-3 cartas por turno | Brutal"
+text = "45 HP | 11 Mana
+3 cards per turn | Brutal"
 horizontal_alignment = 1
 
 [node name="ButtonsContainer" type="HBoxContainer" parent="MenuContainer"]
@@ -328,7 +328,7 @@ alignment = 1
 custom_minimum_size = Vector2(150, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "⬅️ VOLVER"
+text = "⬅️ BACK"
 
 [node name="Spacer5" type="Control" parent="MenuContainer/ButtonsContainer"]
 custom_minimum_size = Vector2(50, 0)
@@ -338,7 +338,7 @@ layout_mode = 2
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "🎮 COMENZAR"
+text = "🎮 START"
 
 [node name="AudioManager" type="Node" parent="."]
 

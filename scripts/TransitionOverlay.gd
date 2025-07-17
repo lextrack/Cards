@@ -13,23 +13,22 @@ func _ready():
 	loading_icon = get_node("LoadingContainer/LoadingIcon")
 	
 	if not overlay:
-		push_error("No se encontró el nodo Overlay en TransitionOverlay")
+		push_error("Overlay node not found in TransitionOverlay")
 		return
 	if not loading_container:
-		push_error("No se encontró el nodo LoadingContainer en TransitionOverlay")
+		push_error("LoadingContainer node not found in TransitionOverlay")
 		return
 	if not loading_icon:
-		push_error("No se encontró el nodo LoadingIcon en TransitionOverlay")
+		push_error("LoadingIcon node not found in TransitionOverlay")
 		return
 	
-	# Configurar el pivot al centro para rotación correcta
-	loading_icon.pivot_offset = Vector2(64, 64)  # Centro del contenedor de 128x128
+	loading_icon.pivot_offset = Vector2(64, 64)
 	
 	overlay.color.a = 0.0
 	loading_container.modulate.a = 0.0
 	loading_icon.rotation = 0.0
 	
-	print("TransitionOverlay inicializado correctamente")
+	print("TransitionOverlay initialized correctly")
 
 func start_loading_animation():
 	if rotation_tween:
@@ -53,7 +52,7 @@ func stop_loading_animation():
 
 func fade_in(duration: float = 0.5):
 	if not overlay or not loading_container:
-		push_error("Nodos no disponibles en fade_in")
+		push_error("Nodes not available in fade_in")
 		return
 	
 	start_loading_animation()
@@ -68,7 +67,7 @@ func fade_in(duration: float = 0.5):
 
 func fade_out(duration: float = 0.5):
 	if not overlay or not loading_container:
-		push_error("Nodos no disponibles en fade_out")
+		push_error("Nodes not available in fade_out")
 		return
 	
 	var tween = create_tween()
@@ -83,7 +82,7 @@ func fade_out(duration: float = 0.5):
 
 func instant_black():
 	if not overlay or not loading_container:
-		push_error("Nodos no disponibles en instant_black")
+		push_error("Nodes not available in instant_black")
 		return
 		
 	overlay.color.a = 1.0
@@ -92,13 +91,13 @@ func instant_black():
 
 func instant_clear():
 	if not overlay or not loading_container:
-		push_error("Nodos no disponibles en instant_clear")
+		push_error("Nodes not available in instant_clear")
 		return
 		
 	overlay.color.a = 0.0
 	loading_container.modulate.a = 0.0
 	stop_loading_animation()
-
+	
 func is_covering():
 	if not overlay:
 		return false

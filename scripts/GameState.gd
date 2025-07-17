@@ -6,7 +6,7 @@ var wins: int = 0
 var losses: int = 0
 
 func _ready():
-	print("GameState inicializado")
+	print("GameState initialized")
 
 func get_selected_difficulty() -> String:
 	return selected_difficulty
@@ -33,7 +33,7 @@ func reset_stats():
 
 func get_stats_text() -> String:
 	if games_played == 0:
-		return "Sin estadísticas aún"
-	
+		return "No statistics yet"
+   
 	var win_rate = get_win_rate() * 100
-	return "Partidas: %d | Victorias: %d | Derrotas: %d | Tasa: %.1f%%" % [games_played, wins, losses, win_rate]
+	return "Games: %d | Wins: %d | Losses: %d | Rate: %.1f%%" % [games_played, wins, losses, win_rate]
