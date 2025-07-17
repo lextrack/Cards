@@ -154,7 +154,7 @@ func check_auto_end_turn():
 		return true
 	
 	if hand.size() == 0:
-		auto_turn_ended.emit("no_cards")
+		#auto_turn_ended.emit("no_cards")
 		return true
 	
 	var playable_cards = []

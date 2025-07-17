@@ -106,7 +106,6 @@ func _on_ai_notification_shown(card_name: String):
 func _on_ai_notification_hidden():
 	print("🤖 AI notification hidden")
 
-# REVISAR ESTO LUEGO
 func cleanup_notifications():
 	if ai_notification:
 		ai_notification.force_close()
@@ -118,8 +117,7 @@ func cleanup_notifications():
 		controls_panel.force_hide()
 	
 	if OS.is_debug_build():
-		print("🧹 Notifications cleaned up")
-#######################################################
+		print("Notifications cleaned up")
 
 func _setup_controls_panel():
 	controls_panel = controls_panel_scene.instantiate()
@@ -277,8 +275,7 @@ func _on_player_hand_changed():
 	ui_manager.update_turn_button_text(player, end_turn_button, input_manager.gamepad_mode)
 	
 	if is_player_turn and player.get_hand_size() == 0:
-		# ✅ Emitir señal para sin cartas
-		game_notification.show_auto_end_turn_notification("no_cards")
+		#game_notification.show_auto_end_turn_notification("no_cards")
 		await game_manager.end_turn_no_cards()
 		start_ai_turn()
 
@@ -292,7 +289,7 @@ func _on_player_cards_played_changed(cards_played: int, max_cards: int):
 		await game_manager.end_turn_limit_reached()
 		start_ai_turn()
 	elif is_player_turn and player.get_hand_size() == 0:
-		game_notification.show_auto_end_turn_notification("no_cards")
+		#game_notification.show_auto_end_turn_notification("no_cards")
 		await game_manager.end_turn_no_cards()
 		start_ai_turn()
 

@@ -55,7 +55,6 @@ static func create_hybrid_card(name: String, cost: int, damage: int, heal: int, 
 	return from_template(template)
 
 static func create_custom_card(template: Dictionary) -> CardData:
-	# Validate template before creation
 	if not _validate_template(template):
 		push_error("Invalid card template: " + str(template))
 		return _create_default_card()
@@ -82,7 +81,6 @@ static func _generate_description(card: CardData) -> String:
 		return " | ".join(effects)
 
 static func _validate_template(template: Dictionary) -> bool:
-	# Check required fields
 	if not template.has("name") or template.get("name", "") == "":
 		return false
 	
@@ -91,8 +89,7 @@ static func _validate_template(template: Dictionary) -> bool:
 	
 	if not template.has("type") or template.get("type", "") == "":
 		return false
-	
-	# Verify it has at least one effect
+
 	var damage = template.get("damage", 0)
 	var heal = template.get("heal", 0)
 	var shield = template.get("shield", 0)
@@ -100,7 +97,6 @@ static func _validate_template(template: Dictionary) -> bool:
 	if damage + heal + shield <= 0:
 		return false
 	
-	# Verify values are reasonable
 	if damage > 30 or heal > 30 or shield > 20:
 		return false
 	

@@ -1,7 +1,6 @@
 class_name CardDatabase
 extends RefCounted
 
-# Definiciones de cartas organizadas por tipo y rareza
 static func get_attack_cards() -> Array[Dictionary]:
 	return [
 		# COMMON ATTACKS

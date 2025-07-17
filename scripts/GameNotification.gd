@@ -6,7 +6,6 @@ extends Control
 @onready var notification_text = $Background/VBox/NotificationText
 @onready var notification_detail = $Background/VBox/NotificationDetail
 
-# Configuración
 const MAX_QUEUE_SIZE = 10
 const DEFAULT_DURATION = 2.0
 const PRIORITY_DURATION = 3.0
@@ -24,7 +23,6 @@ var notification_queue: Array = []
 var total_notifications_shown: int = 0
 var notification_id_counter: int = 0
 
-# Señales para eventos
 signal notification_shown(notification_id: int, title: String)
 signal notification_hidden(notification_id: int)
 signal queue_emptied
@@ -242,28 +240,23 @@ func show_game_end_notification(winner: String, reason: String):
 	config.priority = priority
 	show_notification_from_config(config)
 
-# Sistema de prioridades
 func show_priority_notification(title: String, text: String, detail: String, color: Color, priority: NotificationPriority = NotificationPriority.HIGH):
 	match priority:
 		NotificationPriority.CRITICAL:
-   		# Limpiar cola y mostrar inmediatamente
 			clear_all_notifications()
 			if is_showing:
 				await force_hide()
 			await show_notification(title, text, detail, color, PRIORITY_DURATION)
    	
 		NotificationPriority.HIGH:
-   		# Insertar al principio de la cola
 			var notification = _create_notification_data(title, text, detail, color, PRIORITY_DURATION)
 			notification_queue.push_front(notification)
 			if not is_showing:
 				process_next_notification()
    	
 		_:
-   		# Comportamiento normal
 			queue_notification(title, text, detail, color, DEFAULT_DURATION)
 
-# Configuración flexible
 class NotificationConfig:
 	var title: String
 	var text: String
@@ -291,10 +284,9 @@ func show_notification_from_config(config: NotificationConfig):
 			queue_notification(config.title, config.text, config.detail, config.color, config.duration, config.callback)
 
 func queue_notification(title: String, text: String, detail: String, color: Color, duration: float, callback: Callable = Callable()):
-   # Verificar límite de cola
 	if notification_queue.size() >= MAX_QUEUE_SIZE:
 		queue_overflow.emit()
-		notification_queue.pop_front()  # Remover el más antiguo
+		notification_queue.pop_front()
    
 	var notification = _create_notification_data(title, text, detail, color, duration, callback)
 	notification_queue.append(notification)
@@ -330,7 +322,6 @@ func clear_all_notifications():
 	is_showing = false
 	visible = false
 
-# Métodos de conveniencia
 func show_error(message: String, detail: String = ""):
 	var config = NotificationConfig.new("❌ Error", message, detail, Color.RED, 4.0)
 	config.priority = NotificationPriority.CRITICAL
@@ -349,7 +340,6 @@ func show_info(message: String, detail: String = ""):
 	var config = NotificationConfig.new("ℹ️ Info", message, detail, Color.CYAN, 2.0)
 	show_notification_from_config(config)
 
-# Utilidades y debugging
 func get_notification_stats() -> Dictionary:
 	return {
 		"queue_size": notification_queue.size(),

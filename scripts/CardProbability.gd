@@ -156,7 +156,7 @@ static func simulate_deck_draws(deck: Array, draws: int = 1000) -> Dictionary:
 	
 	return simulation
 
-# Clase de compatibilidad (mantener para no romper código existente)
+# Clase de compatibilidad
 class CardTemplate:
 	var name: String
 	var cost: int
