@@ -51,7 +51,7 @@ alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 0.8, 1)
 theme_override_font_sizes/font_size = 36
-text = "📚 AYUDA"
+text = "📚 HELP"
 horizontal_alignment = 1
 
 [node name="Spacer1" type="Control" parent="MainContainer"]
@@ -93,7 +93,7 @@ grow_vertical = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 18
-text = "📑 TEMAS:"
+text = "📑 TOPICS:"
 
 [node name="TopicsSeparator" type="HSeparator" parent="MainContainer/ContentContainer/TopicsPanel/TopicsContainer"]
 layout_mode = 2
@@ -139,9 +139,9 @@ size_flags_vertical = 3
 theme_override_colors/default_color = Color(0.9, 0.9, 0.9, 1)
 theme_override_font_sizes/normal_font_size = 13
 bbcode_enabled = true
-text = "Selecciona un tema de la izquierda para ver su contenido aquí.
+text = "Select a topic from the left to view its contents here.
 
-Este es el sistema de ayuda interactivo de Card Master. Aquí encontrarás toda la información que necesitas para dominar el juego."
+This is Card Master's interactive help system. Here you will find all the information you need to master the game."
 fit_content = true
 
 [node name="Spacer3" type="Control" parent="MainContainer"]

@@ -10,99 +10,117 @@ var is_transitioning: bool = false
 var selected_topic_button: Button = null
 
 var help_topics = {
-	"📖 Reglas Básicas": """[font_size=24][color=yellow]⚔️ REGLAS DEL JUEGO[/color][/font_size]
+	"📖 Basic Rules": """[font_size=24][color=yellow]⚔️ GAME RULES[/color][/font_size]
 
-[font_size=18][color=lightblue]🎯 OBJETIVO:[/color][/font_size]
-Reduce la vida del oponente a 0 para ganar la partida.
+[font_size=18][color=lightblue]🎯 OBJECTIVE:[/color][/font_size]
+Reduce your opponent's health to 0 to win the match.
 
-[font_size=18][color=lightblue]🎮 TURNOS:[/color][/font_size]
-• Cada turno recibes maná completo y robas cartas
-• Puedes jugar cartas pagando su costo de maná
-• Tienes un límite de cartas por turno (según dificultad)
-• Al terminar tu turno, el oponente juega
+[font_size=18][color=lightblue]🎮 TURNS:[/color][/font_size]
+• Each turn you receive full mana and draw cards
+• You can play cards by paying their mana cost
+• You have a card limit per turn (based on difficulty)
+• When you end your turn, the opponent plays
 
-[font_size=18][color=lightblue]💎 RECURSOS:[/color][/font_size]
-• [color=red]VIDA[/color]: Si llega a 0, pierdes la partida
-• [color=cyan]MANÁ[/color]: Se usa para jugar cartas, se regenera cada turno
-• [color=orange]CARTAS[/color]: Tu arsenal: según la dificultad, puedes usar hasta 4 o 5 cartas por turno. Las especiales brillan más
-• [color=white]MAZOS[/color]: Cantidad de cartas disponible (se repone automáticamente, nunca te faltan)""",
+[font_size=18][color=lightblue]💎 RESOURCES:[/color][/font_size]
+• [color=red]HEALTH[/color]: If it reaches 0, you lose the match
+• [color=cyan]MANA[/color]: Used to play cards, regenerates each turn
+• [color=orange]CARDS[/color]: Your arsenal: depending on difficulty, you can use up to 4 or 5 cards per turn. Special cards shine brighter
+• [color=white]DECKS[/color]: Available card count (automatically replenished, you'll never run out)""",
 
-	"🃏 Tipos de Cartas": """[font_size=24][color=yellow]🗂️ TIPOS DE CARTAS[/color][/font_size]
+	"🃏 Card Types": """[font_size=24][color=yellow]🗂️ CARD TYPES[/color][/font_size]
 
-[font_size=18][color=red]⚔️ CARTAS DE ATAQUE:[/color][/font_size]
-• Causan daño directo al oponente
-• Primero afectan el escudo, luego la vida
-• Ejemplos de ese tipo: Golpe Básico (1 daño), Espada Afilada (5 daño)
+[font_size=18][color=red]⚔️ ATTACK CARDS:[/color][/font_size]
+• Deal direct damage to the opponent
+• First affects shield, then health
+• Examples: Basic Strike (1 damage), Sharp Sword (5 damage)
 
-[font_size=18][color=green]💚 CARTAS DE CURACIÓN:[/color][/font_size]
-• Restauran tu vida perdida
-• Puedes usarlos incluso excediendo tu vida máxima
-• Ejemplos: Vendaje (2 vida), Poción Mayor (8 vida)
+[font_size=18][color=green]💚 HEALING CARDS:[/color][/font_size]
+• Restore your lost health
+• Can be used even exceeding your max health
+• Examples: Bandage (2 health), Major Potion (8 health)
 
-[font_size=18][color=cyan]🛡️ CARTAS DE ESCUDO:[/color][/font_size]
-• Absorben el daño recibido
-• Se acumulan si usas varias seguidas
-• No se regeneran automáticamente
-• Ejemplos: Bloqueo (2 escudo), Escudo Reforzado (6 escudo)""",
+[font_size=18][color=cyan]🛡️ SHIELD CARDS:[/color][/font_size]
+• Absorb incoming damage
+• Stack if used consecutively
+• Don't regenerate automatically
+• Examples: Block (2 shield), Reinforced Shield (6 shield)""",
 
-	"⭐ Sistema de Rareza": """[font_size=24][color=yellow]💎 RAREZA DE CARTAS[/color][/font_size]
+	"⭐ Rarity System": """[font_size=24][color=yellow]💎 CARD RARITY[/color][/font_size]
 
-[font_size=18][color=white]⚪ COMUNES (Blancas):[/color][/font_size]
-• Cartas básicas y equilibradas
-• Aparecen frecuentemente
-• Efectos simples pero útiles
-• Ejemplo: Golpe Básico, Vendaje
+[font_size=18][color=white]⚪ COMMON (White):[/color][/font_size]
+• Basic balanced cards
+• Appear frequently
+• Simple but useful effects
+• Example: Basic Strike, Bandage
 
-[font_size=18][color=green]🟢 POCO COMUNES (Verdes):[/color][/font_size]
-• Efectos más potentes que las comunes
-• Aparecen ocasionalmente
-• Mayor brillo visual
-• Ejemplo: Espada Afilada, Poción
+[font_size=18][color=green]🟢 UNCOMMON (Green):[/color][/font_size]
+• More powerful effects than common cards
+• Appear occasionally
+• More visual shine
+• Example: Sharp Sword, Potion
 
-[font_size=18][color=cyan]🔵 RARAS (Azules):[/color][/font_size]
-• Cartas muy poderosas
-• Solo a veces aparecen
-• Brillo azul distintivo
-• Ejemplo: Golpe Crítico, Curación Mayor
+[font_size=18][color=cyan]🔵 RARE (Blue):[/color][/font_size]
+• Very powerful cards
+• Only appear sometimes
+• Distinctive blue glow
+• Example: Critical Strike, Major Heal
 
-[font_size=18][color=magenta]🟣 ÉPICAS (Púrpuras):[/color][/font_size]
-• Las más poderosas del juego
-• Efectos devastadores
-• Ejemplo: Aniquilación (20 daño), Regeneración (12 vida)""",
+[font_size=18][color=magenta]🟣 EPIC (Purple):[/color][/font_size]
+• Most powerful in the game
+• Devastating effects
+• Example: Annihilation (20 damage), Regeneration (12 health)""",
 
-	"🎚️ Niveles de Dificultad": """[font_size=24][color=yellow]⚖️ DIFICULTADES DISPONIBLES[/color][/font_size]
+	"🎚️ Difficulty Levels": """[font_size=24][color=yellow]⚖️ AVAILABLE DIFFICULTIES[/color][/font_size]
 
 [font_size=18][color=green]🟢 NORMAL:[/color][/font_size]
-[color=lightblue]👤 Jugador:[/color] 35 HP, 10 Maná, 2 cartas/turno, 5 en mano
-[color=orange]🤖 IA:[/color] 35 HP, 10 Maná, estrategia equilibrada
+[color=lightblue]👤 Player:[/color] 35 HP, 10 Mana, 2 cards/turn, 5 in hand
+[color=orange]🤖 AI:[/color] 35 HP, 10 Mana, balanced strategy
 
-[font_size=18][color=orange]🟠 DIFÍCIL:[/color][/font_size]
-[color=lightblue]👤 Jugador:[/color] 33 HP, 10 Maná, 1 carta/turno, 5 en mano
-[color=orange]🤖 IA:[/color] 35 HP, 10 Maná, estrategia agresiva
+[font_size=18][color=orange]🟠 HARD:[/color][/font_size]
+[color=lightblue]👤 Player:[/color] 33 HP, 10 Mana, 1 card/turn, 5 in hand
+[color=orange]🤖 AI:[/color] 35 HP, 10 Mana, aggressive strategy
 
-[font_size=18][color=red]🔴 EXPERTO:[/color][/font_size]
-[color=lightblue]👤 Jugador:[/color] 30 HP, 8 Maná, 1 carta/turno, 4 en mano
-[color=orange]🤖 IA:[/color] 38 HP, 12 Maná, estrategia brutal""",
+[font_size=18][color=red]🔴 EXPERT:[/color][/font_size]
+[color=lightblue]👤 Player:[/color] 30 HP, 8 Mana, 1 card/turn, 4 in hand
+[color=orange]🤖 AI:[/color] 38 HP, 12 Mana, brutal strategy""",
 
-	"⚔️ Sistema de Combate": """[font_size=24][color=yellow]🎲 MECÁNICAS DE COMBATE[/color][/font_size]
+	"⚔️ Combat System": """[font_size=24][color=yellow]🎲 COMBAT MECHANICS[/color][/font_size]
 
-[font_size=18][color=cyan]💥 DAÑO Y ESCUDO:[/color][/font_size]
-• El escudo absorbe daño antes que la vida
-• Si el daño es mayor que el escudo, la diferencia va a vida
-• Acumula escudos usando múltiples cartas
+[font_size=18][color=cyan]💥 DAMAGE & SHIELD:[/color][/font_size]
+• Shield absorbs damage before health
+• If damage exceeds shield, the difference goes to health
+• Stack shields using multiple cards
 
-[font_size=18][color=red]🔥 BONUS DE DAÑO:[/color][/font_size]
-• [color=orange]Turno 4:[/color] +1 daño a todos los ataques
-• [color=orange]Turno 7:[/color] +2 daño a todos los ataques  
-• [color=orange]Turno 10:[/color] +3 daño a todos los ataques
-• [color=orange]Turno 15+:[/color] +4 daño a todos los ataques
-• Al superar esos niveles, el bonus se aplica automáticamente a todos los contendientes
+[font_size=18][color=red]🔥 DAMAGE BONUS:[/color][/font_size]
+• [color=orange]Turn 4:[/color] +1 damage to all attacks
+• [color=orange]Turn 7:[/color] +2 damage to all attacks  
+• [color=orange]Turn 10:[/color] +3 damage to all attacks
+• [color=orange]Turn 15+:[/color] +4 damage to all attacks
+• After reaching these thresholds, the bonus applies automatically to all combatants
 
-[font_size=18][color=green]🔄 RECICLAJE DE CARTAS:[/color][/font_size]
-• Cuando se agota el mazo, las cartas usadas se reintegran
-• Nunca te quedarás completamente sin opciones
-• La estrategia cambia según las cartas disponibles
-• En general, el reciclaje y retiro/robo de cartas es automático, no debes hacer nada"""
+[font_size=18][color=green]🔄 CARD RECYCLING:[/color][/font_size]
+• When the deck is empty, used cards are reshuffled
+• You'll never run completely out of options
+• Strategy changes based on available cards
+• Generally, card recycling and drawing is automatic, no action required""",
+
+	"🎮 Controls": """[font_size=24][color=yellow]🕹️ GAME CONTROLS[/color][/font_size]
+
+[font_size=18][color=orange]🎯 IN-GAME CONTROLS:[/color][/font_size]
+[font_size=16][color=white]With Controller:[/color][/font_size]
+- [color=lime]Left/Right:[/color] Navigate between cards
+- [color=lime]A:[/color] Play selected card
+- [color=lime]B:[/color] End turn
+- [color=lime]X:[/color] Restart match
+- [color=lime]Y:[/color] Return to main menu
+- [color=lime]START:[/color] View key mapping
+
+[font_size=16][color=white]With Keyboard/Mouse:[/color][/font_size]
+- [color=lime]Click on card:[/color] Play card
+- [color=lime]Click "End Turn":[/color] End turn
+- [color=lime]R:[/color] Restart match
+- [color=lime]ESC:[/color] Return to main menu
+- [color=lime]H:[/color] View key mapping"""
 }
 
 func _ready():

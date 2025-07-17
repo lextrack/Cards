@@ -296,7 +296,6 @@ static func validate_database() -> Dictionary:
 	var card_names = []
 	
 	for card in all_cards:
-		# Verificar campos requeridos
 		if not card.has("name") or card.get("name", "") == "":
 			validation.errors.append("Carta sin nombre encontrada")
 			validation.valid = false
@@ -309,7 +308,6 @@ static func validate_database() -> Dictionary:
 			validation.errors.append("Costo inválido para: " + str(card.get("name", "Sin nombre")))
 			validation.valid = false
 		
-		# Verificar nombres duplicados
 		var name = card.get("name", "")
 		if name in card_names:
 			validation.errors.append("Nombre duplicado: " + name)
@@ -317,7 +315,6 @@ static func validate_database() -> Dictionary:
 		else:
 			card_names.append(name)
 		
-		# Verificar balance de poder
 		var power = card.get("damage", 0) + card.get("heal", 0) + card.get("shield", 0)
 		if power == 0:
 			validation.warnings.append("Carta sin efecto: " + name)

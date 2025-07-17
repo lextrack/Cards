@@ -4,17 +4,14 @@ extends RefCounted
 static func from_template(template: Dictionary) -> CardData:
 	var card = CardData.new()
 	
-	# Campos básicos
-	card.card_name = template.get("name", "Carta Sin Nombre")
+	card.card_name = template.get("name", "Unnamed Card")
 	card.cost = template.get("cost", 1)
 	card.card_type = template.get("type", "attack")
 	
-	# Efectos
 	card.damage = template.get("damage", 0)
 	card.heal = template.get("heal", 0)
 	card.shield = template.get("shield", 0)
 	
-	# Generar descripción automáticamente
 	card.description = _generate_description(card)
 	
 	return card
@@ -58,9 +55,9 @@ static func create_hybrid_card(name: String, cost: int, damage: int, heal: int, 
 	return from_template(template)
 
 static func create_custom_card(template: Dictionary) -> CardData:
-	# Validar template antes de crear
+	# Validate template before creation
 	if not _validate_template(template):
-		push_error("Template de carta inválido: " + str(template))
+		push_error("Invalid card template: " + str(template))
 		return _create_default_card()
 	
 	return from_template(template)
@@ -69,23 +66,23 @@ static func _generate_description(card: CardData) -> String:
 	var effects = []
 	
 	if card.damage > 0:
-		effects.append("Daño: " + str(card.damage))
+		effects.append("Damage: " + str(card.damage))
 	
 	if card.heal > 0:
-		effects.append("Cura: " + str(card.heal))
+		effects.append("Heal: " + str(card.heal))
 	
 	if card.shield > 0:
-		effects.append("Escudo: " + str(card.shield))
+		effects.append("Shield: " + str(card.shield))
 	
 	if effects.size() == 0:
-		return "Sin efecto"
+		return "No effect"
 	elif effects.size() == 1:
 		return effects[0]
 	else:
 		return " | ".join(effects)
 
 static func _validate_template(template: Dictionary) -> bool:
-	# Verificar campos obligatorios
+	# Check required fields
 	if not template.has("name") or template.get("name", "") == "":
 		return false
 	
@@ -95,7 +92,7 @@ static func _validate_template(template: Dictionary) -> bool:
 	if not template.has("type") or template.get("type", "") == "":
 		return false
 	
-	# Verificar que tenga al menos un efecto
+	# Verify it has at least one effect
 	var damage = template.get("damage", 0)
 	var heal = template.get("heal", 0)
 	var shield = template.get("shield", 0)
@@ -103,7 +100,7 @@ static func _validate_template(template: Dictionary) -> bool:
 	if damage + heal + shield <= 0:
 		return false
 	
-	# Verificar que los valores sean razonables
+	# Verify values are reasonable
 	if damage > 30 or heal > 30 or shield > 20:
 		return false
 	
@@ -111,7 +108,7 @@ static func _validate_template(template: Dictionary) -> bool:
 
 static func _create_default_card() -> CardData:
 	var default_template = {
-		"name": "Carta Básica",
+		"name": "Basic Card",
 		"cost": 1,
 		"damage": 1,
 		"type": "attack"
@@ -142,7 +139,7 @@ static func modify_card(original: CardData, modifications: Dictionary) -> CardDa
 
 static func scale_card_power(card: CardData, multiplier: float) -> CardData:
 	var template = {
-		"name": card.card_name + " (Mejorada)",
+		"name": card.card_name + " (Upgraded)",
 		"cost": max(1, int(card.cost * multiplier)),
 		"damage": int(card.damage * multiplier),
 		"heal": int(card.heal * multiplier),

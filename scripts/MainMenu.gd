@@ -160,10 +160,10 @@ func show_credits_popup():
 	var credits_text = """
 	🎮 CARD MASTER
 	
-	Desarrollado por: Lextrack
-	
-	🎵 Audio:
-	Efectos de sonido de freesound.org
+	🎵 Audio (Usuarios):
+			freesound.org: 
+	Raclure, Diasyl, Loyalty_Freak_Music,
+	designerschoice, BeezleFM
 	
 	🎨 Arte:
 	Iconos de la comunidad

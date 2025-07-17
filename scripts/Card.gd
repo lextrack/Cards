@@ -121,8 +121,17 @@ func update_display():
 	cost_label.text = str(card_data.cost)
 
 	var rarity_text = DeckManager.get_card_rarity_text(card_data)
-	description_label.text = card_data.description
 	rarity_label.text = rarity_text
+	
+	match card_data.card_type:
+		"attack":
+			description_label.text = "Deals " + str(card_data.damage) + " damage"
+		"heal":
+			description_label.text = "Restores " + str(card_data.heal) + " health"
+		"shield":
+			description_label.text = "Grants " + str(card_data.shield) + " shield"
+		_:
+			description_label.text = card_data.description
 	
 	var type_colors = get_card_type_colors(card_data.card_type)
 	var rarity_colors = get_rarity_colors()

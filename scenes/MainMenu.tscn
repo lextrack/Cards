@@ -81,7 +81,7 @@ custom_minimum_size = Vector2(300, 60)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 20
-text = "COMENZAR PARTIDA"
+text = "START GAME"
 
 [node name="Spacer2" type="Control" parent="MenuContainer/ButtonsContainer"]
 custom_minimum_size = Vector2(0, 15)
@@ -92,7 +92,7 @@ custom_minimum_size = Vector2(300, 50)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 18
-text = "OPCIONES"
+text = "OPTIONS"
 
 [node name="Spacer3" type="Control" parent="MenuContainer/ButtonsContainer"]
 custom_minimum_size = Vector2(0, 10)
@@ -103,7 +103,7 @@ custom_minimum_size = Vector2(300, 50)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 18
-text = "AYUDA"
+text = "HELP"
 
 [node name="Spacer4" type="Control" parent="MenuContainer/ButtonsContainer"]
 custom_minimum_size = Vector2(0, 10)
@@ -114,7 +114,7 @@ custom_minimum_size = Vector2(300, 50)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 18
-text = "CRÉDITOS"
+text = "CREDITS"
 
 [node name="Spacer5" type="Control" parent="MenuContainer/ButtonsContainer"]
 custom_minimum_size = Vector2(0, 10)
@@ -125,7 +125,7 @@ custom_minimum_size = Vector2(300, 50)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 18
-text = "SALIR"
+text = "EXIT"
 
 [node name="FooterContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
