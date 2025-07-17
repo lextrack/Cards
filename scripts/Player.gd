@@ -35,14 +35,13 @@ signal damage_taken(damage_amount: int)
 func _ready():
 	setup_from_difficulty()
 	if is_ai:
-		deck = DeckManager.create_basic_deck()
+		deck = DeckGenerator.create_difficulty_deck(difficulty, 30)
 	else:
 		deck = create_player_deck_by_difficulty()
 	draw_initial_hand()
 	
 func create_player_deck_by_difficulty() -> Array:
-	var distribution = GameBalance.get_card_distribution(difficulty)
-	return CardProbability.create_balanced_deck(30, distribution.attack_ratio, distribution.heal_ratio, distribution.shield_ratio)
+	return DeckGenerator.create_difficulty_deck(difficulty, 30)
 
 func setup_from_difficulty():
 	GameBalance.setup_player(self, difficulty, is_ai)
@@ -176,7 +175,7 @@ func reset_player():
 	turn_number = 0
 	hand.clear()
 	discard_pile.clear()
-	deck = DeckManager.create_basic_deck()
+	deck = create_player_deck_by_difficulty()
 	draw_initial_hand()
 	
 	hp_changed.emit(current_hp)
@@ -185,6 +184,22 @@ func reset_player():
 	hand_changed.emit()
 	cards_played_changed.emit(cards_played_this_turn, get_max_cards_per_turn())
 	turn_changed.emit(turn_number, get_damage_bonus())
+	
+# OPCIONALES: 
+
+func analyze_deck() -> Dictionary:
+	var all_cards = deck + discard_pile + hand
+	return DeckGenerator.analyze_deck(all_cards)
+
+func get_deck_suggestions() -> Array:
+	var all_cards = deck + discard_pile + hand
+	return DeckGenerator.suggest_deck_improvements(all_cards)
+
+func debug_print_deck_info():
+	if OS.is_debug_build():
+		var all_cards = deck + discard_pile + hand
+		print("=== MAZO ", "IA" if is_ai else "JUGADOR", " (", difficulty.to_upper(), ") ===")
+		CardProbability.debug_print_deck_info(all_cards)
 
 func ai_turn(opponent: Player):
 	if not is_ai:

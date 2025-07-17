@@ -47,8 +47,35 @@ func initialize_game():
 	_setup_controls_panel()
 	_load_difficulty()
 	
+	if OS.is_debug_build():
+		_validate_card_system()
+	
 	await handle_scene_entrance()
 	setup_game()
+	
+func _validate_card_system():
+	"""Valida que el sistema de cartas funcione correctamente"""
+	var validation = CardProbability.run_full_validation()
+	
+	if not validation.database_valid:
+		print("❌ ERROR: Base de datos de cartas inválida:")
+		for error in validation.errors:
+			print("   ", error)
+	
+	if not validation.generation_working:
+		print("❌ ERROR: Generación de mazos no funciona")
+	
+	if validation.warnings.size() > 0:
+		print("⚠️  ADVERTENCIAS del sistema de cartas:")
+		for warning in validation.warnings:
+			print("   ", warning)
+	
+	if validation.database_valid and validation.generation_working:
+		print("✅ Sistema de cartas validado correctamente")
+		
+		# Mostrar estadísticas
+		var counts = CardDatabase.get_card_count()
+		print("📊 Cartas disponibles: ", counts.total, " (", counts.attack, " ataques, ", counts.heal, " curaciones, ", counts.shield, " escudos)")
 
 func _setup_components():
 	"""Configura los componentes principales"""
@@ -114,9 +141,64 @@ func setup_game():
 	_connect_player_signals()
 	_connect_ai_signals()
 	
+	if OS.is_debug_build():
+		_analyze_starting_decks()
+	
 	ui_manager.update_all_labels(player, ai)
 	ui_manager.update_hand_display(player, card_scene, hand_container)
 	start_player_turn()
+	
+func _analyze_starting_decks():
+	"""Análisis básico sin dependencias del nuevo sistema"""
+	print("\n🎴 ANÁLISIS BÁSICO DE MAZOS:")
+	
+	# Análisis simple del jugador
+	if player:
+		print("👤 JUGADOR (", difficulty.to_upper(), "):")
+		print("   Cartas en mazo: ", player.deck.size())
+		print("   Cartas en mano: ", player.hand.size())
+		print("   Cartas descartadas: ", player.discard_pile.size())
+		
+		# Contar tipos básicos
+		var attack_count = 0
+		var heal_count = 0
+		var shield_count = 0
+		var all_cards = player.deck + player.hand + player.discard_pile
+		
+		for card in all_cards:
+			if card is CardData:
+				match card.card_type:
+					"attack":
+						attack_count += 1
+					"heal":
+						heal_count += 1
+					"shield":
+						shield_count += 1
+		
+		print("   Distribución: ", attack_count, " ataques, ", heal_count, " curaciones, ", shield_count, " escudos")
+	
+	# Análisis simple de la IA
+	if ai:
+		print("🤖 IA (", difficulty.to_upper(), "):")
+		print("   Cartas en mazo: ", ai.deck.size())
+		print("   Cartas en mano: ", ai.hand.size())
+		print("   Cartas descartadas: ", ai.discard_pile.size())
+					
+func debug_analyze_current_decks():
+	"""Método para analizar mazos durante el juego (usar en consola de debug)"""
+	if not OS.is_debug_build():
+		print("Solo disponible en builds de debug")
+		return
+	
+	print("\n🔍 ANÁLISIS ACTUAL DE MAZOS:")
+	
+	if player:
+		print("👤 JUGADOR:")
+		player.debug_print_deck_info()
+	
+	if ai:
+		print("\n🤖 IA:")
+		ai.debug_print_deck_info()
 
 func _connect_player_signals():
 	"""Conecta las señales del jugador"""
