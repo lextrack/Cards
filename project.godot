@@ -21,6 +21,7 @@ config/icon="uid://cqpkcpdyj3o4k"
 
 TransitionManager="*res://scripts/TransitionManager.gd"
 GameState="*res://scripts/GameState.gd"
+StatisticsManagers="*res://scripts/StatisticsManager.gd"
 
 [display]
 

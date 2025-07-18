@@ -46,6 +46,9 @@ func initialize_game():
 	_setup_controls_panel()
 	_load_difficulty()
 	
+	if StatisticsManagers:
+		StatisticsManagers.start_game(difficulty)
+	
 	if OS.is_debug_build():
 		_validate_card_system()
 	
@@ -197,6 +200,20 @@ func debug_analyze_current_decks():
 	if ai:
 		print("\n🤖 AI:")
 		ai.debug_print_deck_info()
+		
+func _on_player_hp_changed(new_hp: int):
+	ui_manager.update_player_hp(new_hp)
+	
+	if StatisticsManagers and new_hp > player.current_hp:
+		var healing = new_hp - player.current_hp
+		StatisticsManagers.combat_action("healing_done", healing)
+
+func _on_player_shield_changed(new_shield: int):
+	ui_manager.update_player_shield(new_shield)
+	
+	if StatisticsManagers and new_shield > player.current_shield:
+		var shield_gained = new_shield - player.current_shield
+		StatisticsManagers.combat_action("shield_gained", shield_gained)
 
 func _connect_player_signals():
 	player.hp_changed.connect(ui_manager.update_player_hp)
@@ -210,6 +227,8 @@ func _connect_player_signals():
 	player.card_drawn.connect(_on_player_card_drawn)
 	player.auto_turn_ended.connect(_on_auto_turn_ended)
 	player.damage_taken.connect(_on_player_damage_taken)
+	player.hp_changed.connect(_on_player_hp_changed)
+	player.shield_changed.connect(_on_player_shield_changed)
 
 func _connect_ai_signals():
 	ai.hp_changed.connect(ui_manager.update_ai_hp)
@@ -232,6 +251,9 @@ func start_player_turn():
 func start_ai_turn():
 	is_player_turn = false
 	input_manager.start_ai_turn()
+	
+	if StatisticsManagers:
+		StatisticsManagers.turn_completed()
 	
 	controls_panel.force_hide()
 	audio_helper.play_turn_change_sound(false)
@@ -259,6 +281,9 @@ func restart_game():
 func _on_player_damage_taken(damage_amount: int):
 	audio_helper.play_damage_sound(damage_amount)
 	ui_manager.play_damage_effects(damage_amount)
+	
+	if StatisticsManagers:
+		StatisticsManagers.combat_action("damage_taken", damage_amount)
 
 func _on_player_hand_changed():
 	ui_manager.update_hand_display(player, card_scene, hand_container)
@@ -321,6 +346,10 @@ func _on_auto_turn_ended(reason: String):
 func _on_player_died():
 	cleanup_notifications()
 	audio_helper.play_lose_sound()
+	
+	if StatisticsManagers:
+		StatisticsManagers.end_game(false, difficulty, player.turn_number)
+		
 	GameState.add_game_result(false)
 	game_notification.show_game_end_notification("Defeat", "hp_zero")
 	await game_manager.handle_game_over("YOU LOST! Restarting...", end_turn_button)
@@ -333,6 +362,10 @@ func _on_ai_card_played(card: CardData):
 func _on_ai_died():
 	cleanup_notifications()
 	audio_helper.play_win_sound()
+	
+	if StatisticsManagers:
+		StatisticsManagers.end_game(true, difficulty, player.turn_number)
+		
 	GameState.add_game_result(true)
 	game_notification.show_game_end_notification("Victory!", "hp_zero")
 	await game_manager.handle_game_over("YOU WON! Restarting...", end_turn_button)
@@ -343,6 +376,13 @@ func _on_card_clicked(card: Card):
 		return
 	
 	audio_helper.play_card_play_sound(card.card_data.card_type)
+	
+	if StatisticsManagers:
+		StatisticsManagers.card_played(
+			card.card_data.card_name, 
+			card.card_data.card_type, 
+			card.card_data.cost
+		)
 	
 	match card.card_data.card_type:
 		"attack":

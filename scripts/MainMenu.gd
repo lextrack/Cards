@@ -5,6 +5,7 @@ extends Control
 @onready var help_button = $MenuContainer/ButtonsContainer/HelpButton
 @onready var credits_button = $MenuContainer/ButtonsContainer/CreditsButton
 @onready var exit_button = $MenuContainer/ButtonsContainer/ExitButton
+@onready var stats_button = $MenuContainer/ButtonsContainer/StatsButton
 
 @onready var game_title = $MenuContainer/TitleContainer/GameTitle
 @onready var version_label: Label = $FooterContainer/VersionLabel
@@ -48,11 +49,21 @@ func setup_buttons():
 	help_button.pressed.connect(_on_help_pressed)
 	credits_button.pressed.connect(_on_credits_pressed)
 	exit_button.pressed.connect(_on_exit_pressed)
+	stats_button.pressed.connect(_on_statistics_pressed)
 	
 	var buttons = [play_button, options_button, help_button, credits_button, exit_button]
 	for button in buttons:
 		button.mouse_entered.connect(_on_button_hover.bind(button))
 		button.focus_entered.connect(_on_button_focus.bind(button))
+		
+func _on_statistics_pressed():
+	if is_transitioning:
+		return
+	
+	is_transitioning = true
+	play_ui_sound("button_click")
+	
+	TransitionManager.fade_to_scene("res://scenes/StatisticsMenu.tscn", 1.0)
 
 func setup_audio():
 	pass

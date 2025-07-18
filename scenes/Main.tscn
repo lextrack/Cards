@@ -52,10 +52,8 @@ volume_db = -10.0
 [node name="TurnChangePlayer" type="AudioStreamPlayer" parent="AudioManager/GameSounds"]
 
 [node name="WinPlayer" type="AudioStreamPlayer" parent="AudioManager/GameSounds"]
-volume_db = 5.0
 
 [node name="LosePlayer" type="AudioStreamPlayer" parent="AudioManager/GameSounds"]
-volume_db = 3.0
 
 [node name="DeckShufflePlayer" type="AudioStreamPlayer" parent="AudioManager/GameSounds"]
 volume_db = -2.0

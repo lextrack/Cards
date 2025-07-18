@@ -133,12 +133,18 @@ func play_card(card: CardData, target: Player = null) -> bool:
 	hand_changed.emit()
 	cards_played_changed.emit(cards_played_this_turn, get_max_cards_per_turn())
 	
+	var damage_dealt = 0
+	
 	match card.card_type:
 		"attack":
 			if target:
 				var bonus_damage = get_damage_bonus()
 				var total_damage = card.damage + bonus_damage
+				damage_dealt = total_damage
 				target.take_damage(total_damage)
+				
+				if not is_ai and StatisticsManagers:
+					StatisticsManagers.combat_action("damage_dealt", damage_dealt)
 		"heal":
 			heal(card.heal)
 		"shield":
@@ -265,6 +271,9 @@ func ai_turn(opponent: Player):
 		
 		if chosen_card:
 			ai_card_played.emit(chosen_card)
+			
+			if StatisticsManagers and OS.is_debug_build():
+				print("🤖 AI played: ", chosen_card.card_name)
 			
 			await get_tree().create_timer(GameBalance.get_timer_delay("ai_card_notification")).timeout
 			

@@ -42,22 +42,22 @@ func _ready():
 	print("🔊 AudioManager initialized using existing scene nodes")
 
 func _save_original_volumes():
-	original_volumes["card_play"] = card_play_player.volume_db
-	original_volumes["card_draw"] = card_draw_player.volume_db
+	original_volumes["card_play"] = card_play_player.volume_db if card_play_player else -3.0
+	original_volumes["card_draw"] = card_draw_player.volume_db if card_draw_player else 9.0
 	original_volumes["card_hover"] = card_hover_player.volume_db if card_hover_player else -12.0
-	original_volumes["attack"] = attack_player.volume_db
-	original_volumes["heal"] = heal_player.volume_db
-	original_volumes["shield"] = shield_player.volume_db
-	original_volumes["damage"] = damage_player.volume_db
+	original_volumes["attack"] = attack_player.volume_db if attack_player else 5.0
+	original_volumes["heal"] = heal_player.volume_db if heal_player else -5.0
+	original_volumes["shield"] = shield_player.volume_db if shield_player else -14.0
+	original_volumes["damage"] = damage_player.volume_db if damage_player else -10.0
 	original_volumes["turn_change"] = turn_change_player.volume_db if turn_change_player else -5.0
-	original_volumes["win"] = win_player.volume_db
-	original_volumes["lose"] = lose_player.volume_db
+	original_volumes["win"] = win_player.volume_db if win_player else 5.0
+	original_volumes["lose"] = lose_player.volume_db if lose_player else 3.0
 	original_volumes["deck_shuffle"] = deck_shuffle_player.volume_db if deck_shuffle_player else -2.0
 	original_volumes["notification"] = notification_player.volume_db if notification_player else -5.0
-	original_volumes["bonus"] = bonus_player.volume_db
-	original_volumes["music"] = music_player.volume_db
+	original_volumes["bonus"] = bonus_player.volume_db if bonus_player else 2.0
+	original_volumes["music"] = music_player.volume_db if music_player else -25.0
 	
-	original_music_volume = music_player.volume_db
+	original_music_volume = music_player.volume_db if music_player else -25.0
 
 func _create_audio_pools_from_existing_nodes():
 	_create_pool_from_node("card_play", card_play_player, 3, 6)
@@ -137,7 +137,6 @@ func play_audio(pool_name: String, request: AudioRequest = null) -> bool:
 	return success
 
 func _get_fallback_pool(pool_name: String) -> String:
-	"""Get a fallback pool for missing audio pools"""
 	var fallbacks = {
 		"card_hover": "card_play",
 		"turn_change": "card_play", 
@@ -153,7 +152,6 @@ func _get_fallback_pool(pool_name: String) -> String:
 	return fallbacks.get(pool_name, "")
 
 func _play_audio_with_delay(pool: AudioPool, request: AudioRequest):
-	"""Handle delayed audio playback asynchronously"""
 	var delay = request.delay
 	request.delay = 0.0 
 	
@@ -257,55 +255,74 @@ func play_deck_shuffle_sound() -> bool:
 	else:
 		return play_audio("card_draw", request)
 
-func play_background_music():
-	if music_player.stream:
+func play_background_music() -> bool:
+	if music_player and music_player.stream:
 		music_player.play()
+		return true
+	return false
 
-func stop_music():
-	music_player.stop()
+func stop_music() -> bool:
+	if music_player:
+		music_player.stop()
+		return true
+	return false
 
-func set_music_stream(stream: AudioStream):
-	music_player.stream = stream
+func set_music_stream(stream: AudioStream) -> bool:
+	if music_player:
+		music_player.stream = stream
+		return true
+	return false
 
-func fade_music_in(duration: float = 1.0):
-	if not music_player.stream:
-		return
+func fade_music_in(duration: float = 1.0) -> bool:
+	if not music_player or not music_player.stream:
+		return false
 	
 	music_player.volume_db = -60.0
 	music_player.play()
 	
 	var tween = create_tween()
 	tween.tween_property(music_player, "volume_db", original_music_volume, duration)
+	return true
 
-func fade_music_out(duration: float = 1.0):
+func fade_music_out(duration: float = 1.0) -> bool:
+	if not music_player:
+		return false
+		
 	var tween = create_tween()
 	tween.tween_property(music_player, "volume_db", -60.0, duration)
 	await tween.finished
 	music_player.stop()
 	music_player.volume_db = original_music_volume
+	return true
 
-func set_master_volume(volume: float):
+func set_master_volume(volume: float) -> bool:
 	master_volume = clamp(volume, 0.0, 1.0)
 	_apply_volume_changes()
+	return true
 
-func set_sfx_volume(volume: float):
+func set_sfx_volume(volume: float) -> bool:
 	sfx_volume = clamp(volume, 0.0, 1.0)
 	_apply_volume_changes()
+	return true
 
-func set_music_volume(volume: float):
+func set_music_volume(volume: float) -> bool:
 	music_volume = clamp(volume, 0.0, 1.0)
-	music_player.volume_db = original_volumes["music"] + linear_to_db(music_volume * master_volume)
+	if music_player:
+		music_player.volume_db = original_volumes.get("music", -25.0) + linear_to_db(music_volume * master_volume)
+	return true
 
-func set_ui_volume(volume: float):
+func set_ui_volume(volume: float) -> bool:
 	ui_volume = clamp(volume, 0.0, 1.0)
 	_apply_volume_changes()
+	return true
 
-func _apply_volume_changes():
+func _apply_volume_changes() -> bool:
 	for pool_name in audio_pools.keys():
 		var pool = audio_pools[pool_name]
 		var category_volume = _get_category_volume(pool_name)
-		var volume_db = original_volumes[pool_name] + linear_to_db(category_volume * master_volume)
+		var volume_db = original_volumes.get(pool_name, 0.0) + linear_to_db(category_volume * master_volume)
 		pool.set_base_volume(volume_db)
+	return true
 
 func _get_category_volume(pool_name: String) -> float:
 	if pool_name.begins_with("ui_"):
@@ -322,9 +339,9 @@ func _get_category_volume_offset(category: AudioRequest.AudioCategory) -> float:
 		_:
 			return 0.0
 
-func _start_ducking(duck_amount: float):
+func _start_ducking(duck_amount: float) -> bool:
 	if is_ducking:
-		return
+		return true
 	
 	is_ducking = true
 	audio_ducking_started.emit(duck_amount)
@@ -334,10 +351,11 @@ func _start_ducking(duck_amount: float):
 	
 	ducking_tween = create_tween()
 	ducking_tween.tween_property(music_player, "volume_db", original_music_volume + duck_amount, 0.2)
+	return true
 
-func _stop_ducking():
+func _stop_ducking() -> bool:
 	if not is_ducking:
-		return
+		return true
 	
 	is_ducking = false
 	audio_ducking_stopped.emit()
@@ -347,6 +365,7 @@ func _stop_ducking():
 	
 	ducking_tween = create_tween()
 	ducking_tween.tween_property(music_player, "volume_db", original_music_volume, 0.5)
+	return true
 
 func play_simultaneous_sounds(pool_names: Array, requests: Array = []) -> bool:
 	var success_count = 0
@@ -369,18 +388,19 @@ func play_layered_sounds(base_pool: String, layer_pools: Array, volume_reduction
 	
 	return base_success
 
-func stop_all_sounds():
+func stop_all_sounds() -> bool:
 	for pool in audio_pools.values():
 		pool.stop_all()
 	
 	if is_ducking:
 		_stop_ducking()
+	return true
 
 func is_any_audio_playing() -> bool:
 	for pool in audio_pools.values():
 		if pool.is_any_playing():
 			return true
-	return music_player.playing
+	return music_player.playing if music_player else false
 	
 func _on_pool_exhausted(pool_name: String):
 	audio_pool_exhausted.emit(pool_name)
@@ -407,14 +427,14 @@ func debug_print_pools():
 		print("\n🔊 === AUDIO POOLS STATUS ===")
 		for pool in audio_pools.values():
 			pool.debug_print_status()
-		print("Music playing: ", music_player.playing)
+		print("Music playing: ", music_player.playing if music_player else false)
 		print("Is ducking: ", is_ducking)
 		print("==============================\n")
 
 func get_audio_statistics() -> Dictionary:
 	var stats = {
 		"total_pools": audio_pools.size(),
-		"music_playing": music_player.playing,
+		"music_playing": music_player.playing if music_player else false,
 		"is_ducking": is_ducking,
 		"master_volume": master_volume,
 		"sfx_volume": sfx_volume,

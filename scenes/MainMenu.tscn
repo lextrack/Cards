@@ -120,6 +120,17 @@ text = "CREDITS"
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 
+[node name="StatsButton" type="Button" parent="MenuContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 18
+text = "STATS"
+
+[node name="Spacer6" type="Control" parent="MenuContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
 [node name="ExitButton" type="Button" parent="MenuContainer/ButtonsContainer"]
 custom_minimum_size = Vector2(300, 50)
 layout_mode = 2

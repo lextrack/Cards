@@ -26,6 +26,14 @@ func _validate_audio_manager() -> bool:
 	
 	return true
 
+func _convert_to_bool(result) -> bool:
+	if result == null:
+		return false
+	elif result is bool:
+		return result
+	else:
+		return true
+
 func play_safe_audio(method_name: String, params: Array = []) -> bool:
 	if not _check_audio_system():
 		return false
@@ -38,13 +46,17 @@ func play_safe_audio(method_name: String, params: Array = []) -> bool:
 	
 	match params.size():
 		0:
-			success = audio_manager.call(method_name)
+			var result = audio_manager.call(method_name)
+			success = _convert_to_bool(result)
 		1:
-			success = audio_manager.call(method_name, params[0])
+			var result = audio_manager.call(method_name, params[0])
+			success = _convert_to_bool(result)
 		2:
-			success = audio_manager.call(method_name, params[0], params[1])
+			var result = audio_manager.call(method_name, params[0], params[1])
+			success = _convert_to_bool(result)
 		3:
-			success = audio_manager.call(method_name, params[0], params[1], params[2])
+			var result = audio_manager.call(method_name, params[0], params[1], params[2])
+			success = _convert_to_bool(result)
 		_:
 			_handle_error("Too many parameters for method: " + method_name)
 			return false
@@ -125,27 +137,52 @@ func play_deck_shuffle_sound() -> bool:
 	return play_safe_audio("play_deck_shuffle_sound")
 
 func play_background_music() -> bool:
-	return play_safe_audio("play_background_music")
+	if not _check_audio_system():
+		return false
+	
+	if not audio_manager.has_method("play_background_music"):
+		if audio_manager.music_player and audio_manager.music_player.stream:
+			audio_manager.music_player.play()
+			return true
+		return false
+	
+	var result = audio_manager.play_background_music()
+	return _convert_to_bool(result)
 
 func stop_background_music() -> bool:
-	return play_safe_audio("stop_music")
+	if not _check_audio_system():
+		return false
+	
+	if audio_manager.has_method("stop_music"):
+		var result = audio_manager.stop_music()
+		return _convert_to_bool(result)
+	elif audio_manager.music_player:
+		audio_manager.music_player.stop()
+		return true
+	
+	return false
 
 func fade_music_in(duration: float = 1.0) -> bool:
 	if not _check_audio_system():
 		return false
 	
-	audio_manager.fade_music_in(duration)
-	return true
+	if not audio_manager.has_method("fade_music_in"):
+		return play_background_music()
+	
+	var result = audio_manager.fade_music_in(duration)
+	return _convert_to_bool(result)
 
 func fade_music_out(duration: float = 1.0) -> bool:
 	if not _check_audio_system():
 		return false
 	
+	if not audio_manager.has_method("fade_music_out"):
+		return stop_background_music()
+	
 	audio_manager.fade_music_out(duration)
 	return true
 
 func play_simultaneous_card_sounds(card_types: Array) -> bool:
-	"""Play multiple card sounds at the same time"""
 	if not _check_audio_system():
 		return false
 	
@@ -170,7 +207,6 @@ func play_simultaneous_card_sounds(card_types: Array) -> bool:
 	return audio_manager.play_simultaneous_sounds(pool_names, requests)
 
 func play_combo_attack_sound(damage: int, combo_multiplier: int = 1) -> bool:
-	"""Play layered attack sounds for combo effects"""
 	if not _check_audio_system():
 		return false
 	
@@ -184,7 +220,6 @@ func play_combo_attack_sound(damage: int, combo_multiplier: int = 1) -> bool:
 	return base_success
 
 func play_critical_hit_sound(damage: int) -> bool:
-	"""Play special sound for critical hits"""
 	if not _check_audio_system():
 		return false
 	
@@ -197,7 +232,6 @@ func play_critical_hit_sound(damage: int) -> bool:
 	return audio_manager.play_simultaneous_sounds(base_pools, requests)
 
 func play_card_sequence_sound(cards_count: int, interval: float = 0.2) -> bool:
-	"""Play card sounds in sequence (for drawing multiple cards)"""
 	if not _check_audio_system():
 		return false
 	
@@ -214,29 +248,41 @@ func set_master_volume(volume: float) -> bool:
 	if not _check_audio_system():
 		return false
 	
-	audio_manager.set_master_volume(volume)
-	return true
+	if audio_manager.has_method("set_master_volume"):
+		var result = audio_manager.set_master_volume(volume)
+		return _convert_to_bool(result)
+	
+	return false
 
 func set_sfx_volume(volume: float) -> bool:
 	if not _check_audio_system():
 		return false
 	
-	audio_manager.set_sfx_volume(volume)
-	return true
+	if audio_manager.has_method("set_sfx_volume"):
+		var result = audio_manager.set_sfx_volume(volume)
+		return _convert_to_bool(result)
+	
+	return false
 
 func set_music_volume(volume: float) -> bool:
 	if not _check_audio_system():
 		return false
 	
-	audio_manager.set_music_volume(volume)
-	return true
+	if audio_manager.has_method("set_music_volume"):
+		var result = audio_manager.set_music_volume(volume)
+		return _convert_to_bool(result)
+	
+	return false
 
 func set_ui_volume(volume: float) -> bool:
 	if not _check_audio_system():
 		return false
 	
-	audio_manager.set_ui_volume(volume)
-	return true
+	if audio_manager.has_method("set_ui_volume"):
+		var result = audio_manager.set_ui_volume(volume)
+		return _convert_to_bool(result)
+	
+	return false
 
 func is_any_audio_playing() -> bool:
 	if not _check_audio_system():
@@ -248,7 +294,7 @@ func is_music_playing() -> bool:
 	if not _check_audio_system():
 		return false
 	
-	return audio_manager.music_player.playing
+	return audio_manager.music_player.playing if audio_manager.music_player else false
 
 func get_audio_statistics() -> Dictionary:
 	if not _check_audio_system():
@@ -260,30 +306,30 @@ func stop_all_audio() -> bool:
 	if not _check_audio_system():
 		return false
 	
-	audio_manager.stop_all_sounds()
-	return true
+	if audio_manager.has_method("stop_all_sounds"):
+		var result = audio_manager.stop_all_sounds()
+		return _convert_to_bool(result)
+	
+	return false
 
 func emergency_silence() -> bool:
-	"""Complete audio silence - for critical situations"""
 	if not _check_audio_system():
 		return false
 	
-	audio_manager.stop_all_sounds()
-	audio_manager.stop_music()
-	audio_manager.set_master_volume(0.0)
+	stop_all_audio()
+	stop_background_music()
+	set_master_volume(0.0)
 	return true
 
 func restore_audio() -> bool:
-	"""Restore audio after emergency silence"""
 	if not _check_audio_system():
 		return false
 	
-	audio_manager.set_master_volume(1.0)
-	audio_manager.play_background_music()
+	set_master_volume(1.0)
+	play_background_music()
 	return true
 
 func play_turn_start_sequence(is_player: bool, turn_number: int) -> bool:
-	"""Play appropriate sounds for turn start"""
 	if not _check_audio_system():
 		return false
 	
@@ -299,7 +345,6 @@ func play_turn_start_sequence(is_player: bool, turn_number: int) -> bool:
 	return true
 
 func play_game_over_sequence(player_won: bool) -> bool:
-	"""Play comprehensive game over audio sequence"""
 	if not _check_audio_system():
 		return false
 	
@@ -315,7 +360,6 @@ func play_game_over_sequence(player_won: bool) -> bool:
 	return true
 
 func play_card_effect_audio(card_type: String, effect_value: int, is_critical: bool = false) -> bool:
-	"""Play contextual audio based on card effect"""
 	if not _check_audio_system():
 		return false
 	
@@ -325,7 +369,6 @@ func play_card_effect_audio(card_type: String, effect_value: int, is_critical: b
 		return play_card_play_sound(card_type, effect_value)
 
 func play_ui_feedback(action: String, success: bool = true) -> bool:
-	"""Play standardized UI feedback sounds"""
 	if not _check_audio_system():
 		return false
 	
@@ -348,22 +391,18 @@ func play_ui_feedback(action: String, success: bool = true) -> bool:
 	return audio_manager.play_audio("ui_click", request)
 
 func _wait_for_audio(duration: float):
-	"""Helper for audio testing"""
 	if audio_manager and audio_manager.get_tree():
 		await audio_manager.get_tree().create_timer(duration).timeout
 
 func reinitialize() -> bool:
-	"""Reinitialize the audio helper"""
 	if audio_manager:
 		return setup(audio_manager)
 	return false
 
 func is_ready() -> bool:
-	"""Check if audio system is ready"""
 	return is_initialized and _check_audio_system()
 
 func quick_play(sound_name: String, pitch: float = 1.0, volume: float = 0.0, delay: float = 0.0) -> bool:
-	"""Quick way to play common sounds with basic parameters"""
 	if not _check_audio_system():
 		return false
 	
@@ -376,7 +415,6 @@ func quick_play(sound_name: String, pitch: float = 1.0, volume: float = 0.0, del
 	return audio_manager.play_audio(pool_name, request)
 
 func _get_pool_name_for_sound(sound_name: String) -> String:
-	"""Map friendly sound names to pool names"""
 	var sound_map = {
 		"card": "card_play",
 		"draw": "card_draw",
