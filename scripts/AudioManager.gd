@@ -138,15 +138,14 @@ func play_audio(pool_name: String, request: AudioRequest = null) -> bool:
 
 func _get_fallback_pool(pool_name: String) -> String:
 	var fallbacks = {
-		"card_hover": "card_play",
-		"turn_change": "card_play", 
-		"ui_click": "card_play",
-		"ui_hover": "card_play",
-		"notification": "card_play",
-		"deck_shuffle": "card_draw",
-		"bonus": "card_play",
-		"win": "card_play",
-		"lose": "card_play"
+		"card_hover": "notification",  # FIXED: Remove card_play and card_draw as fallbacks
+		"turn_change": "notification", # FIXED: Use notification instead of card_play
+		"ui_click": "notification",    # FIXED: Use notification instead of card_play
+		"ui_hover": "notification",    # FIXED: Use notification instead of card_play
+		"deck_shuffle": "card_play",   # Keep this one as it's reasonable
+		"bonus": "notification",       # FIXED: Use notification instead of card_play
+		"win": "notification",         # FIXED: Use notification instead of card_play
+		"lose": "notification"         # FIXED: Use notification instead of card_play
 	}
 	
 	return fallbacks.get(pool_name, "")
@@ -173,12 +172,18 @@ func play_card_draw_sound() -> bool:
 	return play_audio("card_draw")
 
 func play_card_hover_sound() -> bool:
-	var fallback_pools = ["card_hover", "notification", "card_play", "card_draw"]
+	# FIXED: Remove card_draw from fallbacks and improve priority
+	var fallback_pools = ["card_hover", "notification"]
 	
 	for pool_name in fallback_pools:
 		if audio_pools.has(pool_name):
 			var request = AudioRequest.create_ui_sound().with_volume(-8.0).with_pitch(1.05)
 			return play_audio(pool_name, request)
+	
+	# Last resort: create a very quiet notification sound with different pitch
+	if audio_pools.has("card_play"):
+		var request = AudioRequest.create_ui_sound().with_volume(-15.0).with_pitch(1.2)
+		return play_audio("card_play", request)
 	
 	if OS.is_debug_build():
 		push_warning("No audio pools available for hover sound")
@@ -219,7 +224,7 @@ func play_notification_sound() -> bool:
 	return false
 
 func play_bonus_sound() -> bool:
-	var bonus_pools = ["bonus", "notification", "card_play"]
+	var bonus_pools = ["bonus", "notification"]  # FIXED: Remove card_play
 	
 	for pool_name in bonus_pools:
 		if audio_pools.has(pool_name):
@@ -253,7 +258,7 @@ func play_deck_shuffle_sound() -> bool:
 	if audio_pools.has("deck_shuffle"):
 		return play_audio("deck_shuffle", request)
 	else:
-		return play_audio("card_draw", request)
+		return play_audio("card_play", request)  # This one is okay as fallback
 
 func play_background_music() -> bool:
 	if music_player and music_player.stream:

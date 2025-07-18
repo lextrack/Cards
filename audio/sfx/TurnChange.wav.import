@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://bto1wej75tun2"
-path="res://.godot/imported/CardDrawSound.wav-143c7080524c25ac49805bf773942d42.sample"
+path="res://.godot/imported/TurnChange.wav-b3a2128789bf313ee0e6938fc737d210.sample"
 
 [deps]
 
-source_file="res://audio/sfx/CardDrawSound.wav"
-dest_files=["res://.godot/imported/CardDrawSound.wav-143c7080524c25ac49805bf773942d42.sample"]
+source_file="res://audio/sfx/TurnChange.wav"
+dest_files=["res://.godot/imported/TurnChange.wav-b3a2128789bf313ee0e6938fc737d210.sample"]
 
 [params]
 
