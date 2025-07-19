@@ -14,7 +14,7 @@ extends Control
 @onready var ui_layer = $UILayer
 @onready var top_panel_bg = $UILayer/TopPanel/TopPanelBG
 @onready var damage_bonus_label = $UILayer/TopPanel/StatsContainer/CenterInfo/DamageBonusLabel
-@onready var audio_manager: AudioManager = $AudioManager
+@onready var audio_manager = $AudioManager
 
 var ui_manager: UIManager
 var game_manager: GameManager
@@ -221,11 +221,9 @@ func _connect_player_signals():
 	player.shield_changed.connect(ui_manager.update_player_shield)
 	player.player_died.connect(_on_player_died)
 	player.hand_changed.connect(_on_player_hand_changed)
-	player.deck_reshuffled.connect(_on_deck_reshuffled.bind("Player"))
 	player.cards_played_changed.connect(_on_player_cards_played_changed)
 	player.turn_changed.connect(_on_turn_changed)
 	player.card_drawn.connect(_on_player_card_drawn)
-	player.auto_turn_ended.connect(_on_auto_turn_ended)
 	player.damage_taken.connect(_on_player_damage_taken)
 	player.hp_changed.connect(_on_player_hp_changed)
 	player.shield_changed.connect(_on_player_shield_changed)
@@ -235,7 +233,6 @@ func _connect_ai_signals():
 	ai.mana_changed.connect(ui_manager.update_ai_mana)
 	ai.shield_changed.connect(ui_manager.update_ai_shield)
 	ai.player_died.connect(_on_ai_died)
-	ai.deck_reshuffled.connect(_on_deck_reshuffled.bind("AI"))
 	ai.ai_card_played.connect(_on_ai_card_played)
 
 func start_player_turn():
@@ -290,7 +287,6 @@ func _on_player_hand_changed():
 	ui_manager.update_turn_button_text(player, end_turn_button, input_manager.gamepad_mode)
 	
 	if is_player_turn and player.get_hand_size() == 0:
-		#game_notification.show_auto_end_turn_notification("no_cards")
 		await game_manager.end_turn_no_cards()
 		start_ai_turn()
 
@@ -300,23 +296,15 @@ func _on_player_cards_played_changed(cards_played: int, max_cards: int):
 	ui_manager.update_cards_played_info(cards_played, max_cards, difficulty)
 	
 	if cards_played >= max_cards:
-		#game_notification.show_auto_end_turn_notification("limit_reached")
 		await game_manager.end_turn_limit_reached()
 		start_ai_turn()
 	elif is_player_turn and player.get_hand_size() == 0:
-		#game_notification.show_auto_end_turn_notification("no_cards")
 		await game_manager.end_turn_no_cards()
 		start_ai_turn()
-
-func _on_card_drawn(player_name: String, cards_count: int, from_deck: bool):
-	audio_helper.play_card_draw_sound()
-	game_notification.show_card_draw_notification(player_name, cards_count, from_deck)
 
 func _on_player_card_drawn(cards_count: int, from_deck: bool):
 	await get_tree().create_timer(0.5).timeout
 	audio_helper.play_card_draw_sound()
-	
-	game_notification.show_card_draw_notification("Player", cards_count, from_deck)
 
 func _on_turn_changed(turn_num: int, damage_bonus: int):
 	if damage_bonus > 0 and GameBalance.is_damage_bonus_turn(turn_num):
@@ -327,23 +315,6 @@ func _on_turn_changed(turn_num: int, damage_bonus: int):
 	
 	ui_manager.update_all_labels(player, ai)
 	ui_manager.update_damage_bonus_indicator(player, damage_bonus_label)
-
-func _on_deck_reshuffled(player_name: String):
-	audio_helper.play_deck_shuffle_sound()
-	var cards_reshuffled = player.deck.size() if player_name == "Player" else ai.deck.size()
-	game_notification.show_reshuffle_notification(player_name, cards_reshuffled)
-	ui_manager.show_reshuffle_info(player_name)
-	await get_tree().create_timer(2.0).timeout
-
-func _on_auto_turn_ended(reason: String):
-	game_notification.show_auto_end_turn_notification(reason)
-	await get_tree().create_timer(0.5).timeout
-	
-	if game_manager.should_restart_for_no_cards():
-		await game_manager.restart_for_no_cards()
-		return
-	
-	start_ai_turn()
 
 func _on_player_died():
 	cleanup_notifications()
@@ -358,7 +329,6 @@ func _on_player_died():
 	restart_game()
 
 func _on_ai_card_played(card: CardData):
-	audio_helper.play_card_play_sound(card.card_type)
 	ai_notification.show_card_notification(card, "AI")
 
 func _on_ai_died():
@@ -381,8 +351,8 @@ func _on_card_clicked(card: Card):
 	
 	if StatisticsManagers:
 		StatisticsManagers.card_played(
-			card.card_data.card_name,
-			card.card_data.card_type,
+			card.card_data.card_name, 
+			card.card_data.card_type, 
 			card.card_data.cost
 		)
 	
@@ -398,8 +368,6 @@ func _on_end_turn_pressed():
 		
 	end_turn_button.release_focus()
 	audio_helper.play_notification_sound()
-	
-	game_notification.show_auto_end_turn_notification("pass_turn")
 	
 	if game_manager.should_restart_for_no_cards():
 		await game_manager.restart_for_no_cards()

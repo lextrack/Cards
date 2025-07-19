@@ -11,10 +11,10 @@ const DEFAULT_DURATION = 2.0
 const PRIORITY_DURATION = 3.0
 
 enum NotificationPriority {
-	LOW,      # Información general
-	NORMAL,   # Eventos de juego
-	HIGH,     # Eventos importantes
-	CRITICAL  # Game over, errores
+	LOW,
+	NORMAL,
+	HIGH,
+	CRITICAL
 }
 
 var tween: Tween
@@ -30,7 +30,7 @@ signal queue_overflow
 
 func _ready():
 	if not _validate_nodes():
-		push_error("GameNotification: Nodos críticos faltantes")
+		push_error("GameNotification: Critical nodes missing")
 		return
    
 	_initialize_notification()
@@ -149,64 +149,6 @@ func force_hide():
 	rotation = 0.0
 	is_showing = false
 	visible = false
-
-func show_auto_end_turn_notification(reason: String):
-	var title = "Turn ended automatically"
-	var text = ""
-	var detail = ""
-	var color = Color(0.6, 0.6, 0.6, 0.95)
-	var priority = NotificationPriority.NORMAL
-   
-	match reason:
-		"no_cards":
-			text = "🚫 No cards in hand"
-			detail = "No more cards to play"
-		"limit_reached":
-			text = "🎯 Card limit reached"
-			detail = "You've played all allowed cards"
-		"no_mana":
-			text = "⚡ Not enough mana"
-			detail = "No cards can be played"
-		"pass_turn":
-			title = "Turn passed"
-			text = "⏭️ You chose to pass turn"
-			detail = "No cards played"
-			color = Color(0.4, 0.7, 0.9, 0.95)
-		"timeout":
-			title = "Time limit exceeded"
-			text = "⏰ Turn time expired"
-			detail = "Turn ended automatically"
-			color = Color(0.8, 0.4, 0.2, 0.95)
-		_:
-			text = "⏹️ Turn ended"
-			detail = "Reason: " + reason
-   
-	var config = NotificationConfig.new(title, text, detail, color, GameBalance.get_timer_delay("notification_auto_turn"))
-	config.priority = priority
-	show_notification_from_config(config)
-
-func show_card_draw_notification(player_name: String, cards_drawn: int, from_deck: bool = true):
-	var title = player_name + " drew card" + ("s" if cards_drawn > 1 else "")
-	var text = ""
-	var detail = ""
-	var color = Color(0.2, 0.6, 0.9, 0.95)
-   
-	if from_deck:
-		text = "📥 " + str(cards_drawn) + " card" + ("s" if cards_drawn > 1 else "") + " from deck"
-		detail = "New options available"
-	else:
-		text = "🔄 Starting hand: " + str(cards_drawn) + " cards"
-		detail = "Let the battle begin!"
-   
-	queue_notification(title, text, detail, color, GameBalance.get_timer_delay("notification_draw"))
-
-func show_reshuffle_notification(player_name: String, cards_reshuffled: int):
-	var title = player_name + " reshuffled cards"
-	var text = "♻️ " + str(cards_reshuffled) + " cards to deck"
-	var detail = "Used cards are available again!"
-	var color = Color(0.8, 0.6, 0.2, 0.95)
-   
-	queue_notification(title, text, detail, color, GameBalance.get_timer_delay("notification_reshuffle"))
 
 func show_damage_bonus_notification(turn_number: int, bonus: int):
 	var title = "Damage bonus activated!"
@@ -349,24 +291,8 @@ func get_notification_stats() -> Dictionary:
 		"max_queue_size": MAX_QUEUE_SIZE
 	}
 
-func debug_show_test_notification():
-	if OS.is_debug_build():
-		var config = NotificationConfig.new("🔧 DEBUG", "Test notification", "This is a test notification")
-		config.color = Color.YELLOW
-		config.priority = NotificationPriority.HIGH
-		show_notification_from_config(config)
-
-func get_queue_preview() -> Array:
-	var preview = []
-	for notification in notification_queue:
-		preview.append({
-			"title": notification.title,
-			"timestamp": notification.timestamp
-		})
-	return preview
+func has_pending_notifications() -> bool:
+	return notification_queue.size() > 0 or is_showing
 
 func is_queue_full() -> bool:
 	return notification_queue.size() >= MAX_QUEUE_SIZE
-
-func has_pending_notifications() -> bool:
-	return notification_queue.size() > 0 or is_showing

@@ -24,12 +24,10 @@ signal shield_changed(new_shield: int)
 signal player_died
 signal hand_changed
 signal deck_empty
-signal deck_reshuffled
 signal cards_played_changed(cards_played: int, max_cards: int)
 signal turn_changed(turn_num: int, damage_bonus: int)
 signal ai_card_played(card: CardData)
 signal card_drawn(cards_count: int, from_deck: bool)
-signal auto_turn_ended(reason: String)
 signal damage_taken(damage_amount: int)
 
 func _ready():
@@ -61,10 +59,8 @@ func draw_initial_hand():
 
 func draw_card() -> bool:
 	if deck.size() == 0 and discard_pile.size() > 0:
-		var cards_to_reshuffle = discard_pile.size()
 		deck = DeckManager.create_discard_pile_deck(discard_pile)
 		discard_pile.clear()
-		deck_reshuffled.emit()
 	
 	if deck.size() > 0 and hand.size() < max_hand_size:
 		hand.append(deck.pop_back())
@@ -143,7 +139,6 @@ func play_card(card: CardData, target: Player = null) -> bool:
 				damage_dealt = total_damage
 				target.take_damage(total_damage)
 				
-				# NUEVO: Solo reproducir sonido si NO es IA
 				if not is_ai and StatisticsManagers:
 					StatisticsManagers.combat_action("damage_dealt", damage_dealt)
 		"heal":
@@ -151,29 +146,7 @@ func play_card(card: CardData, target: Player = null) -> bool:
 		"shield":
 			add_shield(card.shield)
 	
-	call_deferred("check_auto_end_turn")
-	
 	return true
-
-func check_auto_end_turn():
-	if cards_played_this_turn >= get_max_cards_per_turn():
-		#auto_turn_ended.emit("limit_reached")
-		return true
-	
-	if hand.size() == 0:
-		#auto_turn_ended.emit("no_cards")
-		return true
-	
-	var playable_cards = []
-	for card in hand:
-		if can_play_card(card):
-			playable_cards.append(card)
-	
-	if playable_cards.size() == 0 and current_mana > 0:
-		auto_turn_ended.emit("no_mana")
-		return true
-	
-	return false
 
 func get_hand_size() -> int:
 	return hand.size()
