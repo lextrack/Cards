@@ -9,6 +9,15 @@ extends Control
 var is_transitioning: bool = false
 var selected_topic_button: Button = null
 
+func _ready():
+	setup_topics()
+	setup_buttons()
+	
+	await handle_scene_entrance()
+	
+	if topics_buttons_container.get_child_count() > 0:
+		topics_buttons_container.get_child(0).grab_focus()
+
 var help_topics = {
 	"📖 Basic Rules": """[font_size=24][color=yellow]⚔️ GAME RULES[/color][/font_size]
 
@@ -27,7 +36,7 @@ Reduce your opponent's health to 0 to win the match.
 • [color=orange]CARDS[/color]: Your arsenal: depending on difficulty, you can use up to 4 or 5 cards per turn. Special cards shine brighter
 • [color=white]DECKS[/color]: Available card count (automatically replenished, you'll never run out)""",
 
-	"🃏 Card Types": """[font_size=24][color=yellow]🗂️ CARD TYPES[/color][/font_size]
+	"🃏  Card Types": """[font_size=24][color=yellow]🗂️ CARD TYPES[/color][/font_size]
 
 [font_size=18][color=red]⚔️ ATTACK CARDS:[/color][/font_size]
 • Deal direct damage to the opponent
@@ -122,15 +131,6 @@ Reduce your opponent's health to 0 to win the match.
 - [color=lime]ESC:[/color] Return to main menu
 - [color=lime]H:[/color] View key mapping"""
 }
-
-func _ready():
-	setup_topics()
-	setup_buttons()
-	
-	await handle_scene_entrance()
-	
-	if topics_buttons_container.get_child_count() > 0:
-		topics_buttons_container.get_child(0).grab_focus()
 
 func handle_scene_entrance():
 	await get_tree().process_frame

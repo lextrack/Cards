@@ -13,6 +13,27 @@ func play_card_play_sound(card_type: String = "", damage: int = 0) -> bool:
 		return false
 	return audio_manager.play_card_play_sound(card_type, damage)
 
+# Nuevos métodos para sonidos de IA
+func play_ai_card_play_sound(card_type: String = "") -> bool:
+	if not is_initialized:
+		return false
+	return audio_manager.play_ai_card_play_sound(card_type)
+
+func play_ai_attack_sound() -> bool:
+	if not is_initialized:
+		return false
+	return audio_manager.play_ai_attack_sound()
+
+func play_ai_heal_sound() -> bool:
+	if not is_initialized:
+		return false
+	return audio_manager.play_ai_heal_sound()
+
+func play_ai_shield_sound() -> bool:
+	if not is_initialized:
+		return false
+	return audio_manager.play_ai_shield_sound()
+
 func play_card_draw_sound() -> bool:
 	if not is_initialized:
 		return false

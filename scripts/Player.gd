@@ -200,6 +200,43 @@ func debug_print_deck_info():
 		var all_cards = deck + discard_pile + hand
 		print("=== DECK ", "AI" if is_ai else "PLAYER", " (", difficulty.to_upper(), ") ===")
 		CardProbability.debug_print_deck_info(all_cards)
+		
+func play_card_with_audio(card: CardData, target: Player = null, audio_helper: AudioHelper = null) -> bool:
+	if not can_play_card(card):
+		return false
+	
+	if audio_helper:
+		if is_ai:
+			audio_helper.play_ai_card_play_sound(card.card_type)
+		else:
+			audio_helper.play_card_play_sound(card.card_type)
+	
+	spend_mana(card.cost)
+	hand.erase(card)
+	discard_pile.append(card)
+	cards_played_this_turn += 1
+	
+	hand_changed.emit()
+	cards_played_changed.emit(cards_played_this_turn, get_max_cards_per_turn())
+	
+	var damage_dealt = 0
+	
+	match card.card_type:
+		"attack":
+			if target:
+				var bonus_damage = get_damage_bonus()
+				var total_damage = card.damage + bonus_damage
+				damage_dealt = total_damage
+				target.take_damage(total_damage)
+				
+				if not is_ai and StatisticsManagers:
+					StatisticsManagers.combat_action("damage_dealt", damage_dealt)
+		"heal":
+			heal(card.heal)
+		"shield":
+			add_shield(card.shield)
+	
+	return true
 
 func ai_turn(opponent: Player):
 	if not is_ai:
@@ -211,14 +248,26 @@ func ai_turn(opponent: Player):
 	var heal_threshold = ai_config.get("heal_threshold", 0.3)
 	var aggression = ai_config.get("aggression", 0.5)
 	
+	var main_scene = get_tree().get_first_node_in_group("main_scene")
+	var audio_helper = null
+	
+	if not main_scene:
+		var root = get_tree().current_scene
+		if root and root.has_method("get") and root.get("audio_helper"):
+			audio_helper = root.audio_helper
+			main_scene = root
+	
+	print("🤖 AI turn started. AudioHelper found: ", audio_helper != null)
+	
 	while can_play_more_cards():
 		var playable_cards = DeckManager.get_playable_cards(hand, current_mana)
 		
 		if playable_cards.size() == 0:
+			print("🤖 AI: No playable cards")
 			break
 		
 		var chosen_card: CardData = null
-		
+
 		if opponent.current_hp <= 12:
 			var finisher_cards = []
 			for card in playable_cards:
@@ -244,12 +293,17 @@ func ai_turn(opponent: Player):
 			chosen_card = playable_cards[0]
 		
 		if chosen_card:
+			print("🤖 AI chose card: ", chosen_card.card_name, " (", chosen_card.card_type, ")")
+			
 			ai_card_played.emit(chosen_card)
 			
-			if StatisticsManagers and OS.is_debug_build():
-				print("🤖 AI played: ", chosen_card.card_name)
-			
 			await get_tree().create_timer(GameBalance.get_timer_delay("ai_card_notification")).timeout
+			
+			if audio_helper:
+				print("🔊 AI playing sound for: ", chosen_card.card_type)
+				audio_helper.play_ai_card_play_sound(chosen_card.card_type)
+			else:
+				print("⚠️ AI: No audio_helper available")
 			
 			match chosen_card.card_type:
 				"attack":
@@ -259,4 +313,5 @@ func ai_turn(opponent: Player):
 			
 			await get_tree().create_timer(GameBalance.get_timer_delay("ai_card_play")).timeout
 		else:
+			print("🤖 AI: No card chosen, breaking")
 			break

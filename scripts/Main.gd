@@ -138,6 +138,22 @@ func _play_direct_entrance():
 	var tween = create_tween()
 	tween.tween_property(self, "modulate:a", 1.0, 0.5)
 	await tween.finished
+	
+func start_game_music():
+	if GlobalMusicManager:
+		# Transferir el stream del juego al manager global si es necesario
+		if audio_manager and audio_manager.music_player and audio_manager.music_player.stream:
+			GlobalMusicManager.set_game_music_stream(audio_manager.music_player.stream)
+		
+		GlobalMusicManager.start_game_music()
+	else:
+		print("⚠️ Main: GlobalMusicManager not available")
+
+func stop_game_music(fade_duration: float = 1.0):
+	if GlobalMusicManager:
+		GlobalMusicManager.stop_all_music(fade_duration)
+	else:
+		print("⚠️ Main: GlobalMusicManager not available")
 
 func setup_game():
 	game_manager.setup_new_game(difficulty)
@@ -152,6 +168,10 @@ func setup_game():
 	
 	ui_manager.update_all_labels(player, ai)
 	ui_manager.update_hand_display(player, card_scene, hand_container)
+	
+	# Iniciar música del juego
+	start_game_music()
+	
 	start_player_turn()
 	
 func _analyze_starting_decks():
@@ -270,11 +290,30 @@ func restart_game():
 	
 	game_count += 1
 	game_manager.restart_game(game_count, difficulty)
-	audio_helper.play_background_music()
+	
+	# NO detener la música del juego al reiniciar - seguir con la misma música
 	
 	await get_tree().create_timer(GameBalance.get_timer_delay("new_game")).timeout
-	setup_game()
-
+	setup_game_without_music()  # Nueva función para no reiniciar música
+	
+func setup_game_without_music():
+	game_manager.setup_new_game(difficulty)
+	player = game_manager.player
+	ai = game_manager.ai
+	
+	_connect_player_signals()
+	_connect_ai_signals()
+	
+	if OS.is_debug_build():
+		_analyze_starting_decks()
+	
+	ui_manager.update_all_labels(player, ai)
+	ui_manager.update_hand_display(player, card_scene, hand_container)
+	
+	# NO iniciar música - ya está sonando
+	
+	start_player_turn()
+	
 func _on_player_damage_taken(damage_amount: int):
 	audio_helper.play_damage_sound(damage_amount)
 	ui_manager.play_damage_effects(damage_amount)
@@ -342,6 +381,13 @@ func _on_ai_died():
 	game_notification.show_game_end_notification("Victory!", "hp_zero")
 	await game_manager.handle_game_over("YOU WON! Restarting...", end_turn_button)
 	restart_game()
+	
+func _notification(what):
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		cleanup_notifications()
+		stop_game_music(0.3)
+		await get_tree().create_timer(0.5).timeout
+		get_tree().quit()
 
 func _on_card_clicked(card: Card):
 	if not is_player_turn or not player.can_play_card(card.card_data):
@@ -358,9 +404,9 @@ func _on_card_clicked(card: Card):
 	
 	match card.card_data.card_type:
 		"attack":
-			player.play_card(card.card_data, ai)
+			player.play_card_with_audio(card.card_data, ai, audio_helper)
 		"heal", "shield":
-			player.play_card(card.card_data)
+			player.play_card_with_audio(card.card_data, null, audio_helper)
 
 func _on_end_turn_pressed():
 	if not is_player_turn:
@@ -387,4 +433,11 @@ func show_exit_confirmation():
 
 func return_to_menu():
 	cleanup_notifications()
+	
+	# Detener música del juego con fade
+	stop_game_music(0.8)
+	
+	# Pequeña pausa para que termine el fade
+	await get_tree().create_timer(0.5).timeout
+	
 	TransitionManager.fade_to_scene("res://scenes/MainMenu.tscn", 1.0)

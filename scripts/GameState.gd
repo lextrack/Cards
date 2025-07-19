@@ -45,20 +45,6 @@ func get_stats_text() -> String:
 		basic.win_rate * 100.0
 	]
 
-# Revisar si de verdad lo voy a usar
-func get_quick_stats() -> Dictionary:
-	if not StatisticsManagers:
-		return {"games_played": 0, "games_won": 0, "win_rate": 0.0}
-	
-	return {
-		"games_played": StatisticsManagers.games_played,
-		"games_won": StatisticsManagers.games_won,
-		"games_lost": StatisticsManagers.games_lost,
-		"win_rate": StatisticsManagers.get_win_rate(),
-		"current_streak": StatisticsManagers.current_win_streak,
-		"best_streak": StatisticsManagers.best_win_streak
-	}
-
 func _on_milestone_reached(milestone_type: String, value: int):
 	match milestone_type:
 		"games_played":

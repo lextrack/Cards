@@ -17,14 +17,39 @@ extends Control
 @onready var hover_player = $AudioManager/HoverPlayer
 
 var is_transitioning: bool = false
+var music_fade_tween: Tween
 
 func _ready():
 	setup_buttons()
 	setup_audio()
 	
 	await handle_scene_entrance()
+
+	start_menu_music()
 	
 	play_button.grab_focus()
+
+func setup_audio():
+	if menu_music_player and menu_music_player.stream and GlobalMusicManager:
+		if not GlobalMusicManager.menu_music_player.stream:
+			GlobalMusicManager.set_menu_music_stream(menu_music_player.stream)
+		else:
+			print("🎵 Menu music stream already configured in GlobalMusicManager")
+
+func start_menu_music():
+	if GlobalMusicManager:
+		GlobalMusicManager.start_menu_music()
+	else:
+		print("⚠️ GlobalMusicManager not available")
+
+func stop_menu_music(fade_duration: float = 1.0):
+	if GlobalMusicManager:
+		GlobalMusicManager.stop_menu_music_for_game(fade_duration)
+	else:
+		print("⚠️ GlobalMusicManager not available")
+
+func resume_menu_music():
+	start_menu_music()
 
 func handle_scene_entrance():
 	await get_tree().process_frame
@@ -65,9 +90,6 @@ func _on_statistics_pressed():
 	
 	TransitionManager.fade_to_scene("res://scenes/StatisticsMenu.tscn", 1.0)
 
-func setup_audio():
-	pass
-
 func play_entrance_animation():
 	modulate.a = 0.0
 	scale = Vector2(5.0, 1.0)
@@ -93,6 +115,9 @@ func _on_play_pressed():
 	is_transitioning = true
 	play_ui_sound("button_click")
 
+	stop_menu_music(0.8)
+	await get_tree().create_timer(0.3).timeout
+
 	TransitionManager.fade_to_scene("res://scenes/DifficultyMenu.tscn", 1.0)
 
 func _on_help_pressed():
@@ -108,7 +133,7 @@ func _on_options_pressed():
 	if is_transitioning:
 		return
 	
-	play_ui_sound("button_click")
+	play_ui_sound("button_click")	
 	show_coming_soon("Coming soon. [Press ESC or B in gamepad to close]")
 
 func _on_credits_pressed():
@@ -116,6 +141,7 @@ func _on_credits_pressed():
 		return
 	
 	play_ui_sound("button_click")
+	
 	show_credits_popup()
 
 func _on_exit_pressed():
@@ -192,6 +218,8 @@ func show_credits_popup():
 func exit_game():
 	is_transitioning = true
 	
+	stop_menu_music(0.5)
+	
 	if TransitionManager.current_overlay:
 		await TransitionManager.current_overlay.fade_in(0.8)
 		
@@ -250,3 +278,6 @@ func _notification(what):
 
 func set_background_color(color: Color):
 	$BackgroundLayer/BackgroundGradient.color = color
+
+func _on_scene_entered():
+	resume_menu_music()

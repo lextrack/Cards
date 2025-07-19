@@ -10,6 +10,11 @@ extends Node
 @onready var shield_player = $CombatSounds/ShieldPlayer
 @onready var damage_player = $CombatSounds/DamagePlayer
 
+@onready var ai_attack_player = $AISounds/AIAttackPlayer
+@onready var ai_heal_player = $AISounds/AIHealPlayer
+@onready var ai_shield_player = $AISounds/AIShieldPlayer
+@onready var ai_card_play_player = $AISounds/AICardPlayPlayer
+
 @onready var turn_change_player = $GameSounds/TurnChangePlayer
 @onready var win_player = $GameSounds/WinPlayer
 @onready var lose_player = $GameSounds/LosePlayer
@@ -31,6 +36,12 @@ func _create_player_pools():
 	_create_pool("heal", heal_player, 3)
 	_create_pool("shield", shield_player, 3)
 	_create_pool("damage", damage_player, 4)
+	
+	_create_pool("ai_attack", ai_attack_player, 3)
+	_create_pool("ai_heal", ai_heal_player, 3)
+	_create_pool("ai_shield", ai_shield_player, 3)
+	_create_pool("ai_card_play", ai_card_play_player, 3)
+	
 	_create_pool("turn_change", turn_change_player, 2)
 	_create_pool("win", win_player, 1)
 	_create_pool("lose", lose_player, 1)
@@ -75,6 +86,26 @@ func play_card_play_sound(card_type: String = "", damage: int = 0) -> bool:
 			return play_shield_sound()
 		_:
 			return _play_sound("card_play")
+
+func play_ai_card_play_sound(card_type: String = "") -> bool:
+	match card_type:
+		"attack":
+			return play_ai_attack_sound()
+		"heal":
+			return play_ai_heal_sound()
+		"shield":
+			return play_ai_shield_sound()
+		_:
+			return _play_sound("ai_card_play")
+
+func play_ai_attack_sound() -> bool:
+	return _play_sound("ai_attack")
+
+func play_ai_heal_sound() -> bool:
+	return _play_sound("ai_heal")
+
+func play_ai_shield_sound() -> bool:
+	return _play_sound("ai_shield")
 
 func play_card_draw_sound() -> bool:
 	return _play_sound("card_draw")
@@ -126,7 +157,6 @@ func _play_sound(sound_name: String) -> bool:
 
 func play_background_music() -> bool:
 	if music_player and music_player.stream:
-		music_player.play()
 		return true
 	return false
 
