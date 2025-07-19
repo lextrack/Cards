@@ -73,10 +73,10 @@ func setup_buttons():
 	options_button.pressed.connect(_on_options_pressed)
 	help_button.pressed.connect(_on_help_pressed)
 	credits_button.pressed.connect(_on_credits_pressed)
-	exit_button.pressed.connect(_on_exit_pressed)
 	stats_button.pressed.connect(_on_statistics_pressed)
+	exit_button.pressed.connect(_on_exit_pressed)
 	
-	var buttons = [play_button, options_button, help_button, credits_button, exit_button]
+	var buttons = [play_button, options_button, help_button, credits_button, stats_button, exit_button]
 	for button in buttons:
 		button.mouse_entered.connect(_on_button_hover.bind(button))
 		button.focus_entered.connect(_on_button_focus.bind(button))
@@ -263,6 +263,8 @@ func _input(event):
 			_on_help_pressed()
 		elif credits_button.has_focus():
 			_on_credits_pressed()
+		elif stats_button.has_focus():
+			_on_statistics_pressed()
 		elif exit_button.has_focus():
 			_on_exit_pressed()
 

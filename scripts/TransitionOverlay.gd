@@ -6,48 +6,110 @@ extends CanvasLayer
 @onready var card_front: ColorRect = $LoadingContainer/CardContainer/CardFront
 @onready var card_back: ColorRect = $LoadingContainer/CardContainer/CardBack
 
-var flip_duration = 1.4
-var pause_duration = 0.8
-var float_amplitude = 5.0
+var show_duration = 0.2
+var flip_duration = 0.5
+var float_amplitude = 2.0
+var current_face = "front"  # "front" o "back"
 
 var rotation_tween: Tween
 var float_tween: Tween
 var is_animating: bool = false
-var original_position: Vector2
 
 func _ready():
 	layer = 1000
-	original_position = card_container.position
 	overlay.color.a = 0.0
 	loading_container.modulate.a = 0.0
+	
+	_ensure_card_position()
+
+func _ensure_card_position():
+	pass
 
 func start_loading_animation():
 	_stop_all_tweens()
 	
 	card_container.rotation = 0.0
 	card_container.scale = Vector2(1.0, 1.0)
-	card_container.position = original_position
+	
+	current_face = "front"
 	card_front.visible = true
 	card_back.visible = false
 	card_front.z_index = 1
 	card_back.z_index = 0
 	
 	is_animating = true
-	_start_rotation_loop()
+	_start_face_cycle()
 	_start_floating_loop()
 
-func _start_rotation_loop():
+func _start_face_cycle():
 	if not is_animating:
 		return
 	
-	rotation_tween = create_tween()
-	rotation_tween.tween_method(_update_rotation, 0.0, 360.0, flip_duration)
+	await get_tree().create_timer(show_duration).timeout
 	
-	await rotation_tween.finished
-	await get_tree().create_timer(pause_duration).timeout
+	if not is_animating:
+		return
+	
+	if current_face == "front":
+		await _flip_to_back()
+		current_face = "back"
+	else:
+		await _flip_to_front()
+		current_face = "front"
 	
 	if is_animating:
-		_start_rotation_loop()
+		_start_face_cycle()
+
+func _flip_to_back():
+	rotation_tween = create_tween()
+	rotation_tween.set_ease(Tween.EASE_IN_OUT)
+	rotation_tween.set_trans(Tween.TRANS_CUBIC)
+	
+	rotation_tween.tween_method(_update_flip_rotation, 0.0, 90.0, flip_duration * 0.5)
+	await rotation_tween.finished
+	
+	card_front.visible = false
+	card_back.visible = true
+	card_front.z_index = 0
+	card_back.z_index = 1
+	
+	rotation_tween = create_tween()
+	rotation_tween.set_ease(Tween.EASE_IN_OUT)
+	rotation_tween.set_trans(Tween.TRANS_CUBIC)
+	rotation_tween.tween_method(_update_flip_rotation, 90.0, 180.0, flip_duration * 0.5)
+	await rotation_tween.finished
+	
+	card_container.rotation = 0.0
+	card_container.scale = Vector2(1.0, 1.0)
+
+func _flip_to_front():
+	rotation_tween = create_tween()
+	rotation_tween.set_ease(Tween.EASE_IN_OUT)
+	rotation_tween.set_trans(Tween.TRANS_CUBIC)
+
+	rotation_tween.tween_method(_update_flip_rotation, 0.0, 90.0, flip_duration * 0.5)
+	await rotation_tween.finished
+
+	card_back.visible = false
+	card_front.visible = true
+	card_back.z_index = 0
+	card_front.z_index = 1
+
+	rotation_tween = create_tween()
+	rotation_tween.set_ease(Tween.EASE_IN_OUT)
+	rotation_tween.set_trans(Tween.TRANS_CUBIC)
+	rotation_tween.tween_method(_update_flip_rotation, 90.0, 180.0, flip_duration * 0.5)
+	await rotation_tween.finished
+	
+	card_container.rotation = 0.0
+	card_container.scale = Vector2(1.0, 1.0)
+
+func _update_flip_rotation(degrees: float):
+	var radians = deg_to_rad(degrees)
+	card_container.rotation = radians
+
+	var scale_factor = abs(cos(radians)) * 0.2 + 0.8
+	card_container.scale = Vector2(scale_factor, 1.0)
 
 func _start_floating_loop():
 	if not is_animating:
@@ -57,33 +119,15 @@ func _start_floating_loop():
 	float_tween.set_ease(Tween.EASE_IN_OUT)
 	float_tween.set_trans(Tween.TRANS_SINE)
 	
-	float_tween.tween_property(card_container, "position:y", original_position.y - float_amplitude, 2.0)
-	float_tween.tween_property(card_container, "position:y", original_position.y + float_amplitude, 2.0)
+	var base_offset_y = card_container.offset_top
+	
+	float_tween.tween_property(card_container, "offset_top", base_offset_y - float_amplitude, 1.0)
+	float_tween.tween_property(card_container, "offset_top", base_offset_y + float_amplitude, 3.0)
 	
 	await float_tween.finished
 	
 	if is_animating:
 		_start_floating_loop()
-
-func _update_rotation(degrees: float):
-	var radians = deg_to_rad(degrees)
-	card_container.rotation = radians
-	
-	var normalized_degrees = fmod(degrees, 360.0)
-
-	if normalized_degrees >= 90.0 and normalized_degrees <= 270.0:
-		card_front.visible = false
-		card_back.visible = true
-		card_front.z_index = 0
-		card_back.z_index = 1
-	else:
-		card_front.visible = true
-		card_back.visible = false
-		card_front.z_index = 1
-		card_back.z_index = 0
-	
-	var scale_factor = abs(cos(radians)) * 0.3 + 0.7
-	card_container.scale = Vector2(scale_factor, 1.0)
 
 func stop_loading_animation():
 	is_animating = false
@@ -93,10 +137,12 @@ func stop_loading_animation():
 	reset_tween.set_parallel(true)
 	reset_tween.set_ease(Tween.EASE_OUT)
 	reset_tween.set_trans(Tween.TRANS_QUART)
-	
+
 	reset_tween.tween_property(card_container, "rotation", 0.0, 0.4)
 	reset_tween.tween_property(card_container, "scale", Vector2(1.0, 1.0), 0.4)
-	reset_tween.tween_property(card_container, "position", original_position, 0.4)
+	
+	var original_offset_top = -95.0 
+	reset_tween.tween_property(card_container, "offset_top", original_offset_top, 0.4)
 	
 	card_front.visible = true
 	card_back.visible = false
@@ -152,9 +198,9 @@ func hide_loading():
 func is_ready() -> bool:
 	return overlay != null and loading_container != null and card_container != null
 
-func set_animation_speed(new_flip_duration: float, new_pause_duration: float = 0.8):
+func set_animation_speed(new_show_duration: float, new_flip_duration: float = 0.6):
+	show_duration = new_show_duration
 	flip_duration = new_flip_duration
-	pause_duration = new_pause_duration
 
 func set_float_intensity(amplitude: float):
 	float_amplitude = amplitude
