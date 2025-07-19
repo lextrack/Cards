@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://cgocqq54tsr6v"]
+[gd_scene load_steps=9 format=3 uid="uid://cgocqq54tsr6v"]
 
 [ext_resource type="Script" uid="uid://dpwskmlvgg420" path="res://scripts/Main.gd" id="1_main"]
 [ext_resource type="Script" uid="uid://c4bcluymhr1ap" path="res://scripts/AudioManager.gd" id="2_vcsgt"]
+[ext_resource type="AudioStream" uid="uid://cfpivtf0scv5x" path="res://audio/sfx/CardDraw.wav" id="3_jlsqs"]
 [ext_resource type="AudioStream" uid="uid://ckxka8g2wos1g" path="res://audio/sfx/AttackSound.wav" id="4_c01mt"]
 [ext_resource type="AudioStream" uid="uid://cnsi1ofavhclr" path="res://audio/sfx/HealPlayer.wav" id="7_lhr70"]
 [ext_resource type="AudioStream" uid="uid://bto1wej75tun2" path="res://audio/sfx/TurnChange.wav" id="8_jlsqs"]
@@ -26,6 +27,7 @@ script = ExtResource("2_vcsgt")
 volume_db = -3.0
 
 [node name="CardDrawPlayer" type="AudioStreamPlayer" parent="AudioManager/CardSounds"]
+stream = ExtResource("3_jlsqs")
 
 [node name="CardHoverPlayer" type="AudioStreamPlayer" parent="AudioManager/CardSounds"]
 
@@ -51,7 +53,7 @@ volume_db = -10.0
 
 [node name="TurnChangePlayer" type="AudioStreamPlayer" parent="AudioManager/GameSounds"]
 stream = ExtResource("8_jlsqs")
-volume_db = 10.0
+volume_db = 6.0
 
 [node name="WinPlayer" type="AudioStreamPlayer" parent="AudioManager/GameSounds"]
 

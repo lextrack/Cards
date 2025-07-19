@@ -14,7 +14,7 @@ extends Control
 @onready var ui_layer = $UILayer
 @onready var top_panel_bg = $UILayer/TopPanel/TopPanelBG
 @onready var damage_bonus_label = $UILayer/TopPanel/StatsContainer/CenterInfo/DamageBonusLabel
-@onready var audio_manager = $AudioManager
+@onready var audio_manager: AudioManager = $AudioManager
 
 var ui_manager: UIManager
 var game_manager: GameManager
@@ -313,7 +313,9 @@ func _on_card_drawn(player_name: String, cards_count: int, from_deck: bool):
 	game_notification.show_card_draw_notification(player_name, cards_count, from_deck)
 
 func _on_player_card_drawn(cards_count: int, from_deck: bool):
+	await get_tree().create_timer(0.5).timeout
 	audio_helper.play_card_draw_sound()
+	
 	game_notification.show_card_draw_notification("Player", cards_count, from_deck)
 
 func _on_turn_changed(turn_num: int, damage_bonus: int):
@@ -379,8 +381,8 @@ func _on_card_clicked(card: Card):
 	
 	if StatisticsManagers:
 		StatisticsManagers.card_played(
-			card.card_data.card_name, 
-			card.card_data.card_type, 
+			card.card_data.card_name,
+			card.card_data.card_type,
 			card.card_data.cost
 		)
 	

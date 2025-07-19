@@ -143,6 +143,7 @@ func play_card(card: CardData, target: Player = null) -> bool:
 				damage_dealt = total_damage
 				target.take_damage(total_damage)
 				
+				# NUEVO: Solo reproducir sonido si NO es IA
 				if not is_ai and StatisticsManagers:
 					StatisticsManagers.combat_action("damage_dealt", damage_dealt)
 		"heal":
